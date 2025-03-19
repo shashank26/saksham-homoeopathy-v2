@@ -31,6 +31,12 @@
           <string>com.arniparth.sakshamhomoeopathy</string>
         </array>
       </dict>
+      <dict>
+        <key>CFBundleURLSchemes</key>
+        <array>
+          <string>com.googleusercontent.apps.89183721418-t8m8lq83pkfla1sic26uid3cju3kk84r</string>
+        </array>
+      </dict>
     </array>
     <key>CFBundleVersion</key>
     <string>1</string>
