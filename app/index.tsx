@@ -1,15 +1,11 @@
-import { Text, View } from "react-native";
+import { Auth } from "@/components/auth/Auth";
+import { HelloText } from "@/components/Hello";
+import "../global.css";
 
 export default function Index() {
   return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <Text>Edit app/index.tsx to edit this screen.</Text>
-    </View>
+    <Auth>
+      <HelloText />
+    </Auth>
   );
 }
