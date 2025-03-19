@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "89183721418",
+    "project_id": "saksham-homoeopathy-66ec9",
+    "storage_bucket": "saksham-homoeopathy-66ec9.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:89183721418:android:75213d12e3e5c6f9612133",
+        "android_client_info": {
+          "package_name": "com.arniparth.sakshamhomoeopathy"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDvphbzMpp1X0Bi5tlU8RX94D21Dq1XtPY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
