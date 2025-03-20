@@ -37,5 +37,5 @@ yarn-error.*
 
 app-example
 
-googleservices.plist
-googleservices.json
+GoogleService-Info.plist
+google-services.json
