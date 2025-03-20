@@ -42,7 +42,7 @@ const OTPAuth: FC<{ confirm: FirebaseAuthTypes.ConfirmationResult }> = ({
               title: "Error",
               message: "Login failed!",
               preset: "error",
-              duration: 4000,
+              duration: 4,
             });
             return;
           }

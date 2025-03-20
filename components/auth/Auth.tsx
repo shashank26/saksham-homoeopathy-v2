@@ -20,9 +20,9 @@ export const Auth: FC<PropsWithChildren> = ({ children }) => {
     return subscriber;
   }, []);
 
-  // if (!user) {
+  if (!user) {
     return <Login />;
-  // }
+  }
 
   return (
     <AuthContext.Provider
