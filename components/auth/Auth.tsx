@@ -1,36 +1,23 @@
-import { AuthService } from "@/services/Auth.service";
-import { FirebaseAuthTypes } from "@react-native-firebase/auth";
-import { FC, PropsWithChildren, useEffect, useState } from "react";
+import { FC, PropsWithChildren } from "react";
 import { Login } from "./Login";
-import { AuthContext } from "./hooks/useAuth";
+import { useAuth } from "./hooks/useAuth";
+import { Text } from "@tamagui/core";
+import { LoaderScreen } from "../LoaderScreen";
 
 export const Auth: FC<PropsWithChildren> = ({ children }) => {
-  const [user, setUser] = useState<FirebaseAuthTypes.User | null>(null);
+  const { user, isLoading, error } = useAuth();
 
-  const onAuthStateChanged = (user: FirebaseAuthTypes.User | null) => {
-    if (user) {
-      console.log(user);
-      setUser(user);
-    }
-  };
+  if (isLoading) {
+    return <LoaderScreen />;
+  }
 
-  useEffect(() => {
-    const subscriber =
-      AuthService.Auth().onAuthStateChanged(onAuthStateChanged);
-    return subscriber;
-  }, []);
+  if (error) {
+    return <Text>Error occurred</Text>;
+  }
 
   if (!user) {
     return <Login />;
   }
 
-  return (
-    <AuthContext.Provider
-      value={{
-        user,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
-  );
+  return <>{children}</>;
 };
