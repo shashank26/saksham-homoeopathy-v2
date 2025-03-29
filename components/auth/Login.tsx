@@ -1,20 +1,26 @@
-import { AuthService } from "@/services/Auth.service";
 import { FirebaseAuthTypes } from "@react-native-firebase/auth";
 import * as burnt from "burnt";
 import { FC, useState } from "react";
-import { KeyboardAvoidingView } from "react-native";
-import { Input, YStack } from "tamagui";
+import { KeyboardAvoidingView, View } from "react-native";
+import { H1, H2, Image, Input, YStack } from "tamagui";
 import { LoaderButton } from "../controls/LoaderButton";
+import { useAuth } from "./hooks/useAuth";
+import LogoSvg from "@/assets/images/svg/logo.svg";
+import { Svg } from "react-native-svg";
 
 const OTPAuth: FC<{ confirm: FirebaseAuthTypes.ConfirmationResult }> = ({
   confirm,
 }) => {
   const [otp, setOtp] = useState<string>("");
   const [verifying, setVerifying] = useState<boolean>(false);
+  const { setError } = useAuth();
 
   return (
     <>
       <Input
+        style={{
+          fontFamily: "JosefinSans-Regular",
+        }}
         borderWidth={2}
         keyboardType="numeric"
         placeholder="OTP"
@@ -38,6 +44,7 @@ const OTPAuth: FC<{ confirm: FirebaseAuthTypes.ConfirmationResult }> = ({
           } catch (err) {
             // TODO: Log to crashylitics
             console.log(err);
+            setError?.(err as any);
             burnt.toast({
               title: "Error",
               message: "Login failed!",
@@ -54,19 +61,40 @@ const OTPAuth: FC<{ confirm: FirebaseAuthTypes.ConfirmationResult }> = ({
 };
 
 export const Login: FC = () => {
+  const { isLoading, signIn } = useAuth();
   const [phoneNumber, setPhoneNumber] = useState<string>("");
   const [confirm, setConfirm] =
     useState<FirebaseAuthTypes.ConfirmationResult | null>(null);
-  const [loadingOtp, setLoadingOtp] = useState<boolean>(false);
 
   return (
     <KeyboardAvoidingView style={{ flex: 1, height: "100%" }}>
-      <YStack flex={1} padding={"$6"} gap={"$4"} justifyContent="center">
+      <YStack flex={1} padding={"$6"} gap={"$4"}>
+        <View
+          style={{
+            alignItems: "center",
+          }}
+        >
+          <LogoSvg/>
+        </View>
+        <H2
+          marginBottom={50}
+          style={{
+            fontFamily: "JosefinSans-Bold",
+            textAlign: "center",
+            color: "#ae4137",
+          }}
+        >
+          Saksham Homoeopathy
+        </H2>
         <Input
+          style={{
+            fontFamily: "JosefinSans-Regular",
+          }}
           borderWidth={2}
           keyboardType="numeric"
           placeholder="Phone number"
-          onChangeText={(e) => {
+          // autoFocus={true}
+          onChangeText={(e: string) => {
             const filteredValue = e.replace(/[^0-9]/g, "");
             setPhoneNumber(filteredValue);
           }}
@@ -84,17 +112,18 @@ export const Login: FC = () => {
               fontWeight: "bold",
             }}
             message="Sending..."
-            text="Send OTP"
-            isLoading={loadingOtp}
+            text="Get OTP"
+            isLoading={isLoading}
             onPress={async () => {
-              if (loadingOtp) return;
-              setLoadingOtp(true);
-              const confirm = await AuthService.signIn(
-                "+91",
-                parseInt(phoneNumber) || 9643018020
-              );
-              setConfirm(confirm);
-              setLoadingOtp(false);
+              if (isLoading || !signIn) return;
+              try {
+                const confirm = await signIn(
+                  parseInt(phoneNumber) || 9643018020
+                );
+                setConfirm(confirm);
+              } catch (err) {
+                console.log(err);
+              }
             }}
           ></LoaderButton>
         )}
