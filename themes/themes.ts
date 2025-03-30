@@ -1,5 +1,59 @@
 import { createThemes, defaultComponentThemes } from "@tamagui/theme-builder";
 import * as Colors from "@tamagui/colors";
+import { createFont } from "tamagui";
+
+const getFont = (family: string) => {
+  return createFont({
+    family,
+    size: {
+      1: 12,
+      2: 14,
+      3: 16,
+      4: 18,
+      5: 20,
+      6: 22,
+      7: 24,
+      8: 26,
+      9: 28,
+      10: 30,
+      11: 32,
+      12: 34,
+      13: 36,
+      14: 38,
+      15: 40,
+      16: 42,
+      17: 44,
+      18: 46,
+      19: 48,
+      20: 50,
+    },
+  });
+};
+
+export const themeColors = {
+  accent: "#994636",
+  light: "#FBF8F4",
+  onyx: "#393E41",
+  plat: "#E7E5DF"
+};
+
+export const getFonts = () => {
+  return [
+    "JosefinSans",
+    "JosefinSans-100",
+    "JosefinSans-200",
+    "JosefinSans-300",
+    "JosefinSans-400",
+    "JosefinSans-500",
+    "JosefinSans-600",
+    "JosefinSans-700",
+  ].reduce((p, c, _i) => {
+    return {
+      ...p,
+      ["js" + (_i > 0 ? _i : "")]: getFont(c),
+    };
+  }, {});
+};
 
 const darkPalette = [
   "hsla(45, 14%, 1%, 1)",

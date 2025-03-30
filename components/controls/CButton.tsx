@@ -1,5 +1,5 @@
 import { FC, useEffect, useRef } from "react";
-import { Animated, Pressable } from "react-native";
+import { Animated } from "react-native";
 import { Button, ButtonProps } from "tamagui";
 
 export type CButtonProps = ButtonProps;

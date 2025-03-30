@@ -3,8 +3,10 @@ import { View } from "react-native";
 
 export default function Index() {
   return (
-    <View>
-      <Text>Hello</Text>
-    </View>
+    <>
+      <View>
+        <Text fontFamily={"$js1"}>Hello</Text>
+      </View>
+    </>
   );
 }

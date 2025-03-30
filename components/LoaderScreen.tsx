@@ -12,14 +12,17 @@ export const LoaderScreen = () => {
         height: "100%",
         width: "100%",
         gap: "30",
+        padding: 20,
       }}
     >
       <LogoSvg viewBox="0 0 160 160" height={"50%"} width={"100%"} />
       <H2
+        fontFamily="$js6"
+        color="$accent"
+        size="$14"
         style={{
-          fontFamily: "JosefinSans-Bold",
           textAlign: "center",
-          color: "#ae4137",
+          lineHeight: "50",
         }}
       >
         Saksham Homoeopathy
