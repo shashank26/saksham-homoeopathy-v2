@@ -1,12 +1,11 @@
+import LogoSvg from "@/assets/images/svg/logo.svg";
 import { FirebaseAuthTypes } from "@react-native-firebase/auth";
 import * as burnt from "burnt";
 import { FC, useState } from "react";
 import { KeyboardAvoidingView, View } from "react-native";
-import { H1, H2, Image, Input, YStack } from "tamagui";
+import { H2, Input, YStack } from "tamagui";
 import { LoaderButton } from "../controls/LoaderButton";
 import { useAuth } from "./hooks/useAuth";
-import LogoSvg from "@/assets/images/svg/logo.svg";
-import { Svg } from "react-native-svg";
 
 const OTPAuth: FC<{ confirm: FirebaseAuthTypes.ConfirmationResult }> = ({
   confirm,
@@ -18,9 +17,7 @@ const OTPAuth: FC<{ confirm: FirebaseAuthTypes.ConfirmationResult }> = ({
   return (
     <>
       <Input
-        style={{
-          fontFamily: "JosefinSans-Regular",
-        }}
+        fontFamily={"$body"}
         borderWidth={2}
         keyboardType="numeric"
         placeholder="OTP"
@@ -68,20 +65,22 @@ export const Login: FC = () => {
 
   return (
     <KeyboardAvoidingView style={{ flex: 1, height: "100%" }}>
-      <YStack flex={1} padding={"$6"} gap={"$4"}>
+      <YStack flex={1} padding={"$6"} gap={"$4"} justifyContent="center">
         <View
           style={{
             alignItems: "center",
           }}
         >
-          <LogoSvg/>
+          <LogoSvg />
         </View>
         <H2
           marginBottom={50}
+          fontFamily="$js6"
+          color="$accent"
+          size="$14"
           style={{
-            fontFamily: "JosefinSans-Bold",
             textAlign: "center",
-            color: "#ae4137",
+            lineHeight: "50",
           }}
         >
           Saksham Homoeopathy
@@ -93,7 +92,6 @@ export const Login: FC = () => {
           borderWidth={2}
           keyboardType="numeric"
           placeholder="Phone number"
-          // autoFocus={true}
           onChangeText={(e: string) => {
             const filteredValue = e.replace(/[^0-9]/g, "");
             setPhoneNumber(filteredValue);

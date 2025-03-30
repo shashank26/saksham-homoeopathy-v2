@@ -5,7 +5,7 @@ export default function RootLayout() {
   return (
     <Tabs>
       <Tabs.Screen
-        name="index"
+        name="home"
         options={{
           headerShown: false,
           tabBarIcon: ({ color }) => (

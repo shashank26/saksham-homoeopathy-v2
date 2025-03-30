@@ -1,32 +1,37 @@
 import { Auth } from "@/components/auth/Auth";
 import { AuthProvider } from "@/components/auth/hooks/useAuth";
 import { LoaderScreen } from "@/components/LoaderScreen";
-import { themes } from "@/themes/themes";
+import { getFonts, themeColors, themes } from "@/themes/themes";
 import { defaultConfig } from "@tamagui/config/v4";
 import { createTamagui, TamaguiProvider } from "@tamagui/core";
 import { ToastProvider } from "@tamagui/toast";
 import { useFonts } from "expo-font";
-import { SplashScreen, Stack } from "expo-router";
-import { SafeAreaView } from "react-native";
+import { Stack } from "expo-router";
 
-const config = createTamagui({ ...defaultConfig, themes });
+const config = createTamagui({
+  ...defaultConfig,
+  themes,
+  tokens: {
+    ...defaultConfig.tokens,
+    color: {
+      ...themeColors
+    },
+  },
+  fonts: {
+    ...getFonts(),
+  },
+});
 
 export default function RootLayout() {
   const [fontsLoaded] = useFonts({
-    "JosefinSans-Bold": require("@/assets/fonts/JosefinSans-Bold.ttf"),
-    "JosefinSans-Regular": require("@/assets/fonts/JosefinSans-Regular.ttf"),
-    "JosefinSans-SemiBold": require("@/assets/fonts/JosefinSans-SemiBold.ttf"),
-    "JosefinSans-Light": require("@/assets/fonts/JosefinSans-Light.ttf"),
-    "JosefinSans-Thin": require("@/assets/fonts/JosefinSans-Thin.ttf"),
-    "JosefinSans-ExtraLight": require("@/assets/fonts/JosefinSans-ExtraLight.ttf"),
-    "JosefinSans-Medium": require("@/assets/fonts/JosefinSans-Medium.ttf"),
-    "JosefinSans-BoldItalic": require("@/assets/fonts/JosefinSans-BoldItalic.ttf"),
-    "JosefinSans-ExtraLightItalic": require("@/assets/fonts/JosefinSans-ExtraLightItalic.ttf"),
-    "JosefinSans-Italic": require("@/assets/fonts/JosefinSans-Italic.ttf"),
-    "JosefinSans-LightItalic": require("@/assets/fonts/JosefinSans-LightItalic.ttf"),
-    "JosefinSans-MediumItalic": require("@/assets/fonts/JosefinSans-MediumItalic.ttf"),
-    "JosefinSans-SemiBoldItalic": require("@/assets/fonts/JosefinSans-SemiBoldItalic.ttf"),
-    "JosefinSans-ThinItalic": require("@/assets/fonts/JosefinSans-ThinItalic.ttf"),
+    JosefinSans: require("@/assets/fonts/JosefinSans-Regular.ttf"),
+    "JosefinSans-100": require("@/assets/fonts/JosefinSans-Thin.ttf"),
+    "JosefinSans-200": require("@/assets/fonts/JosefinSans-ExtraLight.ttf"),
+    "JosefinSans-300": require("@/assets/fonts/JosefinSans-Light.ttf"),
+    "JosefinSans-400": require("@/assets/fonts/JosefinSans-Regular.ttf"),
+    "JosefinSans-500": require("@/assets/fonts/JosefinSans-Medium.ttf"),
+    "JosefinSans-600": require("@/assets/fonts/JosefinSans-SemiBold.ttf"),
+    "JosefinSans-700": require("@/assets/fonts/JosefinSans-Bold.ttf"),
   });
 
   const getUI = () => {
@@ -45,12 +50,10 @@ export default function RootLayout() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <AuthProvider>
-        <TamaguiProvider config={config} defaultTheme="light">
-          <ToastProvider>{getUI()}</ToastProvider>
-        </TamaguiProvider>
-      </AuthProvider>
-    </SafeAreaView>
+    <AuthProvider>
+      <TamaguiProvider config={config} defaultTheme="light">
+        <ToastProvider>{getUI()}</ToastProvider>
+      </TamaguiProvider>
+    </AuthProvider>
   );
 }

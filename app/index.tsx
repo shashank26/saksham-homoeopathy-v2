@@ -1,6 +1,4 @@
-import { useAuth } from "@/components/auth/hooks/useAuth";
-import { Redirect, router, Slot } from "expo-router";
-import { useLayoutEffect } from "react";
+import { Redirect } from "expo-router";
 
 export default function Index() {
   return <Redirect href={'/authorized'} />
