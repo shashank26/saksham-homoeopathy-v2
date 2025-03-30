@@ -1,11 +1,17 @@
 import { themeColors } from "@/themes/themes";
-import { DrawerToggleButton } from "@react-navigation/drawer";
+import {
+  DrawerContentScrollView,
+  DrawerItemList,
+  DrawerToggleButton,
+} from "@react-navigation/drawer";
 import { Drawer } from "expo-router/drawer";
 import React from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { DrawerHeaderTitle } from "./DrawerHeaderTitle";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-
+import { Image, View } from "react-native";
+import { Text } from "@tamagui/core";
+import { useAuth } from "../auth/hooks/useAuth";
 const drawerOptions = [
   {
     title: "Updates",
@@ -37,7 +43,7 @@ const drawerOptions = [
     label: "Do's & Dont's",
     icon: (focused: boolean) => (
       <MaterialIcons
-        name="check-circle-outline"
+        name="check-circle"
         size={24}
         color={focused ? themeColors.plat : themeColors.onyx}
       />
@@ -75,10 +81,38 @@ const drawerButtonOptionsStyle = {
   drawerInactiveBackgroundColor: themeColors.plat, // Inactive button text color
 };
 
+const CustomDrawerContent = (props: any) => {
+  const { user } = useAuth();
+  return (
+    <DrawerContentScrollView {...props}>
+      <View
+        style={{
+          borderColor: themeColors.plat,
+          borderBottomWidth: 1,
+          marginBottom: 10,
+          paddingBottom: 10,
+          gap: 20,
+        }}
+      >
+        <Image
+          source={{ uri: "https://picsum.photos/200" }}
+          height={100}
+          width={100}
+          borderRadius={50}
+          style={{}}
+        />
+        <Text>{user?.displayName || user?.phoneNumber}</Text>
+      </View>
+      <DrawerItemList {...props} />
+    </DrawerContentScrollView>
+  );
+};
+
 export const AppDrawer = () => {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <Drawer
+        drawerContent={(props) => <CustomDrawerContent {...props} />}
         screenOptions={({ route }) => ({
           headerTitle: () => <DrawerHeaderTitle route={route} />,
           headerStyle: {
