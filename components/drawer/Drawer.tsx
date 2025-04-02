@@ -9,13 +9,13 @@ import React from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { DrawerHeaderTitle } from "./DrawerHeaderTitle";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import { Image, View } from "react-native";
+import { Image, Platform, View } from "react-native";
 import { Text } from "@tamagui/core";
 import { useAuth } from "../auth/hooks/useAuth";
 const drawerOptions = [
   {
     title: "Updates",
-    name: "index",
+    name: "home",
     label: "Home",
     icon: (focused: boolean) => (
       <MaterialIcons
@@ -116,7 +116,7 @@ export const AppDrawer = () => {
         screenOptions={({ route }) => ({
           headerTitle: () => <DrawerHeaderTitle route={route} />,
           headerStyle: {
-            height: 120,
+            height: Platform.OS === 'ios' ? 120 : 'auto',
           },
           headerTitleAlign: "left",
           headerLeft: () => (
