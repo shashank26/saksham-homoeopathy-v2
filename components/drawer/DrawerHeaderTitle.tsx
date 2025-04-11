@@ -15,7 +15,7 @@ export const DrawerHeaderTitle = ({
         {(route?.params as any)?.title as string || route?.name}
       </Text>
       <View
-        borderRadius={2}
+        borderRadius={0}
         height={5}
         width={"70%"}
         backgroundColor={themeColors.accent}

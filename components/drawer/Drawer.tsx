@@ -116,7 +116,7 @@ export const AppDrawer = () => {
         screenOptions={({ route }) => ({
           headerTitle: () => <DrawerHeaderTitle route={route} />,
           headerStyle: {
-            height: Platform.OS === 'ios' ? 120 : 'auto',
+            height: Platform.OS === 'ios' ? 120 : 80,
           },
           headerTitleAlign: "left",
           headerLeft: () => (
@@ -125,7 +125,7 @@ export const AppDrawer = () => {
           ...drawerButtonOptionsStyle,
           drawerStyle: {
             width: "70%",
-            rowGap: 5,
+            rowGap: 5
           },
           drawerLabelStyle: {
             fontSize: 18,
@@ -134,6 +134,7 @@ export const AppDrawer = () => {
           drawerItemStyle: {
             marginVertical: 5, // Adds space between buttons
           },
+          drawerType: 'slide'
         })}
       >
         {drawerOptions.map((options) => (

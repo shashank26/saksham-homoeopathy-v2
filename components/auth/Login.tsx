@@ -3,9 +3,9 @@ import { FirebaseAuthTypes } from "@react-native-firebase/auth";
 import * as burnt from "burnt";
 import { FC, useState } from "react";
 import { KeyboardAvoidingView, View } from "react-native";
-import { H2, Input, YStack } from "tamagui";
 import { LoaderButton } from "../controls/LoaderButton";
 import { useAuth } from "./hooks/useAuth";
+import { H2, Input, YStack } from "tamagui";
 
 const OTPAuth: FC<{ confirm: FirebaseAuthTypes.ConfirmationResult }> = ({
   confirm,
@@ -17,8 +17,9 @@ const OTPAuth: FC<{ confirm: FirebaseAuthTypes.ConfirmationResult }> = ({
   return (
     <>
       <Input
-        fontFamily={"$body"}
+        fontFamily="$js4"
         borderWidth={2}
+        fontSize="$4"
         keyboardType="numeric"
         placeholder="OTP"
         maxLength={6}
@@ -60,6 +61,7 @@ const OTPAuth: FC<{ confirm: FirebaseAuthTypes.ConfirmationResult }> = ({
 export const Login: FC = () => {
   const { isLoading, signIn } = useAuth();
   const [phoneNumber, setPhoneNumber] = useState<string>("");
+  const [otpLoading, setOtpLoading] = useState<boolean>(false);
   const [confirm, setConfirm] =
     useState<FirebaseAuthTypes.ConfirmationResult | null>(null);
 
@@ -86,9 +88,8 @@ export const Login: FC = () => {
           Saksham Homoeopathy
         </H2>
         <Input
-          style={{
-            fontFamily: "JosefinSans-Regular",
-          }}
+          fontFamily="$js4"
+          fontSize="$4"
           borderWidth={2}
           keyboardType="numeric"
           placeholder="Phone number"
@@ -97,7 +98,7 @@ export const Login: FC = () => {
             setPhoneNumber(filteredValue);
           }}
           maxLength={10}
-          value={phoneNumber.toString()}
+          value={phoneNumber + ''}
         />
         {confirm ? (
           <OTPAuth confirm={confirm}></OTPAuth>
@@ -105,16 +106,13 @@ export const Login: FC = () => {
           <LoaderButton
             disabled={phoneNumber.length !== 10}
             theme={"accent"}
-            style={{
-              fontSize: 20,
-              fontWeight: "bold",
-            }}
             message="Sending..."
             text="Get OTP"
-            isLoading={isLoading}
+            isLoading={otpLoading}
             onPress={async () => {
-              if (isLoading || !signIn) return;
+              if (otpLoading || !signIn) return;
               try {
+                setOtpLoading(true);
                 const confirm = await signIn(
                   parseInt(phoneNumber) || 9643018020
                 );
@@ -122,6 +120,7 @@ export const Login: FC = () => {
               } catch (err) {
                 console.log(err);
               }
+              setOtpLoading(false);
             }}
           ></LoaderButton>
         )}

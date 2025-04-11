@@ -20,10 +20,10 @@ export const LoaderButton: FC<LoaderButtonProps> = ({
       {isLoading ? (
         <View style={{ flexDirection: "row", alignItems: "center" }}>
           <Spinner color={"$red1"} />
-          <SizableText padding={"$2"}>Sending...</SizableText>
+          <SizableText fontFamily="$js4" fontSize="$4" padding={"$2"}>Sending...</SizableText>
         </View>
       ) : (
-        <Paragraph size="$5" fontWeight={"500"}>
+        <Paragraph fontSize="$4" fontFamily="$js4">
           {text}
         </Paragraph>
       )}

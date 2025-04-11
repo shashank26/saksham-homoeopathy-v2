@@ -49,6 +49,7 @@ export const AuthProvider = ({ children }: React.PropsWithChildren) => {
             try {
                 return AuthService.signIn("+91", phoneNumber);
             } catch(err) {
+              setLoading(false);
                 setError(err as any);
                 throw err;
             }

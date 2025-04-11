@@ -39,6 +39,7 @@ app-example
 
 GoogleService-Info.plist
 google-services.json
+startAndroid.sh
 
 ios
 android
