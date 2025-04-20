@@ -120,6 +120,8 @@ const builtThemes = createThemes({
         ...Colors.yellow,
         ...lightShadows,
         shadowColor: lightShadows.shadow1,
+        blue10: '#3B82F6',
+        gray6: '#D1D5DB',
       },
       dark: {
         ...Colors.greenDark,
@@ -127,6 +129,8 @@ const builtThemes = createThemes({
         ...Colors.yellowDark,
         ...darkShadows,
         shadowColor: darkShadows.shadow1,
+        blue10: '#60A5FA',
+        gray6: '#4B5563',
       },
     },
   },

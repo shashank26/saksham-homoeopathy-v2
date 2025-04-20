@@ -145,7 +145,7 @@ const styles = StyleSheet.create({
   tabContainer: {
     width: 70,
     height: 45,
-    borderRadius: 50,
+    borderRadius: 8,
     alignItems: "center",
     justifyContent: "center"
   },
