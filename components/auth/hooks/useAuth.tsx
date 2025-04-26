@@ -1,7 +1,6 @@
 import { AuthService } from "@/services/Auth.service";
 import { FirebaseAuthTypes } from "@react-native-firebase/auth";
 import React, { useEffect, useState } from "react";
-import { AnimateStyle } from "react-native-reanimated";
 
 export type AuthContextType = {
   user: FirebaseAuthTypes.User | null;
@@ -30,6 +29,11 @@ export const AuthProvider = ({ children }: React.PropsWithChildren) => {
 
   const onAuthStateChanged = (user: FirebaseAuthTypes.User | null) => {
     if (user) {
+      if (!user.displayName) {
+        user.updateProfile({
+          displayName: user.phoneNumber,
+        });
+      }
       setUser(user);
     }
     setLoading(false);
