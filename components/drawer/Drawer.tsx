@@ -101,7 +101,7 @@ const CustomDrawerContent = (props: any) => {
           borderRadius={50}
           style={{}}
         />
-        <Text fontFamily="$js" fontSize="$6">{user?.displayName || user?.phoneNumber}</Text>
+        <Text fontFamily="$js" fontSize="$6">{user?.displayName}</Text>
       </View>
       <DrawerItemList {...props} />
     </DrawerContentScrollView>
