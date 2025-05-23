@@ -7,6 +7,7 @@ import { createTamagui, TamaguiProvider } from "@tamagui/core";
 import { ToastProvider } from "@tamagui/toast";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
+import { useEffect } from "react";
 
 const config = createTamagui({
   ...defaultConfig,

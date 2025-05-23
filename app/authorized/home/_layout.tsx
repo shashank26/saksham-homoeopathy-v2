@@ -94,8 +94,8 @@ export default function RootLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: "Updates",
-          tabBarIconName: "circle-notifications",
+          title: "Home",
+          tabBarIconName: "home-filled",
           headerShown: false,
         }}
       />

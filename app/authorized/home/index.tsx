@@ -1,12 +1,5 @@
-import { Text } from "@tamagui/core";
-import { View } from "react-native";
+import Posts from "@/components/posts/Posts";
 
 export default function Index() {
-  return (
-    <>
-      <View>
-        <Text fontFamily={"$js1"}>Hello</Text>
-      </View>
-    </>
-  );
+  return <Posts />;
 }
