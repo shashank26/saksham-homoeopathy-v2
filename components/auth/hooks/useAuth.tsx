@@ -29,6 +29,8 @@ export const AuthProvider = ({ children }: React.PropsWithChildren) => {
 
   const onAuthStateChanged = (user: FirebaseAuthTypes.User | null) => {
     if (user) {
+      AuthService.setUser(user);
+      AuthService.putFirestoreUser();
       if (!user.displayName) {
         user.updateProfile({
           displayName: user.phoneNumber,

@@ -1,12 +1,9 @@
+import { HistoryScreen } from "@/components/history/HistoryScreen";
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 
 const History: React.FC = () => {
-  return (
-    <View style={styles.container}>
-      <Text style={styles.text}>History Component</Text>
-    </View>
-  );
+  return <HistoryScreen />;
 };
 
 const styles = StyleSheet.create({

@@ -14,7 +14,7 @@ import { Text } from "@tamagui/core";
 import { useAuth } from "../auth/hooks/useAuth";
 const drawerOptions = [
   {
-    title: "Updates",
+    title: "Home",
     name: "home",
     label: "Home",
     icon: (focused: boolean) => (
