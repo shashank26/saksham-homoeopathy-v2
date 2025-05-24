@@ -6,7 +6,7 @@ import { ActivityIndicator, View } from "react-native";
 import { PostContext } from "./Post.context";
 import usePosts from "./hooks/usePosts";
 import { Image } from "react-native";
-import { XStack, YStack } from "tamagui";
+import { Spinner, XStack, YStack } from "tamagui";
 import { MomentService } from "@/services/Moment.service";
 import ShimmerPlaceholder from "react-native-shimmer-placeholder";
 import { LinearGradient } from "expo-linear-gradient";
@@ -73,7 +73,7 @@ export default function Posts() {
           flexDirection: "row",
         }}
       >
-        <ActivityIndicator size="small" color="#000000"></ActivityIndicator>
+        <Spinner size="small" color={themeColors.accent} />
         <Text style={{ marginLeft: 10 }} fontFamily={"$js6"} fontSize={16}>
           Loading posts...
         </Text>
