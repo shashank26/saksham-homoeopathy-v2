@@ -7,7 +7,7 @@ import { createTamagui, TamaguiProvider } from "@tamagui/core";
 import { ToastProvider } from "@tamagui/toast";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
-import { useEffect } from "react";
+import { PortalProvider } from "tamagui";
 
 const config = createTamagui({
   ...defaultConfig,
@@ -15,7 +15,7 @@ const config = createTamagui({
   tokens: {
     ...defaultConfig.tokens,
     color: {
-      ...themeColors
+      ...themeColors,
     },
   },
   fonts: {
@@ -41,6 +41,7 @@ export default function RootLayout() {
     }
     return (
       <Auth>
+        
         <Stack
           screenOptions={{
             headerShown: false,
@@ -53,7 +54,9 @@ export default function RootLayout() {
   return (
     <AuthProvider>
       <TamaguiProvider config={config} defaultTheme="light">
-        <ToastProvider>{getUI()}</ToastProvider>
+        <PortalProvider>
+          <ToastProvider>{getUI()}</ToastProvider>
+        </PortalProvider>
       </TamaguiProvider>
     </AuthProvider>
   );

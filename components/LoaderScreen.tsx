@@ -12,7 +12,7 @@ export const LoaderScreen = () => {
         height: "100%",
         width: "100%",
         gap: "30",
-        padding: 20,
+        padding: 10,
       }}
     >
       <LogoSvg viewBox="0 0 160 160" height={"50%"} width={"100%"} />
