@@ -62,6 +62,7 @@ const CreatePostForm = ({
                 };
               });
             }}
+            value={formData.title}
           />
         </YStack>
         <YStack height={"200"}>
@@ -69,6 +70,7 @@ const CreatePostForm = ({
           <TextArea
             size={200}
             height={150}
+            value={formData.body}
             onChangeText={(text) => {
               setFormData((prev) => {
                 return {

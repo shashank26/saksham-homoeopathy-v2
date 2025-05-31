@@ -89,13 +89,13 @@ export function OverlayActivityIndicator({
               color={themeColors.accent}
               style={{ marginRight: 10 }}
             />
-            <Text color={themeColors.onyx} fontSize={18} fontFamily={"$js4"}>
+            <Text color={themeColors.onyx} fontSize={28} fontFamily={"$js5"}>
               {title}
             </Text>
           </XStack>
           <XStack alignItems="center" justifyContent="center" gap={10}>
             {icon}
-            <Text color={themeColors.onyx} fontSize={14} fontFamily={"$js3"}>
+            <Text color={themeColors.onyx} fontSize={16} fontFamily={"$js4"}>
               {description}
             </Text>
           </XStack>
@@ -104,7 +104,11 @@ export function OverlayActivityIndicator({
     </Animated.View>
   );
 
-  return showOverlay ? view : <></>;
+  return (
+    <Modal visible={showOverlay} transparent animationType="fade">
+      {view}
+    </Modal>
+  );
 }
 export function ConfirmDialog({
   icon,
