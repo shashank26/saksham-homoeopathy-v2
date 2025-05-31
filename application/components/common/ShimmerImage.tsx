@@ -75,12 +75,14 @@ export const ShimmerImage: FC<RoundedAvatarProps> = ({
     //   }}
     // >
     <View
+      
       style={{ position: "relative", height: size.height, width: size.width }}
     >
       <Image
         style={{
           height: size.height,
           width: size.width,
+          borderRadius: 10
         }}
         src={url || altUrl}
         onMagicTap={onPress}
