@@ -9,10 +9,9 @@ export default function usePosts() {
   useEffect(() => {
     (async () => {
       PostService.onPostUpdate((newPosts: Post[]) => {
-        setPosts(newPosts);
+        setPosts(newPosts.sort((p1, p2) => p2.updatedAt.getTime() - p1.updatedAt.getTime()));
       });
       setLoading(posts.length > 0 ? 2 : 1);
-      setPosts(await PostService.getPosts());
       setLoading(0);
     })();
   }, [page]);

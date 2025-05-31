@@ -2,7 +2,7 @@ import { themeColors } from "@/themes/themes";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { FC, useState } from "react";
-import { DimensionValue, Image, View } from "react-native";
+import { ActivityIndicator, DimensionValue, Image, StyleSheet, View } from "react-native";
 import ShimmerPlaceholder from "react-native-shimmer-placeholder";
 import { Avatar, Button, YStack, Text } from "tamagui";
 
@@ -29,7 +29,7 @@ export const ShimmerImage: FC<RoundedAvatarProps> = ({
 }) => {
   const [loaded, setLoaded] = useState(false);
   const [failed, setFailed] = useState(false);
-  const [key, setKey] = useState(Date.now());
+  const [key, setKey] = useState(url);
 
   if (failed) {
     return (
@@ -54,7 +54,7 @@ export const ShimmerImage: FC<RoundedAvatarProps> = ({
             icon={<Ionicons name="reload" size={20} />}
             backgroundColor={themeColors.light}
             onPress={() => {
-              setKey(Date.now());
+              setKey(`${url}-${Date.now()}`);
             }}
           >
             <Text>Retry</Text>
@@ -65,29 +65,45 @@ export const ShimmerImage: FC<RoundedAvatarProps> = ({
   }
 
   return (
-    <ShimmerPlaceholder
-      visible={loaded}
-      LinearGradient={LinearGradient}
-      style={{
-        width: size.width,
-        height: size.height,
-        borderRadius: borderRadius,
-      }}
+    // <ShimmerPlaceholder
+    //   visible={loaded}
+    //   LinearGradient={LinearGradient}
+    //   style={{
+    //     width: size.width,
+    //     height: size.height,
+    //     borderRadius: borderRadius,
+    //   }}
+    // >
+    <View
+      style={{ position: "relative", height: size.height, width: size.width }}
     >
       <Image
-        key={key}
         style={{
           height: size.height,
           width: size.width,
         }}
         src={url || altUrl}
         onMagicTap={onPress}
-        onLoadStart={() => setLoaded(false)}
-        onLoadEnd={() => setLoaded(true)}
+        onLoadStart={() => {
+          console.log("starting loading", url);
+          setLoaded(false);
+        }}
+        onLoadEnd={() => {
+          console.log("ending loading", url);
+          setLoaded(true);
+        }}
         onError={() => {
           setFailed(true);
         }}
       />
-    </ShimmerPlaceholder>
+      {!loaded && (
+        <ActivityIndicator
+          size={"small"}
+          color={themeColors.accent}
+          style={StyleSheet.absoluteFill}
+        />
+      )}
+    </View>
+    // </ShimmerPlaceholder>
   );
 };

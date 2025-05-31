@@ -9,7 +9,7 @@ import { Button, Form, Input, Label, XStack, YStack } from "tamagui";
 import { useAuth } from "../auth/hooks/useAuth";
 import { OverlayActivityIndicator } from "../common/Alert";
 import { DrawerSheet } from "../common/DrawerSheet";
-import { ImagePicker } from "../common/MediaPicker";
+import { ImagePicker, MediaPickerResult } from "../common/MediaPicker";
 import { ShimmerImage } from "../common/ShimmerImage";
 import { Ionicons } from "@expo/vector-icons";
 
@@ -122,7 +122,7 @@ export const ProfileScreen = () => {
           elevation={5}
           padding="$4"
         >
-          <DrawerSheet<Blob>
+          <DrawerSheet<MediaPickerResult>
             FC={ProfileAvatar}
             Child={ImagePicker}
             onClose={async (data) => {
@@ -136,7 +136,7 @@ export const ProfileScreen = () => {
                 const fileName = `profile/images/${user?.uid}.jpg`;
                 const storageUrl = await StorageService.setItem(
                   fileName,
-                  data as Blob
+                  data.blob as Blob
                 );
                 updateProfile?.({
                   ...profile,

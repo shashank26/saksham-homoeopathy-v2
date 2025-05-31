@@ -1,10 +1,9 @@
 import type { FirebaseStorageTypes } from "@react-native-firebase/storage";
-import storage, {
-    ref
-} from "@react-native-firebase/storage";
+import { ref } from "@react-native-firebase/storage";
+import { fileStore } from "./Firebase.service";
 
 export class StorageService {
-  static readonly storage: FirebaseStorageTypes.Module = storage();
+  static readonly storage: FirebaseStorageTypes.Module = fileStore;
 
   private static uploadTask(task: FirebaseStorageTypes.Task): Promise<string> {
     return new Promise<string>((resolve, reject) => {

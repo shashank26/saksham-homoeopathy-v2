@@ -7,6 +7,7 @@ import { createTamagui, TamaguiProvider } from "@tamagui/core";
 import { ToastProvider } from "@tamagui/toast";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { PortalProvider } from "tamagui";
 
 const config = createTamagui({
@@ -51,12 +52,14 @@ export default function RootLayout() {
   };
 
   return (
-    <AuthProvider>
-      <TamaguiProvider config={config} defaultTheme="light">
-        <PortalProvider>
-          <ToastProvider>{getUI()}</ToastProvider>
-        </PortalProvider>
-      </TamaguiProvider>
-    </AuthProvider>
+    <GestureHandlerRootView>
+      <AuthProvider>
+        <TamaguiProvider config={config} defaultTheme="light">
+          <PortalProvider>
+            <ToastProvider>{getUI()}</ToastProvider>
+          </PortalProvider>
+        </TamaguiProvider>
+      </AuthProvider>
+    </GestureHandlerRootView>
   );
 }

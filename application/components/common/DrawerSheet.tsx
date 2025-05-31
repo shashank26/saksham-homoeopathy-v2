@@ -20,6 +20,7 @@ export const DrawerSheet = <T,>({
     <>
       <FC setOpen={setOpen} />
       <Sheet
+        moveOnKeyboardChange={true}
         forceRemoveScrollEnabled={open}
         modal={true}
         open={open}
