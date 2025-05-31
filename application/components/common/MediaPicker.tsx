@@ -1,17 +1,39 @@
 import { themeColors } from "@/themes/themes";
 import { MaterialIcons } from "@expo/vector-icons";
-import { Text } from "@tamagui/core";
-import { FC } from "react";
-import { Button, XStack, YStack } from "tamagui";
-import * as ExpoImagePicker from "expo-image-picker";
-import { useAuth } from "../auth/hooks/useAuth";
 import {} from "@react-native-firebase/firestore";
-import { StorageService } from "@/services/Storage.service";
+import { Text } from "@tamagui/core";
+import * as ExpoImagePicker from "expo-image-picker";
+import { Button, Image, XStack, YStack } from "tamagui";
+import { styleSheets } from "../styles";
+import { View } from "react-native";
 
-export const ImagePicker = <T,>({
+import ImageResizer from "react-native-image-resizer";
+
+const compressImage = async (uri: string, ratio: number) => {
+  try {
+    const resizedImage = await ImageResizer.createResizedImage(
+      uri,
+      ratio * 1000,
+      1000,
+      "JPEG",
+      100
+    );
+    return resizedImage.uri; // path to compressed image
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
+};
+
+export type MediaPickerResult = {
+  blob: Blob;
+  uri: string;
+};
+
+export const ImagePicker = ({
   onClose,
 }: {
-  onClose: (data: T) => void;
+  onClose: (data: MediaPickerResult) => void;
 }) => {
   return (
     <YStack gap={10} alignItems="center">
@@ -34,18 +56,26 @@ export const ImagePicker = <T,>({
           console.log("Opening image picker...");
           let result = await ExpoImagePicker.launchImageLibraryAsync({
             mediaTypes: ["images"],
-            allowsEditing: true,
-            aspect: [1, 1],
-            quality: 0.3,
           });
           if (result.canceled) {
             console.log("Image picker was canceled");
             return;
           }
-          const asset = result.assets[0];
-          const response = await fetch(asset.uri);
+
+          const imageData = result.assets[0];
+          const ratio = imageData.width / imageData.height;
+
+          const asset = await compressImage(imageData.uri, ratio);
+          if (!asset) {
+            console.log("Failed to compress image");
+            return;
+          }
+          const response = await fetch(asset);
           const blob = await response.blob();
-          onClose(blob as T);
+          onClose({
+            blob,
+            uri: asset,
+          });
         }}
         backgroundColor={themeColors.accent}
       />
@@ -54,10 +84,10 @@ export const ImagePicker = <T,>({
   );
 };
 
-export const VideoPicker = <T,>({
+export const VideoPicker = ({
   onClose,
 }: {
-  onClose: (data: T) => void;
+  onClose: (data: MediaPickerResult) => void;
 }) => {
   return (
     <YStack gap={10} alignItems="center">
@@ -91,7 +121,10 @@ export const VideoPicker = <T,>({
           const asset = result.assets[0];
           const response = await fetch(asset.uri);
           const blob = await response.blob();
-          onClose(blob as T);
+          onClose({
+            blob,
+            uri: result.assets[0].uri,
+          });
         }}
         backgroundColor={themeColors.accent}
       />
@@ -100,10 +133,46 @@ export const VideoPicker = <T,>({
   );
 };
 
-export const MediaPicker = <T,>({
+export const ImagePreview = ({
+  uris,
+  onRemove,
+}: {
+  uris: string[];
+  onRemove: (uri: string) => void;
+}) => {
+  return (
+    <XStack gap={5} padding={"5"}>
+      {uris.map((uri) => (
+        <View
+          key={uri}
+          style={{ position: "relative", ...styleSheets.shadowStyle }}
+        >
+          <Image src={uri} height={60} width={60} />
+          <Button
+            position="absolute"
+            top={-6}
+            right={-6}
+            size="$1"
+            circular
+            backgroundColor={themeColors.onyx}
+            style={styleSheets.shadowStyle}
+            icon={
+              <MaterialIcons name="close" color={themeColors.plat} size={16} />
+            }
+            onPress={() => {
+              onRemove(uri);
+            }}
+          />
+        </View>
+      ))}
+    </XStack>
+  );
+};
+
+export const MediaPicker = ({
   onClose,
 }: {
-  onClose: (data: T) => void;
+  onClose: (data: MediaPickerResult) => void;
 }) => {
   return (
     <XStack gap={15} padding={15}>

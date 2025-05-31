@@ -1,26 +1,39 @@
-import { Post } from "@/services/Posts.service";
+import { Role } from "@/services/Firebase.service";
+import { MomentService } from "@/services/Moment.service";
+import { Post, PostService } from "@/services/Posts.service";
+import { themeColors } from "@/themes/themes";
+import { MaterialIcons } from "@expo/vector-icons";
 import { FlashList } from "@shopify/flash-list";
-import { Text, Theme } from "@tamagui/core";
-import { useState } from "react";
-import { ActivityIndicator, View } from "react-native";
+import { Text } from "@tamagui/core";
+import { useRef, useState } from "react";
+import { View } from "react-native";
+import { Pressable, Swipeable } from "react-native-gesture-handler";
+import { Spinner, XStack, YStack } from "tamagui";
+import { useAuth } from "../auth/hooks/useAuth";
+import { ShimmerImage } from "../common/ShimmerImage";
+import { CreatePost } from "./CreatePost";
 import { PostContext } from "./Post.context";
 import usePosts from "./hooks/usePosts";
-import { Image } from "react-native";
-import { Spinner, XStack, YStack } from "tamagui";
-import { MomentService } from "@/services/Moment.service";
-import ShimmerPlaceholder from "react-native-shimmer-placeholder";
-import { LinearGradient } from "expo-linear-gradient";
-import { themeColors } from "@/themes/themes";
-import { FloatingRoundButton } from "../common/FloatingRoundButton";
-import { useAuth } from "../auth/hooks/useAuth";
-import { Role } from "@/services/Firebase.service";
-import { ShimmerImage } from "../common/ShimmerImage";
+import { ConfirmDialog } from "../common/Alert";
+
+const renderRightActions = (onDelete: () => void) => (
+  <Pressable
+    onPress={onDelete}
+    style={{
+      justifyContent: "center",
+      alignItems: "center",
+      width: 80,
+    }}
+  >
+    <MaterialIcons name="delete" size={32} color={"#ff0000"} />
+  </Pressable>
+);
 
 const RenderPost: React.FC<{ item: Post }> = ({ item }) => {
-  const [loaded, setLoaded] = useState(false);
   return (
     <YStack
       padding={10}
+      marginBottom={10}
       borderRadius={5}
       backgroundColor="#fff"
       shadowColor="#000"
@@ -61,6 +74,38 @@ const RenderPost: React.FC<{ item: Post }> = ({ item }) => {
   );
 };
 
+const DoctorPost: React.FC<{ item: Post }> = ({ item }) => {
+  const [showConfirm, setShowConfirm] = useState<boolean>(false);
+  const ref = useRef<any>(null);
+  return (
+    <>
+      <Swipeable
+        ref={ref}
+        renderRightActions={() =>
+          renderRightActions(() => {
+            setShowConfirm(true);
+          })
+        }
+      >
+        <RenderPost item={item} />
+      </Swipeable>
+      <ConfirmDialog
+        description="Do you want to delete this post?"
+        title="Delete"
+        visible={showConfirm}
+        icon={<MaterialIcons name="delete-forever" color={"red"} size={24} />}
+        onConfirm={(confirm) => {
+          ref.current?.close();
+          setShowConfirm(false);
+          if (confirm) {
+            PostService.delete(item.id as string);
+          }
+        }}
+      />
+    </>
+  );
+};
+
 export default function Posts() {
   const { role } = useAuth();
   const { loading, posts } = usePosts();
@@ -92,8 +137,16 @@ export default function Posts() {
         >
           <FlashList
             data={posts}
-            renderItem={({ item }) => <RenderPost item={item} />}
+            renderItem={({ item }) =>
+              role === Role.DOCTOR ? (
+                <DoctorPost item={item} />
+              ) : (
+                <RenderPost item={item} />
+              )
+            }
             estimatedItemSize={100}
+            keyExtractor={(item) => item.id || item.title}
+
             // ListFooterComponent={
             //   <ActivityIndicator size="small" color="#000000">
             //     <Text>Loading...</Text>
@@ -107,17 +160,25 @@ export default function Posts() {
           />
         </View>
       ) : (
-        <View>
-          <Text>No Posts</Text>
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            flexDirection: "row",
+          }}
+        >
+          <MaterialIcons
+            name="disabled-visible"
+            size={46}
+            color={themeColors.accent}
+          />
+          <Text style={{ marginLeft: 10 }} fontFamily={"$js6"} fontSize={32}>
+            No Posts
+          </Text>
         </View>
       )}
-      {role === Role.DOCTOR && (
-        <FloatingRoundButton
-          onPress={function (): void {
-            throw new Error("Function not implemented.");
-          }}
-        />
-      )}
+      <CreatePost />
     </PostContext.Provider>
   );
 }

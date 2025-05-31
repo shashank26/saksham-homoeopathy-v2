@@ -1,40 +1,47 @@
 import {
   FirebaseFirestoreTypes,
+  serverTimestamp,
 } from "@react-native-firebase/firestore";
 import { db } from "./Firebase.service";
+
+export type CreatePostType = {
+  title: string;
+  body: string;
+  media?: {
+    type: "image" | "video";
+    url: string;
+  };
+};
 
 export type Post = {
   createdAt: Date;
   updatedAt: Date;
-  title: string;
-  body: string;
-  media: {
-    type: "image" | "video";
-    url: string;
-  };
   id?: string;
-};
+  key?: string;
+} & CreatePostType;
 
 const postConverter = {
-  toFirestore(post: Post): FirebaseFirestoreTypes.DocumentData {
+  toFirestore(post: CreatePostType): FirebaseFirestoreTypes.DocumentData {
     return {
-      createdAt: post.createdAt,
-      updatedAt: post.updatedAt,
+      createdAt: new Date(),
+      updatedAt: new Date(),
       title: post.title,
       body: post.body,
-      media: post.media,
+      media: post.media || null,
     };
   },
   fromFirestore(snapshot: FirebaseFirestoreTypes.QueryDocumentSnapshot): Post {
     const data = snapshot.data();
-    return {
+    const newPost = {
       createdAt: data.createdAt.toDate(),
       updatedAt: data.updatedAt.toDate(),
       title: data.title,
       body: data.body,
       media: data.media,
       id: snapshot.id,
+      key: snapshot.id,
     };
+    return newPost;
   },
 };
 
@@ -43,41 +50,39 @@ export class PostService {
     return db.collection("posts");
   }
 
-  static latestPostDocumentId: string | undefined;
-
   static postHash = new Map<string, Post>();
 
   static onPostUpdate(callback: (posts: Post[]) => void) {
-    this.posts.limit(1).onSnapshot((snapshot) => {
-      if (snapshot.empty) return;
-      const newPosts = snapshot.docChanges();
-      newPosts.forEach((change) => {
-        const post = postConverter.fromFirestore(change.doc);
-        if (change.type === "added") {
-          this.postHash.set(change.doc.id, post);
-        } else if (change.type === "modified") {
-          this.postHash.set(change.doc.id, post);
-        } else if (change.type === "removed") {
-          this.postHash.delete(change.doc.id);
-        }
+    this.posts
+      .orderBy("updatedAt", "desc")
+      .limit(100)
+      .onSnapshot((snapshot) => {
+        if (snapshot.empty) return;
+        const newPosts = snapshot.docChanges();
+        newPosts.forEach((change) => {
+          try {
+            const post = postConverter.fromFirestore(change.doc);
+            if (change.type === "added") {
+              this.postHash.set(change.doc.id, post);
+            } else if (change.type === "modified") {
+              this.postHash.set(change.doc.id, post);
+            } else if (change.type === "removed") {
+              this.postHash.delete(change.doc.id);
+            }
+            callback([...this.postHash.values()]);
+          } catch (err) {
+            console.log(err);
+          }
+        });
       });
-      callback([...this.postHash.values()]);
-    });
   }
 
-  static async getPosts(): Promise<Post[]> {
-    let queryBuilder = this.posts
-      .orderBy("updatedAt", "desc")
-      .limit(10)
-    if (this.latestPostDocumentId) {
-        queryBuilder = queryBuilder.startAfter(this.latestPostDocumentId);
-    }
-    const querySnapshot = await queryBuilder.get();
-    querySnapshot.docs.forEach((snapshot) => {
-      const post = postConverter.fromFirestore(snapshot);
-      this.postHash.set(post.id as string, post);
-    });
+  static async create(post: CreatePostType) {
+    const postData = postConverter.toFirestore(post);
+    return this.posts.add(postData);
+  }
 
-    return [...this.postHash.values()];
+  static async delete(id: string) {
+    return this.posts.doc(id).delete();
   }
 }

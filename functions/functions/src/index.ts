@@ -5,12 +5,12 @@ import Role from "./constants";
 admin.initializeApp();
 
 const seed = () => {
-  admin.auth().createUser({
-    phoneNumber: "+919643018020",
-  });
-  admin.firestore().collection("roles").doc("+919643018020").set({
-    role: "doctor",
-  });
+  // admin.auth().createUser({
+  //   phoneNumber: "+919643018020",
+  // });
+  // admin.firestore().collection("roles").doc("+919643018020").set({
+  //   role: "doctor",
+  // });
 };
 
 const isEmulator = process.env.FUNCTIONS_EMULATOR === "true";
