@@ -1,10 +1,9 @@
 import { db } from "@/services/Firebase.service";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, Dimensions, View } from "react-native";
-import { styleSheets } from "../styles";
-import { ScrollView, Text, YStack } from "tamagui";
+import { ActivityIndicator, Dimensions, FlatList, View } from "react-native";
+import { Text } from "tamagui";
 import { ShimmerImage } from "../common/ShimmerImage";
-import { FlatList } from "react-native-gesture-handler";
+import { styleSheets } from "../styles";
 
 export const AwardsScreen = () => {
   const [images, setImages] = useState<string[]>([]);
