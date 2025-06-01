@@ -5,7 +5,7 @@ import { themeColors } from "@/themes/themes";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useEffect, useState } from "react";
 import { View } from "react-native";
-import { FlatList } from "react-native-gesture-handler";
+import { FlatList } from "react-native";
 import { Text, XStack, YStack } from "tamagui";
 
 const MedicineCard = ({ item }: { item: MedicineType }) => {

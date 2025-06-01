@@ -3,18 +3,17 @@ import { MomentService } from "@/services/Moment.service";
 import { Post, PostService } from "@/services/Posts.service";
 import { themeColors } from "@/themes/themes";
 import { MaterialIcons } from "@expo/vector-icons";
-import { FlashList } from "@shopify/flash-list";
 import { Text } from "@tamagui/core";
 import { useRef, useState } from "react";
-import { View } from "react-native";
+import { FlatList, View } from "react-native";
 import { Pressable, Swipeable } from "react-native-gesture-handler";
 import { Spinner, XStack, YStack } from "tamagui";
 import { useAuth } from "../auth/hooks/useAuth";
+import { ConfirmDialog } from "../common/Alert";
 import { ShimmerImage } from "../common/ShimmerImage";
 import { CreatePost } from "./CreatePost";
 import { PostContext } from "./Post.context";
 import usePosts from "./hooks/usePosts";
-import { ConfirmDialog } from "../common/Alert";
 
 const renderRightActions = (onDelete: () => void) => (
   <Pressable
@@ -134,7 +133,7 @@ export default function Posts() {
         <View
           style={{ flex: 1, backgroundColor: themeColors.plat, padding: 10 }}
         >
-          <FlashList
+          <FlatList
             data={posts}
             renderItem={({ item }) =>
               role === Role.DOCTOR ? (
@@ -143,19 +142,7 @@ export default function Posts() {
                 <RenderPost item={item} />
               )
             }
-            estimatedItemSize={100}
             keyExtractor={(item) => item.id || item.title}
-
-            // ListFooterComponent={
-            //   <ActivityIndicator size="small" color="#000000">
-            //     <Text>Loading...</Text>
-            //   </ActivityIndicator>
-            // }
-            // onEndReachedThreshold={0.5}
-            // onEndReached={() => {
-            //   if (loading) return;
-            //   setPage((prev) => prev + 1);
-            // }}
           />
         </View>
       ) : (
