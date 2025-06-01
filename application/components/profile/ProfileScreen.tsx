@@ -1,8 +1,8 @@
 import { UserProfile } from "@/services/Auth.service";
 import { StorageService } from "@/services/Storage.service";
 import { themeColors } from "@/themes/themes";
+import { Ionicons } from "@expo/vector-icons";
 import { Text } from "@tamagui/core";
-import { useToastController } from "@tamagui/toast";
 import { FC, useState } from "react";
 import { View } from "react-native";
 import { Button, Form, Input, Label, XStack, YStack } from "tamagui";
@@ -11,7 +11,7 @@ import { OverlayActivityIndicator } from "../common/Alert";
 import { DrawerSheet } from "../common/DrawerSheet";
 import { ImagePicker, MediaPickerResult } from "../common/MediaPicker";
 import { ShimmerImage } from "../common/ShimmerImage";
-import { Ionicons } from "@expo/vector-icons";
+import { UserService } from "@/services/User.service";
 
 const ProfileAvatar: FC<{
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -69,14 +69,13 @@ const ProfileAvatar: FC<{
 };
 
 export const ProfileScreen = () => {
-  const { profile, user, updateProfile, signOut } = useAuth();
+  const { profile, updateProfile, signOut } = useAuth();
   const [name, setName] = useState(profile?.displayName || "");
   const [popup, setPopup] = useState({
     visible: false,
     description: "",
     title: "",
   });
-  const toast = useToastController();
 
   const handleUpdate = async (profile: UserProfile) => {
     setPopup({
@@ -133,9 +132,8 @@ export const ProfileScreen = () => {
                 title: "Please wait",
               });
               try {
-                const fileName = `profile/images/${user?.uid}.jpg`;
-                const storageUrl = await StorageService.setItem(
-                  fileName,
+                const storageUrl = await UserService.uploadProfileImage(
+                  profile.id,
                   data.blob as Blob
                 );
                 updateProfile?.({

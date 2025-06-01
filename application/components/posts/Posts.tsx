@@ -61,7 +61,6 @@ const RenderPost: React.FC<{ item: Post }> = ({ item }) => {
       </Text>
       {item.media && (
         <ShimmerImage
-          onPress={() => {}}
           url={item.media.url}
           size={{
             height: 200,

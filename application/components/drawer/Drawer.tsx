@@ -12,6 +12,7 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { Image, Platform, View } from "react-native";
 import { Text } from "@tamagui/core";
 import { useAuth } from "../auth/hooks/useAuth";
+import { ShimmerImage } from "../common/ShimmerImage";
 const drawerOptions = [
   {
     title: "Home",
@@ -82,7 +83,7 @@ const drawerButtonOptionsStyle = {
 };
 
 const CustomDrawerContent = (props: any) => {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   return (
     <DrawerContentScrollView {...props}>
       <View
@@ -94,14 +95,17 @@ const CustomDrawerContent = (props: any) => {
           gap: 20,
         }}
       >
-        <Image
-          source={{ uri: "https://picsum.photos/200" }}
-          height={100}
-          width={100}
+        <ShimmerImage
+          url={profile?.photoUrl || "https://picsum.photos/200"}
           borderRadius={50}
-          style={{}}
+          size={{
+            height: 100,
+            width: 100,
+          }}
         />
-        <Text fontFamily="$js" fontSize="$6">{user?.displayName}</Text>
+        <Text fontFamily="$js" fontSize="$6">
+          {profile?.displayName || profile?.phoneNumber || user?.displayName}
+        </Text>
       </View>
       <DrawerItemList {...props} />
     </DrawerContentScrollView>
@@ -116,7 +120,7 @@ export const AppDrawer = () => {
         screenOptions={({ route }) => ({
           headerTitle: () => <DrawerHeaderTitle route={route} />,
           headerStyle: {
-            height: Platform.OS === 'ios' ? 120 : 'auto',
+            height: Platform.OS === "ios" ? 120 : "auto",
           },
           headerTitleAlign: "left",
           headerLeft: () => (

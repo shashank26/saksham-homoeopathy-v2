@@ -1,5 +1,5 @@
-import { Text } from "@tamagui/core";
+import { DND } from "@/components/dos-and-donts/DND";
 
 export default function DosAndDonts() {
-  return <Text>DnD</Text>;
+  return <DND />;
 }

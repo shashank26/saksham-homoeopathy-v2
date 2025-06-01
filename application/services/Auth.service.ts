@@ -7,6 +7,7 @@ export type UserProfile = {
   displayName: string;
   phoneNumber: string;
   photoUrl: string;
+  id: string;
 };
 
 export class AuthService {
@@ -47,6 +48,7 @@ export class AuthService {
             displayName: data?.displayName || "",
             phoneNumber: data?.phoneNumber || "",
             photoUrl: data?.photoUrl || "",
+            id: doc.id,
           });
         }
       });
@@ -64,6 +66,7 @@ export class AuthService {
         displayName: data?.displayName || "",
         phoneNumber: data?.phoneNumber || "",
         photoUrl: data?.photoUrl || "",
+        id: doc.id,
       };
     }
     return undefined;

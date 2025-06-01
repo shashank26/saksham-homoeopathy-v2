@@ -1,5 +1,5 @@
-import { Text } from "@tamagui/core";
+import { AboutUs } from "@/components/about-us/AboutUs";
 
 export default function About() {
-  return <Text>About</Text>;
+  return <AboutUs />;
 }

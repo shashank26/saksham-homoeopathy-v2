@@ -1,9 +1,6 @@
-import { View } from "react-native";
-import { Text } from "@tamagui/core";
-import { TouchableOpacity, StyleSheet } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
 import { themeColors } from "@/themes/themes";
-import { FloatingRoundButton } from "../common/FloatingRoundButton";
+import { Text } from "@tamagui/core";
+import { View } from "react-native";
 
 export function HistoryScreen() {
   return (
@@ -16,9 +13,6 @@ export function HistoryScreen() {
       }}
     >
       <Text>History</Text>
-      <FloatingRoundButton
-        onPress={() => console.log("Add new history item")}
-      />
     </View>
   );
 }

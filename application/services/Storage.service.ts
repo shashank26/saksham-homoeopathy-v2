@@ -1,5 +1,5 @@
 import type { FirebaseStorageTypes } from "@react-native-firebase/storage";
-import { ref } from "@react-native-firebase/storage";
+import { listAll, ref } from "@react-native-firebase/storage";
 import { fileStore } from "./Firebase.service";
 
 export class StorageService {
@@ -54,6 +54,18 @@ export class StorageService {
     } catch (error) {
       console.error("Error removing data from AsyncStorage:", error);
       return false;
+    }
+  }
+
+  static async removeFolder(id: string) {
+    try {
+      const folder = this.storage.ref(id);
+      if (!folder) return;
+      const files = await listAll(folder);
+      const deletePromises = files.items.map((itemRef) => itemRef.delete());
+      await Promise.all(deletePromises);
+    } catch (err) {
+      console.error("Error removing files from:", id);
     }
   }
 }
