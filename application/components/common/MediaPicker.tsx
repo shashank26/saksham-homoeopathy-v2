@@ -16,7 +16,7 @@ const compressImage = async (uri: string, ratio: number) => {
       ratio * 1000,
       1000,
       "JPEG",
-      100
+      70
     );
     return resizedImage.uri; // path to compressed image
   } catch (err) {

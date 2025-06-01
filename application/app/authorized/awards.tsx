@@ -1,5 +1,5 @@
-import { Text } from "@tamagui/core";
+import { AwardsScreen } from "@/components/awards/Awards";
 
 export default function Awards() {
-  return <Text>Awards</Text>;
+  return <AwardsScreen />;
 }

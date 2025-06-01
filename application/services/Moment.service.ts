@@ -14,4 +14,11 @@ export class MomentService {
     if (interval > 1) return `${interval} minutes ago`;
     return `${Math.floor(seconds)} seconds ago`;
   }
+
+  static getDDMMMYYY(date: Date): string {
+    const day = date.getDate();
+    const month = date.toLocaleString("default", { month: "short" });
+    const year = date.getFullYear();
+    return `${day} ${month} ${year}`;
+  }
 }

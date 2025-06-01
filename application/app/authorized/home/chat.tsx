@@ -4,7 +4,7 @@ import { StyleSheet, Text, View } from "react-native";
 const Chat = () => {
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Chat Screen</Text>
+      <Text style={styles.text}>Coming soon...</Text>
     </View>
   );
 };

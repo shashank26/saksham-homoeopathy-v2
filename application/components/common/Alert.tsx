@@ -1,8 +1,8 @@
 import { themeColors } from "@/themes/themes";
 import { Text } from "@tamagui/core";
 import { useEffect, useRef, useState } from "react";
-import { View, StyleSheet, Animated, Modal } from "react-native";
-import { AlertDialog, Button, Spinner, XStack, YStack } from "tamagui";
+import { Animated, Modal, StyleSheet } from "react-native";
+import { Button, Spinner, XStack, YStack } from "tamagui";
 export type OverlayActivityIndicatorProps = {
   icon: React.ReactNode;
   title: string;
@@ -105,7 +105,7 @@ export function OverlayActivityIndicator({
   );
 
   return (
-    <Modal visible={showOverlay} transparent animationType="fade">
+    <Modal visible={showOverlay} transparent animationType="none">
       {view}
     </Modal>
   );
@@ -215,7 +215,7 @@ export function ConfirmDialog({
   );
 
   return (
-    <Modal visible={showOverlay} transparent animationType="fade">
+    <Modal visible={showOverlay} transparent animationType="none">
       {view}
     </Modal>
   );
