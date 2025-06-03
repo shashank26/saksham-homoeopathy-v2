@@ -17,11 +17,14 @@ const OTPAuth: FC<{ confirm: FirebaseAuthTypes.ConfirmationResult }> = ({
   return (
     <>
       <Input
-        fontFamily={"$body"}
+        fontFamily={"$js4"}
+        fontSize={"$4"}
         borderWidth={2}
         keyboardType="numeric"
         placeholder="OTP"
         maxLength={6}
+        readOnly={verifying}
+        secureTextEntry={true}
         onChangeText={(e) => {
           const filteredValue = e.replace(/[^0-9]/g, "");
           setOtp(filteredValue);
@@ -31,7 +34,7 @@ const OTPAuth: FC<{ confirm: FirebaseAuthTypes.ConfirmationResult }> = ({
         isLoading={verifying}
         message="Logging in..."
         text="Login"
-        disabled={otp.length !== 6}
+        disabled={otp.length !== 6 || verifying}
         theme={"accent"}
         onPress={async () => {
           if (verifying) return;
@@ -59,6 +62,7 @@ const OTPAuth: FC<{ confirm: FirebaseAuthTypes.ConfirmationResult }> = ({
 
 export const Login: FC = () => {
   const { isLoading, signIn } = useAuth();
+  const [fetchingOTP, setFetchingOTP] = useState<boolean>(false);
   const [phoneNumber, setPhoneNumber] = useState<string>("");
   const [confirm, setConfirm] =
     useState<FirebaseAuthTypes.ConfirmationResult | null>(null);
@@ -86,10 +90,10 @@ export const Login: FC = () => {
           Saksham Homoeopathy
         </H2>
         <Input
-          style={{
-            fontFamily: "JosefinSans-Regular",
-          }}
+          fontFamily={"$js4"}
+          fontSize={"$4"}
           borderWidth={2}
+          readOnly={fetchingOTP || isLoading}
           keyboardType="numeric"
           placeholder="Phone number"
           onChangeText={(e: string) => {
@@ -103,7 +107,7 @@ export const Login: FC = () => {
           <OTPAuth confirm={confirm}></OTPAuth>
         ) : (
           <LoaderButton
-            disabled={phoneNumber.length !== 10}
+            disabled={phoneNumber.length !== 10 || fetchingOTP || isLoading}
             theme={"accent"}
             style={{
               fontSize: 20,
@@ -111,17 +115,25 @@ export const Login: FC = () => {
             }}
             message="Sending..."
             text="Get OTP"
-            isLoading={isLoading}
+            isLoading={fetchingOTP || isLoading}
             onPress={async () => {
               if (isLoading || !signIn) return;
               try {
+                setFetchingOTP(true);
                 const confirm = await signIn(
                   parseInt(phoneNumber) || 9643018020
                 );
                 setConfirm(confirm);
               } catch (err) {
                 console.log(err);
+                burnt.toast({
+                  title: "Error",
+                  message: "Login failed!",
+                  preset: "error",
+                  duration: 4,
+                });
               }
+              setFetchingOTP(false);
             }}
           ></LoaderButton>
         )}

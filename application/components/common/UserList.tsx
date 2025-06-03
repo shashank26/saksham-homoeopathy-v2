@@ -18,6 +18,8 @@ export const UserInfo = React.memo(
           width: "100%",
           padding: 15,
           borderRadius: 10,
+          borderBottomColor: '#ccc',
+          borderBottomWidth: 1,
         }}
       >
         {user.photoUrl ? (
@@ -44,11 +46,11 @@ export const UserInfo = React.memo(
             <EvilIcons name="user" color={themeColors.accent} size={64} />
           </View>
         )}
-        <YStack justifyContent="center" gap={5}>
-          <Text fontFamily={"$js6"} fontSize={"$6"}>
+        <YStack justifyContent="center" gap={2}>
+          <Text fontFamily={"$js6"} fontSize={"$6"} color={themeColors.onyx}>
             {user.displayName}
           </Text>
-          <Text fontFamily={"$js4"} color={themeColors.onyx}>
+          <Text fontFamily={"$js4"} fontSize={"$3"} color={"#aaa"}>
             {user.phoneNumber}
           </Text>
         </YStack>
@@ -74,19 +76,27 @@ export const UserList = () => {
   const [searchToken, setSearchToken] = useState<string>("");
   const router = useRouter();
   useEffect(() => {
-    UserService.onUserUpdate((users) => {
+    const unsub = UserService.onUserUpdate((users) => {
       setUserList(users);
     });
+    return unsub;
   }, []);
 
   return (
     <View style={{ flex: 1, padding: 10, backgroundColor: themeColors.plat }}>
       <Input
+        fontFamily={"$js5"}
+        fontSize={"$4"}
         placeholder="Search..."
+        clearButtonMode="always"
         onChangeText={(text) => {
           setSearchToken(text);
         }}
-        style={{ width: "100%", marginBottom: 10, backgroundColor: themeColors.light }}
+        style={{
+          width: "100%",
+          marginBottom: 10,
+          backgroundColor: themeColors.light,
+        }}
       />
       <FlatList
         data={userList.filter(

@@ -8,12 +8,14 @@ export type UserProfile = {
   phoneNumber: string;
   photoUrl: string;
   id: string;
+  role?: Role;
 };
 
 export class AuthService {
   private static user: FirebaseAuthTypes.User;
 
   static Auth = userAuth;
+  static roleHash = new Map<string, Role>();
 
   static setUser(user: FirebaseAuthTypes.User) {
     this.user = user;
@@ -35,6 +37,18 @@ export class AuthService {
     }
 
     return null;
+  }
+
+  static async getRoles() {
+    db.collection("roles").onSnapshot((snapshot) => {
+      snapshot.docChanges().forEach((change) => {
+        if (change.type === "added" || change.type === "modified") {
+          this.roleHash.set(change.doc.id, change.doc.data().role);
+        } else if (change.type === "removed") {
+          this.roleHash.delete(change.doc.id);
+        }
+      });
+    });
   }
 
   static async onProfileUpdate(cb: (userProfile: UserProfile) => void) {
@@ -72,7 +86,7 @@ export class AuthService {
     return undefined;
   }
 
-  static async putUserProfile(profile: UserProfile) {
+  static async putUserProfile(profile: Partial<UserProfile>) {
     if (!this.user) {
       throw new Error("User not authenticated");
     }
@@ -88,6 +102,7 @@ export class AuthService {
       displayName: profile.displayName,
       phoneNumber: this.user.phoneNumber as string,
       photoUrl: profile.photoUrl,
+      id: this.user.uid
     };
   }
 

@@ -1,12 +1,32 @@
+import { useAuth } from "@/components/auth/hooks/useAuth";
+import { renderRightActions } from "@/components/common/DeleteRightAction";
 import { styleSheets } from "@/components/styles";
+import { Role } from "@/services/Firebase.service";
 import { HistoryService, MedicineType } from "@/services/History.service";
 import { MomentService } from "@/services/Moment.service";
 import { themeColors } from "@/themes/themes";
 import { MaterialIcons } from "@expo/vector-icons";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { View } from "react-native";
 import { FlatList } from "react-native";
+import { Swipeable } from "react-native-gesture-handler";
 import { Text, XStack, YStack } from "tamagui";
+
+const AdminMedicineCard = ({ item }: { item: MedicineType }) => {
+  const ref = useRef<any>(null);
+  return (
+    <Swipeable
+      ref={ref}
+      renderRightActions={() =>
+        renderRightActions(() => {
+          HistoryService.deleteMedicine(item.id as string);
+        })
+      }
+    >
+      <MedicineCard item={item} />
+    </Swipeable>
+  );
+};
 
 const MedicineCard = ({ item }: { item: MedicineType }) => {
   return (
@@ -41,6 +61,7 @@ const MedicineCard = ({ item }: { item: MedicineType }) => {
 };
 
 export const UserHistoryScreen = ({ phoneNumber }: { phoneNumber: string }) => {
+  const { role } = useAuth();
   const [medicines, setMedicines] = useState<MedicineType[]>([]);
   useEffect(() => {
     const unsub = HistoryService.onMedicineUpdateForUser(
@@ -55,7 +76,13 @@ export const UserHistoryScreen = ({ phoneNumber }: { phoneNumber: string }) => {
     <View>
       <FlatList
         data={medicines}
-        renderItem={({ item }) => <MedicineCard item={item} />}
+        renderItem={({ item }) =>
+          role === Role.ADMIN || role === Role.DOCTOR ? (
+            <AdminMedicineCard item={item} />
+          ) : (
+            <MedicineCard item={item} />
+          )
+        }
         keyExtractor={(item) => item.id as string}
       />
     </View>

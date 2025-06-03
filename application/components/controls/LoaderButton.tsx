@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { ButtonProps, Paragraph, SizableText, Spinner, View } from "tamagui";
+import { ButtonProps, Paragraph, SizableText, Spinner, Text, View } from "tamagui";
 import { CButton } from "./CButton";
 
 export type LoaderButtonProps = {
@@ -20,12 +20,12 @@ export const LoaderButton: FC<LoaderButtonProps> = ({
       {isLoading ? (
         <View style={{ flexDirection: "row", alignItems: "center" }}>
           <Spinner color={"$red1"} />
-          <SizableText padding={"$2"}>{message}</SizableText>
+          <Text padding={"$2"} fontFamily={"$js4"} fontSize={"$4"}>{message}</Text>
         </View>
       ) : (
-        <Paragraph size="$5" fontWeight={"500"}>
+        <Text fontFamily={"$js4"} fontSize="$4">
           {text}
-        </Paragraph>
+        </Text>
       )}
     </CButton>
   );

@@ -26,6 +26,7 @@ const getFont = (family: string) => {
       18: 46,
       19: 48,
       20: 50,
+      $true: 18,
     },
   });
 };
@@ -34,7 +35,7 @@ export const themeColors = {
   accent: "#994636",
   light: "#FBF8F4",
   onyx: "#393E41",
-  plat: "#E7E5DF"
+  plat: "#E7E5DF",
 };
 
 export const getFonts = () => {

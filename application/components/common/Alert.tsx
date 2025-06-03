@@ -89,13 +89,13 @@ export function OverlayActivityIndicator({
               color={themeColors.accent}
               style={{ marginRight: 10 }}
             />
-            <Text color={themeColors.onyx} fontSize={28} fontFamily={"$js5"}>
+            <Text color={themeColors.onyx} fontFamily={"$js5"} fontSize={"$10"}>
               {title}
             </Text>
           </XStack>
           <XStack alignItems="center" justifyContent="center" gap={10}>
             {icon}
-            <Text color={themeColors.onyx} fontSize={16} fontFamily={"$js4"}>
+            <Text color={themeColors.onyx} fontFamily={"$js4"} fontSize={"$4"}>
               {description}
             </Text>
           </XStack>
@@ -185,13 +185,13 @@ export function ConfirmDialog({
           gap={10}
         >
           <XStack alignItems="center" justifyContent="center" gap={10}>
-            <Text color={themeColors.onyx} fontSize={28} fontFamily={"$js5"}>
+            <Text color={themeColors.onyx} fontFamily={"$js5"} fontSize={"$10"}>
               {icon}
               {title}
             </Text>
           </XStack>
           <XStack alignItems="center" justifyContent="center" gap={10}>
-            <Text color={themeColors.onyx} fontSize={16} fontFamily={"$js4"}>
+            <Text color={themeColors.onyx} fontFamily={"$js4"} fontSize={"$4"}>
               {description}
             </Text>
           </XStack>
@@ -200,13 +200,17 @@ export function ConfirmDialog({
               backgroundColor={themeColors.onyx}
               onPress={() => onConfirm(false)}
             >
-              <Text color={"white"}>Cancel</Text>
+              <Text fontFamily={"$js5"} fontSize={"$4"} color={"white"}>
+                Cancel
+              </Text>
             </Button>
             <Button
               backgroundColor={themeColors.accent}
               onPress={() => onConfirm(true)}
             >
-              <Text color={"white"}>Confirm</Text>
+              <Text fontFamily={"$js5"} fontSize={"$4"} color={"white"}>
+                Confirm
+              </Text>
             </Button>
           </XStack>
         </YStack>

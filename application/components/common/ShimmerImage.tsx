@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import { Button, Text, YStack } from "tamagui";
 import { Image } from "expo-image";
+import { styleSheets } from "../styles";
 
 const blurhash =
   "|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[";
@@ -102,7 +103,14 @@ export const ShimmerImage: FC<RoundedAvatarProps> = React.memo(
 
     return (
       <View
-        style={{ position: "relative", height: size.height, width: size.width }}
+        style={{
+          position: "relative",
+          height: size.height,
+          width: size.width,
+          borderWidth: 1,
+          borderRadius,
+          borderColor: "#eee",
+        }}
       >
         {onPress ? (
           <TouchableOpacity onPress={onPress}>{view}</TouchableOpacity>
