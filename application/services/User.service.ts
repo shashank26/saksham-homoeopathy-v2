@@ -14,7 +14,7 @@ export class UserService {
     `${this.profileFolder(id)}/${Crypto.randomUUID()}.jpg`;
 
   static onUserUpdate(callback: (users: UserProfile[]) => void) {
-    this.USER_COLLECTION.onSnapshot((snapshot) => {
+    return this.USER_COLLECTION.onSnapshot((snapshot) => {
       snapshot.docChanges().forEach((change) => {
         if (change.type === "added" || change.type === "modified") {
           const userProfile: UserProfile = {
@@ -22,8 +22,11 @@ export class UserService {
             phoneNumber: change.doc.data().phoneNumber,
             photoUrl: change.doc.data().photoUrl,
             id: change.doc.id,
+            role: change.doc.data().role || "user",
           };
-          this.userHash.set(change.doc.id, userProfile);
+          if (userProfile.role === "user") {
+            this.userHash.set(change.doc.id, userProfile);
+          }
         } else if (change.type === "removed") {
           this.userHash.delete(change.doc.id);
         }

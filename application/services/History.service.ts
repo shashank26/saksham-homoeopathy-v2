@@ -51,4 +51,12 @@ export class HistoryService {
       console.log(err);
     }
   }
+
+  static async deleteMedicine(id: string) {
+    try {
+      await this.HISTORY_COLLECTION.doc(id).delete();
+    } catch (err) {
+      console.log(err);
+    }
+  }
 }

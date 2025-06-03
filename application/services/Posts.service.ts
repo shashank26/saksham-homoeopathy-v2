@@ -57,7 +57,7 @@ export class PostService {
       .orderBy("updatedAt", "desc")
       .limit(100)
       .onSnapshot((snapshot) => {
-        if (snapshot.empty) return;
+        if (!snapshot) return;
         const newPosts = snapshot.docChanges();
         newPosts.forEach((change) => {
           try {

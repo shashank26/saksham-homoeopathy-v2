@@ -43,11 +43,11 @@ export const AuthProvider = ({ children }: React.PropsWithChildren) => {
       if (userProfile) {
         setProfile(userProfile);
       } else {
-        userProfile = await AuthService.putUserProfile({
+        userProfile = (await AuthService.putUserProfile({
           displayName: user.displayName || user.phoneNumber || "",
           phoneNumber: user.phoneNumber || "",
           photoUrl: user.photoURL || "",
-        });
+        })) as UserProfile;
       }
       let role = await AuthService.getUserRole();
       setRole(role);
@@ -86,7 +86,7 @@ export const AuthProvider = ({ children }: React.PropsWithChildren) => {
         updateProfile: async (profile: UserProfile) => {
           try {
             const updatedProfile = await AuthService.putUserProfile(profile);
-            setProfile(updatedProfile);
+            setProfile(updatedProfile as UserProfile);
           } catch (err) {
             setError(err as any);
             throw err;

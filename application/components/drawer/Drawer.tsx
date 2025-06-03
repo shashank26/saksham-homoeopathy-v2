@@ -1,18 +1,20 @@
 import { themeColors } from "@/themes/themes";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import {
   DrawerContentScrollView,
   DrawerItemList,
   DrawerToggleButton,
 } from "@react-navigation/drawer";
+import { Text } from "@tamagui/core";
 import { Drawer } from "expo-router/drawer";
 import React from "react";
+import { Platform, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { DrawerHeaderTitle } from "./DrawerHeaderTitle";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import { Image, Platform, View } from "react-native";
-import { Text } from "@tamagui/core";
 import { useAuth } from "../auth/hooks/useAuth";
 import { ShimmerImage } from "../common/ShimmerImage";
+import { DrawerHeaderTitle } from "./DrawerHeaderTitle";
+import { YStack } from "tamagui";
+
 const drawerOptions = [
   {
     title: "Home",
@@ -103,9 +105,19 @@ const CustomDrawerContent = (props: any) => {
             width: 100,
           }}
         />
-        <Text fontFamily="$js" fontSize="$6">
-          {profile?.displayName || profile?.phoneNumber || user?.displayName}
-        </Text>
+        <YStack>
+          <Text
+            fontFamily="$js5"
+            fontSize="$6"
+            color={themeColors.onyx}
+            marginLeft={10}
+          >
+            {profile?.displayName || profile?.phoneNumber || user?.displayName}
+          </Text>
+          <Text fontFamily="$js4" fontSize="$2" color={"#aaa"} marginLeft={10}>
+            {profile?.phoneNumber}
+          </Text>
+        </YStack>
       </View>
       <DrawerItemList {...props} />
     </DrawerContentScrollView>
@@ -120,7 +132,7 @@ export const AppDrawer = () => {
         screenOptions={({ route }) => ({
           headerTitle: () => <DrawerHeaderTitle route={route} />,
           headerStyle: {
-            height: Platform.OS === "ios" ? 120 : "auto",
+            height: Platform.OS === "ios" ? 120 : 80,
           },
           headerTitleAlign: "left",
           headerLeft: () => (

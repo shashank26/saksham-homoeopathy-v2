@@ -36,24 +36,30 @@ export const setUserRole = firestore.onDocumentCreatedWithAuthContext(
         .collection("roles")
         .doc(doc.phoneNumber)
         .get();
+      let roleData: { role: Role };
       if (role.exists) {
-        const roleData = role.data() as { role: Role };
-        console.log("role document reference:", roleData);
-        await admin.auth().setCustomUserClaims(userId, {
-          role: roleData.role,
-        });
-        console.log(`Role ${roleData.role} set for user ${userId}`);
+        roleData = role.data() as { role: Role };
       } else {
         console.log(
           `No role found for phone number: 
           ${doc.phoneNumber}
           , setting default role(User).`
         );
-        await admin.auth().setCustomUserClaims(userId, {
+        roleData = {
           role: Role.USER,
-        });
-        console.log(`Role ${Role.USER} set for user ${userId}`);
+        };
       }
+
+      await admin.auth().setCustomUserClaims(userId, {
+        role: roleData.role,
+      });
+      await admin.firestore().collection("users").doc(userId).set(
+        {
+          role: roleData.role,
+        },
+        { merge: true }
+      );
+      console.log(`Role ${roleData.role} set for user ${userId}`);
     } catch (error) {
       console.error(`Error setting role for user ${userId}:`, error);
     }

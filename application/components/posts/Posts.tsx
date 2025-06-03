@@ -6,27 +6,15 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { Text } from "@tamagui/core";
 import { useRef, useState } from "react";
 import { FlatList, View } from "react-native";
-import { Pressable, Swipeable } from "react-native-gesture-handler";
+import { Swipeable } from "react-native-gesture-handler";
 import { Spinner, XStack, YStack } from "tamagui";
 import { useAuth } from "../auth/hooks/useAuth";
 import { ConfirmDialog } from "../common/Alert";
 import { ShimmerImage } from "../common/ShimmerImage";
 import { CreatePost } from "./CreatePost";
-import { PostContext } from "./Post.context";
 import usePosts from "./hooks/usePosts";
+import { renderRightActions } from "../common/DeleteRightAction";
 
-const renderRightActions = (onDelete: () => void) => (
-  <Pressable
-    onPress={onDelete}
-    style={{
-      justifyContent: "center",
-      alignItems: "center",
-      width: 80,
-    }}
-  >
-    <MaterialIcons name="delete" size={32} color={"#ff0000"} />
-  </Pressable>
-);
 
 const RenderPost: React.FC<{ item: Post }> = ({ item }) => {
   return (
@@ -65,6 +53,7 @@ const RenderPost: React.FC<{ item: Post }> = ({ item }) => {
             height: 200,
             width: "100%",
           }}
+          resizeMode="contain"
           borderRadius={10}
         />
       )}
@@ -128,7 +117,7 @@ export default function Posts() {
   }
 
   return (
-    <PostContext.Provider value={{ page }}>
+    <>
       {posts.length > 0 ? (
         <View
           style={{ flex: 1, backgroundColor: themeColors.plat, padding: 10 }}
@@ -165,6 +154,6 @@ export default function Posts() {
         </View>
       )}
       <CreatePost />
-    </PostContext.Provider>
+    </>
   );
 }

@@ -3,7 +3,7 @@ import { StorageService } from "@/services/Storage.service";
 import * as Crypto from "expo-crypto";
 import { Dispatch, useState } from "react";
 import { StyleSheet, View } from "react-native";
-import { Input, Label, TextArea, XStack, YStack } from "tamagui";
+import { Input, Label, Text, TextArea, XStack, YStack } from "tamagui";
 import { useAuth } from "../auth/hooks/useAuth";
 import { OverlayActivityIndicator } from "../common/Alert";
 import { DrawerSheet } from "../common/DrawerSheet";
@@ -15,6 +15,7 @@ import {
 } from "../common/MediaPicker";
 import { LoaderButton } from "../controls/LoaderButton";
 import { Role } from "@/services/Firebase.service";
+import { themeColors } from "@/themes/themes";
 
 const CreatePostButton = ({
   setOpen,
@@ -52,8 +53,13 @@ const CreatePostForm = ({
     <View style={styles.container}>
       <YStack gap={5} width={"100%"}>
         <YStack gap={2} width={"100%"}>
-          <Label>Title</Label>
+          <Label fontFamily={"$js5"} fontSize={"$5"}>
+            Title
+          </Label>
           <Input
+            fontFamily={"$js5"}
+            fontSize={"$4"}
+            maxLength={50}
             onChangeText={(text) => {
               setFormData((prev) => {
                 return {
@@ -64,12 +70,24 @@ const CreatePostForm = ({
             }}
             value={formData.title}
           />
+          <Text
+            alignSelf="flex-end"
+            color={themeColors.accent}
+            fontFamily={"$js5"}
+            fontSize={"$1"}
+          >
+            {formData.title.length}/50
+          </Text>
         </YStack>
         <YStack height={"200"}>
-          <Label>Content</Label>
+          <Label fontFamily={"$js5"} fontSize={"$4"}>
+            Content
+          </Label>
           <TextArea
-            size={200}
-            height={150}
+            fontFamily={"$js5"}
+            fontSize={"$4"}
+            maxLength={250}
+            multiline={true}
             value={formData.body}
             onChangeText={(text) => {
               setFormData((prev) => {
@@ -80,6 +98,14 @@ const CreatePostForm = ({
               });
             }}
           />
+          <Text
+            alignSelf="flex-end"
+            color={themeColors.accent}
+            fontFamily={"$js5"}
+            fontSize={"$1"}
+          >
+            {formData.body.length}/250
+          </Text>
         </YStack>
         <XStack
           gap={5}
@@ -151,7 +177,7 @@ const CreatePostForm = ({
             onClose(true);
             setLoading(false);
           }}
-        ></LoaderButton>
+        />
       </YStack>
     </View>
   );

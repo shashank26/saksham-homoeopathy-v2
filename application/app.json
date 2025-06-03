@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "saksham-homoeopathy",
+    "name": "Saksham Homoeopathy",
     "slug": "saksham-homoeopathy",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -16,10 +16,13 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#000000"
       },
       "package": "com.arniparth.sakshamhomoeopathy",
-      "googleServicesFile": "./google-services.json"
+      "googleServicesFile": "./google-services.json",
+      "permissions": [
+        "android.permission.RECORD_AUDIO"
+      ]
     },
     "web": {
       "bundler": "metro",
@@ -42,9 +45,9 @@
         "expo-splash-screen",
         {
           "image": "./assets/images/image.png",
-          "imageWidth": 200,
+          "imageWidth": 300,
           "resizeMode": "contain",
-          "backgroundColor": "#ffffff"
+          "backgroundColor": "#000000"
         }
       ],
       [
@@ -56,6 +59,14 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "e8e0d64e-2cac-4c08-b093-e78c63236af0"
+      }
     }
   }
 }
