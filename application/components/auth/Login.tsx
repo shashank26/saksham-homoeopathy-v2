@@ -75,6 +75,9 @@ const OTPAuth: FC<{
       {message && (
         <>
           <H2
+            fontFamily="$js6"
+            color="$accent"
+            size="$4"
             style={{
               textAlign: "center",
               color: "red",
@@ -175,6 +178,9 @@ export const Login: FC = () => {
             {resendOTP && (
               <>
                 <H2
+                  fontFamily="$js6"
+                  color="$accent"
+                  size="$4"
                   style={{
                     textAlign: "center",
                     color: "red",

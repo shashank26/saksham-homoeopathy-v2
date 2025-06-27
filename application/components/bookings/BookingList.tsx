@@ -1,17 +1,16 @@
 import {
-  BookingService,
-  BookingType,
-  SlotTime,
+    BookingService,
+    BookingType
 } from "@/services/Booking.service";
+import { MomentService } from "@/services/Moment.service";
 import { themeColors } from "@/themes/themes";
+import { toast } from "burnt";
 import { FC, useEffect, useRef, useState } from "react";
 import { FlatList, View } from "react-native";
 import { Swipeable } from "react-native-gesture-handler";
-import { Input, Text, XStack, YStack } from "tamagui";
+import { Text, XStack, YStack } from "tamagui";
 import { DateTimePicker } from "../common/DateTimePicker";
 import { renderRightActions } from "../common/DeleteRightAction";
-import { MomentService } from "@/services/Moment.service";
-import { toast } from "burnt";
 
 const BookingCard = ({ item }: { item: BookingType }) => {
   const ref = useRef<any>(null);
@@ -20,7 +19,6 @@ const BookingCard = ({ item }: { item: BookingType }) => {
       ref={ref}
       renderRightActions={() =>
         renderRightActions(async () => {
-          // Handle delete action here
           const res = await BookingService.deleteBooking(item.id as string);
           if (res) {
             toast({
@@ -67,12 +65,10 @@ const BookingCard = ({ item }: { item: BookingType }) => {
 
 export const BookingList: FC<{
   bookings: BookingType[];
-  searchToken?: string;
-}> = ({ bookings, searchToken = "" }) => {
+}> = ({ bookings }) => {
   return (
     <FlatList
       data={bookings
-        .filter((booking) => booking.phoneNumber.includes(searchToken))
         .sort((a, b) => {
           return a.date.getTime() - b.date.getTime();
         })}
@@ -119,7 +115,6 @@ export const AdminBookingList = () => {
             MomentService.getDDMMMYYY(selectedDate)
           );
         })}
-        searchToken={searchToken}
       />
     </View>
   );

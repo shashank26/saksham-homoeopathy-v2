@@ -70,7 +70,7 @@ const BookingForm = ({
             *
           </Text>
         </Text>
-        <XStack gap={10} justifyContent="space-between" flexWrap="wrap">
+        <XStack gap={10} flexWrap="wrap">
           {availableSlots.length === 0 ? (
             <Text fontFamily={"$js4"} fontSize={"$4"} color={themeColors.onyx}>
               No slots available for this date.
@@ -79,6 +79,8 @@ const BookingForm = ({
             availableSlots.map((slot) => (
               <Button
                 key={slot.value}
+                fontFamily={"$js4"}
+                fontSize={"$4"}
                 backgroundColor={
                   selectedSlot === slot.value ? themeColors.accent : undefined
                 }
@@ -101,6 +103,8 @@ const BookingForm = ({
       </YStack>
       <Button
         marginTop={50}
+        fontFamily={"$js4"}
+        fontSize={"$4"}
         backgroundColor={!selectedSlot ? undefined : themeColors.accent}
         textProps={{
           color: !selectedSlot ? themeColors.onyx : themeColors.light,
@@ -145,10 +149,11 @@ const BookingForm = ({
 
 const UserBooking = () => {
   const [bookings, setBookings] = useState<any[]>([]);
+  const { user } = useAuth();
   useEffect(() => {
     const unsubscribe = BookingService.onBookingUpdate((data) => {
       setBookings(data);
-    });
+    }, user?.phoneNumber || "");
     return () => {
       unsubscribe();
     };
