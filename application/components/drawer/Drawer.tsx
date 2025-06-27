@@ -10,10 +10,10 @@ import { Drawer } from "expo-router/drawer";
 import React from "react";
 import { Platform, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { YStack } from "tamagui";
 import { useAuth } from "../auth/hooks/useAuth";
 import { ShimmerImage } from "../common/ShimmerImage";
 import { DrawerHeaderTitle } from "./DrawerHeaderTitle";
-import { YStack } from "tamagui";
 
 const drawerOptions = [
   {
@@ -23,6 +23,18 @@ const drawerOptions = [
     icon: (focused: boolean) => (
       <MaterialIcons
         name="house"
+        size={24}
+        color={focused ? themeColors.plat : themeColors.onyx}
+      />
+    ),
+  },
+  {
+    title: "Bookings",
+    name: "bookings",
+    label: "Bookings",
+    icon: (focused: boolean) => (
+      <MaterialIcons
+        name="calendar-month"
         size={24}
         color={focused ? themeColors.plat : themeColors.onyx}
       />

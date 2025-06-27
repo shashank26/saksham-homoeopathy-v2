@@ -7,12 +7,17 @@ import { H2, Input, YStack } from "tamagui";
 import { LoaderButton } from "../controls/LoaderButton";
 import { useAuth } from "./hooks/useAuth";
 
-const OTPAuth: FC<{ confirm: FirebaseAuthTypes.ConfirmationResult }> = ({
-  confirm,
-}) => {
+type OTPAuthCode = "auth/invalid-verification-code" | "auth/code-expired";
+type OTPAuthMessage = { code: OTPAuthCode; message: string } | null;
+
+const OTPAuth: FC<{
+  confirm: FirebaseAuthTypes.ConfirmationResult;
+  onResendOTP: (message: string) => void;
+}> = ({ confirm, onResendOTP }) => {
   const [otp, setOtp] = useState<string>("");
   const [verifying, setVerifying] = useState<boolean>(false);
   const { setError } = useAuth();
+  const [message, setMessage] = useState<OTPAuthMessage>(null);
 
   return (
     <>
@@ -41,21 +46,44 @@ const OTPAuth: FC<{ confirm: FirebaseAuthTypes.ConfirmationResult }> = ({
           setVerifying(true);
           try {
             const resp = await confirm.confirm(otp);
-          } catch (err) {
+          } catch (err: any) {
             // TODO: Log to crashylitics
             console.log(err);
-            setError?.(err as any);
+            let message = "Login failed!";
+            if (err.code === "auth/invalid-verification-code") {
+              message = "Invalid OTP. Please try again.";
+            } else if (err.code === "auth/code-expired") {
+              message = "OTP expired. Please request a new OTP.";
+              onResendOTP(message);
+            }
+            setError?.(err);
+            setMessage({
+              code: err.code as OTPAuthCode,
+              message,
+            });
             burnt.toast({
               title: "Error",
-              message: "Login failed!",
+              message,
               preset: "error",
-              duration: 4,
+              shouldDismissByDrag: true,
+              duration: 10,
             });
-            return;
           }
           setVerifying(false);
         }}
       ></LoaderButton>
+      {message && (
+        <>
+          <H2
+            style={{
+              textAlign: "center",
+              color: "red",
+            }}
+          >
+            {message.message}
+          </H2>
+        </>
+      )}
     </>
   );
 };
@@ -66,6 +94,7 @@ export const Login: FC = () => {
   const [phoneNumber, setPhoneNumber] = useState<string>("");
   const [confirm, setConfirm] =
     useState<FirebaseAuthTypes.ConfirmationResult | null>(null);
+  const [resendOTP, setResendOTP] = useState<string>("");
 
   return (
     <KeyboardAvoidingView style={{ flex: 1, height: "100%" }}>
@@ -104,38 +133,58 @@ export const Login: FC = () => {
           value={phoneNumber.toString()}
         />
         {confirm ? (
-          <OTPAuth confirm={confirm}></OTPAuth>
-        ) : (
-          <LoaderButton
-            disabled={phoneNumber.length !== 10 || fetchingOTP || isLoading}
-            theme={"accent"}
-            style={{
-              fontSize: 20,
-              fontWeight: "bold",
-            }}
-            message="Sending..."
-            text="Get OTP"
-            isLoading={fetchingOTP || isLoading}
-            onPress={async () => {
-              if (isLoading || !signIn) return;
-              try {
-                setFetchingOTP(true);
-                const confirm = await signIn(
-                  parseInt(phoneNumber) || 9643018020
-                );
-                setConfirm(confirm);
-              } catch (err) {
-                console.log(err);
-                burnt.toast({
-                  title: "Error",
-                  message: "Login failed!",
-                  preset: "error",
-                  duration: 4,
-                });
-              }
+          <OTPAuth
+            confirm={confirm}
+            onResendOTP={(message) => {
+              setConfirm(null);
+              setResendOTP(message);
               setFetchingOTP(false);
             }}
-          ></LoaderButton>
+          ></OTPAuth>
+        ) : (
+          <>
+            <LoaderButton
+              disabled={phoneNumber.length !== 10 || fetchingOTP || isLoading}
+              theme={"accent"}
+              style={{
+                fontSize: 20,
+                fontWeight: "bold",
+              }}
+              message="Sending..."
+              text={"Get OTP"}
+              isLoading={fetchingOTP || isLoading}
+              onPress={async () => {
+                if (isLoading || !signIn || !phoneNumber) return;
+                try {
+                  setResendOTP("Fetching OTP...");
+                  setFetchingOTP(true);
+                  const confirm = await signIn(parseInt(phoneNumber));
+                  setConfirm(confirm);
+                } catch (err) {
+                  console.log(err);
+                  burnt.toast({
+                    title: "Error",
+                    message: "Login failed!",
+                    preset: "error",
+                    duration: 4,
+                  });
+                }
+                setFetchingOTP(false);
+              }}
+            ></LoaderButton>
+            {resendOTP && (
+              <>
+                <H2
+                  style={{
+                    textAlign: "center",
+                    color: "red",
+                  }}
+                >
+                  {resendOTP}
+                </H2>
+              </>
+            )}
+          </>
         )}
       </YStack>
     </KeyboardAvoidingView>
