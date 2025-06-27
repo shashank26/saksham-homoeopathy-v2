@@ -26,7 +26,7 @@ const OTPAuth: FC<{
         fontSize={"$4"}
         borderWidth={2}
         keyboardType="numeric"
-        placeholder="OTP"
+        placeholder="Enter 6 Digit Code"
         maxLength={6}
         readOnly={verifying}
         secureTextEntry={true}
@@ -44,6 +44,7 @@ const OTPAuth: FC<{
         onPress={async () => {
           if (verifying) return;
           setVerifying(true);
+          onResendOTP("");
           try {
             const resp = await confirm.confirm(otp);
           } catch (err: any) {
