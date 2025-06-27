@@ -1,6 +1,5 @@
 import { useAuth } from "@/components/auth/hooks/useAuth";
 import { AdminHistoryScreen } from "@/components/history/admin/AdminHistoryScreen";
-import { HistoryScreen } from "@/components/history/HistoryScreen";
 import { UserHistoryScreen } from "@/components/history/user/UserHistoryScreen";
 import { Role } from "@/services/Firebase.service";
 import React from "react";

@@ -5,10 +5,11 @@ import { UserProfile } from "@/services/Auth.service";
 import { HistoryService, MedicineType } from "@/services/History.service";
 import { MomentService } from "@/services/Moment.service";
 import { themeColors } from "@/themes/themes";
-import DTP from "@react-native-community/datetimepicker";
+import DatePicker from "react-native-date-picker";
 import { useState } from "react";
 import { Platform } from "react-native";
 import { Button, Input, ScrollView, Text, View, XStack, YStack } from "tamagui";
+import { DateTimePicker } from "@/components/common/DateTimePicker";
 
 const medicineFormValid = (
   medicineForm: Partial<MedicineType>
@@ -26,52 +27,6 @@ const medicineFormValid = (
     return false;
   }
   return medicineForm as MedicineType;
-};
-
-const DateTimePicker = ({
-  value,
-  onChange,
-  minDate,
-}: {
-  value: Date;
-  minDate?: Date;
-  onChange: (date: Date) => void;
-}) => {
-  const os = Platform.OS;
-  const [showCalender, setShowCalender] = useState<boolean>(false);
-  const calender = (
-    <DTP
-      mode="date"
-      display="calendar"
-      style={{ width: "100%" }}
-      value={value}
-      minimumDate={minDate}
-      onChange={(date) => {
-        const newDate = new Date(date.nativeEvent.timestamp);
-        onChange(newDate);
-        setShowCalender(false);
-      }}
-    />
-  );
-
-  if (os === "ios") {
-    return calender;
-  } else {
-    return (
-      <>
-        <Button
-          onPress={() => {
-            setShowCalender(true);
-          }}
-        >
-          <Text fontFamily={"$js5"} fontSize={"$4"}>
-            {MomentService.getDDMMMYYY(value)}
-          </Text>
-        </Button>
-        {showCalender && calender}
-      </>
-    );
-  }
 };
 
 const MedicineForm = ({
@@ -151,11 +106,15 @@ const MedicineForm = ({
             {medicineForm.dosage?.length || 0}/50
           </Text>
         </YStack>
-        <XStack gap={5} alignItems="center">
+        <YStack gap={5}>
           <Text fontFamily={"$js4"} fontSize={"$4"} color={themeColors.onyx}>
             Prescribed Date
+            <Text fontFamily={"$js4"} fontSize={"$4"} color={"red"}>
+              *
+            </Text>
           </Text>
           <DateTimePicker
+            mode="date"
             value={startDate}
             onChange={(date) => {
               setStartDate(date);
@@ -167,13 +126,17 @@ const MedicineForm = ({
               });
             }}
           />
-        </XStack>
-        <XStack gap={5} alignItems="center">
+        </YStack>
+        <YStack gap={5}>
           <Text fontFamily={"$js4"} fontSize={"$4"} color={themeColors.onyx}>
             End Date
+            <Text fontFamily={"$js4"} fontSize={"$4"} color={"red"}>
+              *
+            </Text>
           </Text>
           <DateTimePicker
             value={endDate}
+            mode="date"
             minDate={startDate}
             onChange={(date) => {
               setEndDate(date);
@@ -185,7 +148,7 @@ const MedicineForm = ({
               });
             }}
           />
-        </XStack>
+        </YStack>
         <LoaderButton
           style={{ marginTop: 20, marginBottom: 10 }}
           disabled={medicineFormValid(medicineForm) === false}

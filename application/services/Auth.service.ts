@@ -29,10 +29,14 @@ export class AuthService {
     const user = this.Auth.currentUser;
 
     if (user) {
-      const idTokenResult = await user.getIdTokenResult(true); // force refresh
+      const idTokenResult = await user.getIdTokenResult(true);
       const role = idTokenResult.claims.role;
 
       console.log("User role:", role);
+      if (!role) {
+        const firestoreRole = this.roleHash.get(user.phoneNumber as string);
+        return firestoreRole;
+      }
       return role as Role;
     }
 
@@ -102,7 +106,7 @@ export class AuthService {
       displayName: profile.displayName,
       phoneNumber: this.user.phoneNumber as string,
       photoUrl: profile.photoUrl,
-      id: this.user.uid
+      id: this.user.uid,
     };
   }
 

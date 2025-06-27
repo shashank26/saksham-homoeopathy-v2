@@ -50,7 +50,7 @@ export const AuthProvider = ({ children }: React.PropsWithChildren) => {
         })) as UserProfile;
       }
       let role = await AuthService.getUserRole();
-      setRole(role);
+      setRole(role || Role.USER);
       setProfile(userProfile);
     } else {
       setUser(null);
@@ -62,6 +62,7 @@ export const AuthProvider = ({ children }: React.PropsWithChildren) => {
 
   useEffect(() => {
     const subscriber = AuthService.Auth.onAuthStateChanged(onAuthStateChanged);
+
     AuthService.onProfileUpdate((profile) => {
       setProfile(profile);
     });
