@@ -1,12 +1,14 @@
 import { Auth } from "@/components/auth/Auth";
 import { AuthProvider } from "@/components/auth/hooks/useAuth";
 import { LoaderScreen } from "@/components/LoaderScreen";
+import { initializeFirebaseAppCheck } from "@/services/AppCheck";
 import { getFonts, themeColors, themes } from "@/themes/themes";
 import { defaultConfig } from "@tamagui/config/v4";
 import { createTamagui, TamaguiProvider } from "@tamagui/core";
 import { ToastProvider } from "@tamagui/toast";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
+import { useEffect, useState } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { PortalProvider } from "tamagui";
 
@@ -50,6 +52,19 @@ export default function RootLayout() {
       </Auth>
     );
   };
+
+  const [appCheckInitialized, setAppCheckInitialized] = useState(false);
+
+  useEffect(() => {
+    initializeFirebaseAppCheck().finally(() => {
+      console.log("AppCheck initialized");
+      setAppCheckInitialized(true);
+    });
+  }, []);
+
+  if (!appCheckInitialized) {
+    return <></>;
+  }
 
   return (
     <GestureHandlerRootView>

@@ -31,7 +31,6 @@ export class AuthService {
     if (user) {
       const idTokenResult = await user.getIdTokenResult(true);
       const role = idTokenResult.claims.role;
-
       console.log("User role:", role);
       if (!role) {
         const firestoreRole = this.roleHash.get(user.phoneNumber as string);
