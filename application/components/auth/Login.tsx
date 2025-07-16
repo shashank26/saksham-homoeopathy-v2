@@ -3,7 +3,7 @@ import { FirebaseAuthTypes } from "@react-native-firebase/auth";
 import * as burnt from "burnt";
 import { FC, useState } from "react";
 import { KeyboardAvoidingView, View } from "react-native";
-import { H2, Input, YStack } from "tamagui";
+import { H2, Input, ScrollView, YStack } from "tamagui";
 import { LoaderButton } from "../controls/LoaderButton";
 import { useAuth } from "./hooks/useAuth";
 
@@ -43,8 +43,8 @@ const OTPAuth: FC<{
         theme={"accent"}
         onPress={async () => {
           if (verifying) return;
-          setVerifying(true);
           onResendOTP("");
+          setVerifying(true);
           try {
             const resp = await confirm.confirm(otp);
           } catch (err: any) {
@@ -101,99 +101,110 @@ export const Login: FC = () => {
   const [resendOTP, setResendOTP] = useState<string>("");
 
   return (
-    <KeyboardAvoidingView style={{ flex: 1, height: "100%" }}>
-      <YStack flex={1} padding={"$6"} gap={"$4"} justifyContent="center">
-        <View
-          style={{
-            alignItems: "center",
-          }}
-        >
-          <LogoSvg />
-        </View>
-        <H2
-          marginBottom={50}
-          fontFamily="$js6"
-          color="$accent"
-          size="$14"
-          style={{
-            textAlign: "center",
-            lineHeight: "50",
-          }}
-        >
-          Saksham Homoeopathy
-        </H2>
-        <Input
-          fontFamily={"$js4"}
-          fontSize={"$4"}
-          borderWidth={2}
-          readOnly={fetchingOTP || isLoading}
-          keyboardType="numeric"
-          placeholder="Phone number"
-          onChangeText={(e: string) => {
-            const filteredValue = e.replace(/[^0-9]/g, "");
-            setPhoneNumber(filteredValue);
-          }}
-          maxLength={10}
-          value={phoneNumber.toString()}
-        />
-        {confirm ? (
-          <OTPAuth
-            confirm={confirm}
-            onResendOTP={(message) => {
-              setConfirm(null);
-              setResendOTP(message);
-              setFetchingOTP(false);
+    <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
+      <ScrollView
+        contentContainerStyle={{
+          flexGrow: 1,
+        }}
+      >
+        <YStack flex={1} padding={"$6"} gap={"$4"} justifyContent="center">
+          <View
+            style={{
+              alignItems: "center",
             }}
-          ></OTPAuth>
-        ) : (
-          <>
-            <LoaderButton
-              disabled={phoneNumber.length !== 10 || fetchingOTP || isLoading}
-              theme={"accent"}
-              style={{
-                fontSize: 20,
-                fontWeight: "bold",
-              }}
-              message="Sending..."
-              text={"Get OTP"}
-              isLoading={fetchingOTP || isLoading}
-              onPress={async () => {
-                if (isLoading || !signIn || !phoneNumber) return;
-                try {
-                  setResendOTP("Fetching OTP...");
-                  setFetchingOTP(true);
-                  const confirm = await signIn(parseInt(phoneNumber));
-                  setConfirm(confirm);
-                } catch (err) {
-                  console.log(err);
-                  burnt.toast({
-                    title: "Error",
-                    message: "Login failed!",
-                    preset: "error",
-                    duration: 4,
-                  });
+          >
+            <LogoSvg />
+          </View>
+          <H2
+            marginBottom={50}
+            fontFamily="$js6"
+            color="$accent"
+            size="$14"
+            style={{
+              textAlign: "center",
+              lineHeight: "50",
+            }}
+          >
+            Saksham Homoeopathy
+          </H2>
+          <Input
+            fontFamily={"$js4"}
+            fontSize={"$4"}
+            borderWidth={2}
+            readOnly={fetchingOTP || isLoading}
+            keyboardType="numeric"
+            placeholder="Phone number"
+            onChangeText={(e: string) => {
+              const filteredValue = e.replace(/[^0-9]/g, "");
+              setPhoneNumber(filteredValue);
+            }}
+            maxLength={10}
+            value={phoneNumber.toString()}
+          />
+          {confirm ? (
+            <OTPAuth
+              confirm={confirm}
+              onResendOTP={(message) => {
+                if (message === "") {
+                  setResendOTP("");
+                  return;
                 }
+                setConfirm(null);
+                setResendOTP(message);
                 setFetchingOTP(false);
               }}
-            ></LoaderButton>
-            {resendOTP && (
-              <>
-                <H2
-                  fontFamily="$js6"
-                  color="$accent"
-                  size="$4"
-                  style={{
-                    textAlign: "center",
-                    color: "red",
-                  }}
-                >
-                  {resendOTP}
-                </H2>
-              </>
-            )}
-          </>
-        )}
-      </YStack>
+            ></OTPAuth>
+          ) : (
+            <>
+              <LoaderButton
+                disabled={phoneNumber.length !== 10 || fetchingOTP || isLoading}
+                theme={"accent"}
+                style={{
+                  fontSize: 20,
+                  fontWeight: "bold",
+                }}
+                message="Sending..."
+                text={"Get OTP"}
+                isLoading={fetchingOTP || isLoading}
+                onPress={async () => {
+                  if (isLoading || !signIn || !phoneNumber) return;
+                  try {
+                    setResendOTP("Fetching OTP...");
+                    setFetchingOTP(true);
+                    const confirm = await signIn(parseInt(phoneNumber));
+                    setConfirm(confirm);
+                  } catch (err) {
+                    console.log(err);
+                    burnt.toast({
+                      title: "Error",
+                      message: "Login failed!",
+                      preset: "error",
+                      duration: 4,
+                    });
+                    setResendOTP("Failed to fetch OTP. Please try again.");
+                  }
+                  setFetchingOTP(false);
+                }}
+              ></LoaderButton>
+              {resendOTP && (
+                <>
+                  <H2
+                    fontFamily="$js6"
+                    color="$accent"
+                    size="$4"
+                    style={{
+                      textAlign: "center",
+                      color: "red",
+                    }}
+                  >
+                    {resendOTP}
+                  </H2>
+                </>
+              )}
+            </>
+          )}
+        </YStack>
+      </ScrollView>
     </KeyboardAvoidingView>
   );
 };

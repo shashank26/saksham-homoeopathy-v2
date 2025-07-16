@@ -95,11 +95,10 @@ export const ProfileScreen = () => {
   };
 
   return (
-    <KeyboardAvoidingView style={{ flex: 1 }}>
+    <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
       <ScrollView
         contentContainerStyle={{
           flexGrow: 1,
-          justifyContent: "center",
         }}
       >
         <View
@@ -107,7 +106,6 @@ export const ProfileScreen = () => {
             flex: 1,
             padding: 20,
             backgroundColor: themeColors.plat,
-            justifyContent: "center",
           }}
           pointerEvents={popup.visible ? "none" : "auto"}
         >
@@ -117,117 +115,115 @@ export const ProfileScreen = () => {
             icon={<></>}
             visible={popup.visible}
           />
-          <Form>
-            <YStack
-              alignItems="center"
-              gap={15}
-              backgroundColor={themeColors.light}
-              borderRadius={10}
-              shadowColor={themeColors.onyx}
-              shadowOffset={{ width: 0, height: 4 }}
-              shadowOpacity={0.3}
-              shadowRadius={4}
-              elevation={5}
-              padding="$4"
-            >
-              <DrawerSheet<MediaPickerResult>
-                FC={ProfileAvatar}
-                Child={ImagePicker}
-                onClose={async (data) => {
-                  if (!data || !profile) return;
-                  setPopup({
-                    visible: true,
-                    description: "Updating your profile picture...",
-                    title: "Please wait",
-                  });
-                  try {
-                    const storageUrl = await UserService.uploadProfileImage(
-                      profile.id,
-                      data.blob as Blob
-                    );
-                    updateProfile?.({
-                      ...profile,
-                      photoUrl: storageUrl as string,
-                    });
-                  } catch (error) {}
-
-                  setPopup({
-                    visible: false,
-                    description: "",
-                    title: "",
-                  });
-                }}
-              ></DrawerSheet>
-
-              <Text fontFamily={"$js4"} fontSize={"$12"}>
-                {profile?.displayName}
-              </Text>
-              <Text fontFamily={"$js2"} fontSize={"$4"}>
-                {profile?.phoneNumber}
-              </Text>
-              <XStack alignItems="center" gap="$4">
-                <Text fontFamily={"$js5"} fontSize={"$4"}>
-                  Name
-                </Text>
-                <Input
-                  fontFamily={"$js5"}
-                  style={{ flex: 1 }}
-                  fontSize={"$4"}
-                  defaultValue={profile?.displayName}
-                  onChangeText={(text) => {
-                    setName(text);
-                  }}
-                />
-              </XStack>
-              <Button
-                onPress={() => {
-                  if (!profile || !name.trim()) return;
-                  handleUpdate({
+          <YStack
+            alignItems="center"
+            gap={15}
+            backgroundColor={themeColors.light}
+            borderRadius={10}
+            shadowColor={themeColors.onyx}
+            shadowOffset={{ width: 0, height: 4 }}
+            shadowOpacity={0.3}
+            shadowRadius={4}
+            elevation={5}
+            padding="$4"
+          >
+            <DrawerSheet<MediaPickerResult>
+              FC={ProfileAvatar}
+              Child={ImagePicker}
+              onClose={async (data) => {
+                if (!data || !profile) return;
+                setPopup({
+                  visible: true,
+                  description: "Updating your profile picture...",
+                  title: "Please wait",
+                });
+                try {
+                  const storageUrl = await UserService.uploadProfileImage(
+                    profile.id,
+                    data.blob as Blob
+                  );
+                  updateProfile?.({
                     ...profile,
-                    displayName: name,
+                    photoUrl: storageUrl as string,
                   });
+                } catch (error) {}
+
+                setPopup({
+                  visible: false,
+                  description: "",
+                  title: "",
+                });
+              }}
+            ></DrawerSheet>
+
+            <Text fontFamily={"$js4"} fontSize={"$12"}>
+              {profile?.displayName}
+            </Text>
+            <Text fontFamily={"$js2"} fontSize={"$4"}>
+              {profile?.phoneNumber}
+            </Text>
+            <XStack alignItems="center" gap="$4">
+              <Text fontFamily={"$js5"} fontSize={"$4"}>
+                Name
+              </Text>
+              <Input
+                fontFamily={"$js5"}
+                style={{ flex: 1 }}
+                fontSize={"$4"}
+                defaultValue={profile?.displayName}
+                onChangeText={(text) => {
+                  setName(text);
                 }}
-                borderRadius={5}
-                width={"100%"}
-                backgroundColor={themeColors.accent}
+              />
+            </XStack>
+            <Button
+              onPress={() => {
+                if (!profile || !name.trim()) return;
+                handleUpdate({
+                  ...profile,
+                  displayName: name,
+                });
+              }}
+              borderRadius={5}
+              width={"100%"}
+              backgroundColor={themeColors.accent}
+            >
+              <Text
+                color={themeColors.plat}
+                fontFamily={"$js5"}
+                fontSize={"$4"}
               >
-                <Text
-                  color={themeColors.plat}
-                  fontFamily={"$js5"}
-                  fontSize={"$4"}
-                >
-                  Save
-                </Text>
-              </Button>
-              <Button
-                onPress={async () => {
-                  if (!signOut) return;
-                  setPopup({
-                    visible: true,
-                    description: "Signing out...",
-                    title: "Please wait",
-                  });
-                  await signOut();
-                  setPopup({
-                    visible: false,
-                    description: "",
-                    title: "",
-                  });
-                }}
-                borderRadius={5}
-                width={"100%"}
-                backgroundColor={themeColors.onyx}
+                Save
+              </Text>
+            </Button>
+            <Button
+              onPress={async () => {
+                if (!signOut) return;
+                setPopup({
+                  visible: true,
+                  description: "Signing out...",
+                  title: "Please wait",
+                });
+                await signOut();
+                setPopup({
+                  visible: false,
+                  description: "",
+                  title: "",
+                });
+              }}
+              borderRadius={5}
+              width={"100%"}
+              backgroundColor={themeColors.onyx}
+            >
+              <Text
+                color={themeColors.plat}
+                fontFamily={"$js5"}
+                fontSize={"$4"}
               >
-                <Text
-                  color={themeColors.plat}
-                  fontFamily={"$js5"}
-                  fontSize={"$4"}
-                >
-                  Sign out
-                </Text>
-              </Button>
-            </YStack>
-          </Form>
+                Sign out
+              </Text>
+            </Button>
+          </YStack>
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
