@@ -100,14 +100,6 @@ export default function RootLayout() {
         }}
       />
       <Tabs.Screen
-        name="chat"
-        options={{
-          title: "Chat",
-          tabBarIconName: "chat",
-          headerShown: false,
-        }}
-      />
-      <Tabs.Screen
         name="history"
         options={{
           title: "History",
@@ -123,6 +115,15 @@ export default function RootLayout() {
           headerShown: false,
         }}
       />
+      <Tabs.Screen
+        name="alerts"
+        options={{
+          title: "Alerts",
+          tabBarIconName: "notifications",
+          headerShown: false,
+
+        }}
+      />
     </Tabs>
   );
 }
@@ -135,7 +136,7 @@ const styles = StyleSheet.create({
     height: 80,
     justifyContent: "space-around",
     alignItems: "flex-start",
-    paddingTop: 5
+    paddingTop: 5,
   },
   tabItem: {
     flex: 1,
@@ -147,6 +148,6 @@ const styles = StyleSheet.create({
     height: 45,
     borderRadius: 50,
     alignItems: "center",
-    justifyContent: "center"
+    justifyContent: "center",
   },
 });

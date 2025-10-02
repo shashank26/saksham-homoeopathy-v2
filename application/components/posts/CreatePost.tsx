@@ -1,5 +1,7 @@
+import { Role } from "@/services/Firebase.service";
 import { CreatePostType, PostService } from "@/services/Posts.service";
 import { StorageService } from "@/services/Storage.service";
+import { themeColors } from "@/themes/themes";
 import * as Crypto from "expo-crypto";
 import { Dispatch, useState } from "react";
 import { StyleSheet, View } from "react-native";
@@ -9,13 +11,11 @@ import { OverlayActivityIndicator } from "../common/Alert";
 import { DrawerSheet } from "../common/DrawerSheet";
 import { FloatingRoundButton } from "../common/FloatingRoundButton";
 import {
-  ImagePicker,
   ImagePreview,
-  MediaPickerResult,
+  MediaPicker,
+  MediaPickerResult
 } from "../common/MediaPicker";
 import { LoaderButton } from "../controls/LoaderButton";
-import { Role } from "@/services/Firebase.service";
-import { themeColors } from "@/themes/themes";
 
 const CreatePostButton = ({
   setOpen,
@@ -111,19 +111,23 @@ const CreatePostForm = ({
           gap={5}
           style={{ alignItems: "center", justifyContent: "center" }}
         >
-          <ImagePicker
-            onClose={(imageData) => {
-              setSelectedMedia([imageData]);
+          <MediaPicker
+            onClose={(media) => {
+              setSelectedMedia((prev) => {
+                return [...prev, media];
+              });
             }}
           />
           {selectedMedia.length > 0 && (
             <ImagePreview
               onRemove={(uri) => {
                 setSelectedMedia((prev) => {
-                  return prev.filter((media) => media.uri !== uri);
+                  return prev.filter((media) =>
+                    ![media.uri, media.thumbnail].includes(uri)
+                  );
                 });
               }}
-              uris={selectedMedia.map((media) => media.uri)}
+              uris={selectedMedia.map((media) => media.thumbnail || media.uri)}
             />
           )}
         </XStack>
@@ -148,19 +152,29 @@ const CreatePostForm = ({
             setLoading(true);
             try {
               const media = selectedMedia.length > 0 ? selectedMedia[0] : null;
-              let savedUri;
+              let savedUri, thumbnailUri;
               if (media) {
                 savedUri = await StorageService.setItem(
                   Crypto.randomUUID(),
                   media.blob
                 );
+                if (media?.thumbnail) {
+                  const thumbnailBlob = await fetch(media.thumbnail).then(
+                    (res) => res.blob()
+                  );
+                  thumbnailUri = await StorageService.setItem(
+                    Crypto.randomUUID(),
+                    thumbnailBlob
+                  );
+                }
               }
               const res = await PostService.create({
                 body: formData.body,
                 media: savedUri
                   ? {
-                      type: "image",
+                      type: media?.thumbnail ? "video" : "image",
                       url: savedUri,
+                      thumbnail: thumbnailUri,
                     }
                   : undefined,
                 title: formData.title,

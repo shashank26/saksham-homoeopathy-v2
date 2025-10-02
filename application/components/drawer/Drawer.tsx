@@ -65,18 +65,6 @@ const drawerOptions = [
     ),
   },
   {
-    title: "Testimonials",
-    name: "testimonials",
-    label: "Testimnonials",
-    icon: (focused: boolean) => (
-      <MaterialIcons
-        name="format-quote"
-        size={24}
-        color={focused ? themeColors.plat : themeColors.onyx}
-      />
-    ),
-  },
-  {
     title: "Awards & Accolades",
     name: "awards",
     label: "Awards & Accolades",
@@ -144,7 +132,7 @@ export const AppDrawer = () => {
         screenOptions={({ route }) => ({
           headerTitle: () => <DrawerHeaderTitle route={route} />,
           headerStyle: {
-            height: Platform.OS === "ios" ? 120 : 80,
+            height: 120,
           },
           headerTitleAlign: "left",
           headerLeft: () => (

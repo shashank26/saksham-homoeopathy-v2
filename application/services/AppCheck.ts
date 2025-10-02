@@ -2,7 +2,6 @@ import {
   initializeAppCheck,
   ReactNativeFirebaseAppCheckProvider,
 } from "@react-native-firebase/app-check";
-import { ANDROID_TOKEN, APPLE_TOKEN } from "./DebugTokens";
 import { getApp } from "@react-native-firebase/app";
 
 export async function initializeFirebaseAppCheck() {
@@ -12,11 +11,11 @@ export async function initializeFirebaseAppCheck() {
     rnfbProvider.configure({
       android: {
         provider: __DEV__ ? "debug" : "playIntegrity",
-        debugToken: ANDROID_TOKEN,
+        debugToken: "F83545C7-7215-4355-B5E9-A0887742D3D2",
       },
       apple: {
         provider: __DEV__ ? "debug" : "appAttestWithDeviceCheckFallback",
-        debugToken: APPLE_TOKEN,
+        debugToken: "F83545C7-7215-4355-B5E9-A0887742D3D2",
       },
       web: {
         provider: "reCaptchaV3",

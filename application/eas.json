@@ -5,8 +5,9 @@
   },
   "build": {
     "development": {
+      "autoIncrement": true,
       "android": {
-        "buildType": "apk"
+        "buildType": "app-bundle"
       }
     },
     "preview": {
