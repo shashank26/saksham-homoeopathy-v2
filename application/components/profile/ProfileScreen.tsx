@@ -12,7 +12,7 @@ import { DrawerSheet } from "../common/DrawerSheet";
 import { ImagePicker, MediaPickerResult } from "../common/MediaPicker";
 import { ShimmerImage } from "../common/ShimmerImage";
 import { UserService } from "@/services/User.service";
-import { ScrollView } from "react-native-gesture-handler";
+import { Pressable, ScrollView } from "react-native-gesture-handler";
 
 const ProfileAvatar: FC<{
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -25,36 +25,37 @@ const ProfileAvatar: FC<{
 
   if (!profile?.photoUrl) {
     return (
-      <View
-        style={{
-          height: 120,
-          width: 120,
-          borderRadius: 60,
-          backgroundColor: themeColors.plat,
-          justifyContent: "center",
-          alignItems: "center",
-          shadowColor: themeColors.onyx,
-          shadowOffset: { width: 0, height: 4 },
-          shadowOpacity: 0.3,
-          shadowRadius: 4,
-          elevation: 5,
-        }}
-      >
-        <Button
-          icon={
-            <Ionicons
-              name="cloud-upload"
-              size={20}
-              onPress={handleImagePicker}
-            />
-          }
-          backgroundColor={"transparent"}
+      <Pressable onPress={handleImagePicker}>
+        <View
+          style={{
+            height: 120,
+            width: 120,
+            borderRadius: 60,
+            backgroundColor: themeColors.plat,
+            justifyContent: "center",
+            alignItems: "center",
+            shadowColor: themeColors.onyx,
+            shadowOffset: { width: 0, height: 4 },
+            shadowOpacity: 0.3,
+            shadowRadius: 4,
+            elevation: 5,
+          }}
         >
-          <Text fontFamily={"$js5"} fontSize={"$4"}>
-            Photo
-          </Text>
-        </Button>
-      </View>
+          <Button
+            icon={
+              <Ionicons
+                name="cloud-upload"
+                size={20}
+              />
+            }
+            backgroundColor={"transparent"}
+          >
+            <Text fontFamily={"$js5"} fontSize={"$4"}>
+              Photo
+            </Text>
+          </Button>
+        </View>
+      </Pressable>
     );
   }
 
@@ -131,7 +132,7 @@ export const ProfileScreen = () => {
               FC={ProfileAvatar}
               Child={ImagePicker}
               onClose={async (data) => {
-                if (!data || !profile) return;
+                if (!data || !profile || 'error' in data) return;
                 setPopup({
                   visible: true,
                   description: "Updating your profile picture...",

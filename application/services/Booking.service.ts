@@ -1,4 +1,5 @@
 import { db } from "./Firebase.service";
+import { NotificationService } from "./Notification.service";
 
 export type SlotTime =
   | "11:30"
@@ -13,6 +14,12 @@ export type BookingType = {
   date: Date;
   slot: SlotTime;
   id?: string; // Optional ID for the booking
+  cancelled?: boolean;
+  person: {
+    name: string;
+    age: string;
+    sex: string;
+  };
 };
 
 export class BookingService {
@@ -43,6 +50,12 @@ export class BookingService {
             date: data.date.toDate(),
             slot: data.slot as SlotTime,
             id: change.doc.id, // Include the document ID
+            cancelled: data.cancelled || false,
+            person: {
+              name: data.person?.name,
+              age: data.person?.age,
+              sex: data.person?.sex,
+            },
           };
           this.bookingHash.set(change.doc.id, newBooking);
         } else if (change.type === "removed") {
@@ -60,6 +73,9 @@ export class BookingService {
         phoneNumber: booking.phoneNumber,
         date: booking.date,
         slot: booking.slot,
+        person: {
+          ...booking.person,
+        },
       });
       return res;
     } catch (err) {
@@ -74,6 +90,22 @@ export class BookingService {
       return true;
     } catch (err) {
       console.error("Error deleting booking:", err);
+      return false;
+    }
+  }
+
+  static async cancelBooking(booking: BookingType) {
+    try {
+      await this.BOOKING_COLLECTION.doc(booking.id).update({ cancelled: true });
+      await NotificationService.addNotification(
+        booking.phoneNumber,
+        `Your booking has been cancelled for ${booking.date.toLocaleDateString()} at ${
+          booking.slot
+        }.`
+      );
+      return true;
+    } catch (err) {
+      console.error("Error cancelling booking:", err);
       return false;
     }
   }
