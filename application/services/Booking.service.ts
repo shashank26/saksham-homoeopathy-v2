@@ -9,6 +9,15 @@ export type SlotTime =
   | "12:30"
   | "12:45";
 
+export const slots: { label: string; value: SlotTime }[] = [
+  { label: "11.30 AM", value: "11:30" },
+  { label: "11.45 PM", value: "11:45" },
+  { label: "12.00 PM", value: "12:00" },
+  { label: "12.15 PM", value: "12:15" },
+  { label: "12.30 PM", value: "12:30" },
+  { label: "12.45 PM", value: "12:45" },
+];
+
 export type BookingType = {
   phoneNumber: string;
   date: Date;
@@ -24,6 +33,10 @@ export type BookingType = {
 
 export class BookingService {
   private static BOOKING_COLLECTION = db.collection("bookings");
+
+  private static BOOKING_META_COLLECTION = db.collection("booking_meta");
+
+  private static BLOCKED_BOOKINGS = db.collection("blocked_bookings");
 
   private static bookingHash = new Map<string, BookingType>();
 
@@ -69,6 +82,14 @@ export class BookingService {
 
   static async addBooking(booking: BookingType) {
     try {
+      const isAvailable = await this.isSlotAvailable(
+        booking.date,
+        booking.slot
+      );
+      if (!isAvailable) {
+        console.warn("Slot is not available");
+        return null;
+      }
       const res = await this.BOOKING_COLLECTION.add({
         phoneNumber: booking.phoneNumber,
         date: booking.date,
@@ -82,6 +103,18 @@ export class BookingService {
       console.error("Error adding booking:", err);
       return null;
     }
+  }
+  static isSlotAvailable(date: Date, slot: string) {
+    return this.BOOKING_COLLECTION.where("date", "==", date)
+      .where("slot", "==", slot)
+      .get()
+      .then((querySnapshot) => {
+        return querySnapshot.empty;
+      })
+      .catch((error) => {
+        console.error("Error checking slot availability: ", error);
+        return false;
+      });
   }
 
   static async deleteBooking(id: string) {
@@ -108,5 +141,51 @@ export class BookingService {
       console.error("Error cancelling booking:", err);
       return false;
     }
+  }
+
+  static async getDefaultSlots(): Promise<
+    { label: string; value: SlotTime }[]
+  > {
+    const doc = await this.BOOKING_META_COLLECTION.doc("slot_info").get();
+    const data = doc.data();
+    if (!data) return [];
+    return data.slots as { label: string; value: SlotTime }[];
+  }
+
+  static async getBlockedSlots(date: Date): Promise<SlotTime[]> {
+    const doc = await this.BLOCKED_BOOKINGS.doc(date.toDateString()).get();
+    const data = doc.data();
+    const blockedSlots: SlotTime[] = data?.slots || [];
+    return blockedSlots;
+  }
+
+  static getBlockedSlotsUpdate(
+    date: Date,
+    cb: (slots: SlotTime[]) => void
+  ): () => void {
+    const unsub = this.BLOCKED_BOOKINGS.doc(date.toDateString()).onSnapshot(
+      (doc) => {
+        const data = doc.data();
+        const blockedSlots: SlotTime[] = data?.slots || [];
+        cb(blockedSlots);
+      }
+    );
+    return unsub;
+  }
+
+  static async blockBooking(date: Date, slots: SlotTime[]) {
+    this.BLOCKED_BOOKINGS.doc(date.toDateString()).set({
+      slots: slots,
+    });
+  }
+
+  static async unblockBooking(date: Date, slots: SlotTime[]) {
+    const doc = await this.BLOCKED_BOOKINGS.doc(date.toDateString()).get();
+    const data = doc.data();
+    const blockedSlots: SlotTime[] = data?.slots || [];
+    const updatedSlots = blockedSlots.filter((s) => !slots.includes(s));
+    this.BLOCKED_BOOKINGS.doc(date.toDateString()).set({
+      slots: updatedSlots,
+    });
   }
 }

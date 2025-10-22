@@ -1,6 +1,7 @@
 import {
   BookingService,
   BookingType,
+  slots,
   SlotTime,
 } from "@/services/Booking.service";
 import { MomentService } from "@/services/Moment.service";
@@ -17,14 +18,7 @@ import { Dropdown } from "../common/Select";
 import { AdminBookingList, BookingList } from "./BookingList";
 import { Role } from "@/services/Firebase.service";
 
-const slots: { label: string; value: SlotTime }[] = [
-  { label: "11.30 AM", value: "11:30" },
-  { label: "11.45 PM", value: "11:45" },
-  { label: "12.00 PM", value: "12:00" },
-  { label: "12.15 PM", value: "12:15" },
-  { label: "12.30 PM", value: "12:30" },
-  { label: "12.45 PM", value: "12:45" },
-];
+
 
 export const SlotButton = ({
   slot,
@@ -63,16 +57,35 @@ const BookingForm = ({
   const [sex, setSex] = useState<string>("other");
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [selectedSlot, setSelectedSlot] = useState<string>("");
-  const availableSlots = slots.filter((slot) => {
-    const isBooked = currentBookings.some(
-      (booking) =>
-        MomentService.getDDMMMYYY(booking.date) ===
-          MomentService.getDDMMMYYY(selectedDate) && booking.slot === slot.value
-    );
-    const slotExpired = MomentService.isSlotExpired(selectedDate, slot.value);
-    return !isBooked && !slotExpired;
-  });
+  const [availableSlots, setAvailableSlots] = useState<
+    { label: string; value: SlotTime }[]
+  >([]);
   const { user } = useAuth();
+
+  useEffect(() => {
+    BookingService.getBlockedSlots(selectedDate).then((blockedSlots) => {
+      const allSlots = slots.filter((slot) => {
+        const isBlocked = blockedSlots.some(
+          (blockedSlot) => blockedSlot === slot.value
+        );
+
+        const isBooked = currentBookings.some(
+          (booking) =>
+            MomentService.getDDMMMYYY(booking.date) ===
+              MomentService.getDDMMMYYY(selectedDate) &&
+            booking.slot === slot.value
+        );
+
+        const isSlotExpired = MomentService.isSlotExpired(
+          selectedDate,
+          slot.value
+        );
+        return !isBlocked && !isBooked && !isSlotExpired;
+      });
+      setAvailableSlots(allSlots);
+    });
+  }, [selectedDate, currentBookings]);
+
   return (
     <ScrollView>
       <YStack
