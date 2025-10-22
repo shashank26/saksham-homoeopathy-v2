@@ -1,4 +1,5 @@
 import { BookingService, BookingType } from "@/services/Booking.service";
+import { Role } from "@/services/Firebase.service";
 import { MomentService } from "@/services/Moment.service";
 import { themeColors } from "@/themes/themes";
 import { toast } from "burnt";
@@ -6,10 +7,11 @@ import { FC, useEffect, useRef, useState } from "react";
 import { FlatList, View } from "react-native";
 import { Swipeable } from "react-native-gesture-handler";
 import { Text, XStack, YStack } from "tamagui";
+import { useAuth } from "../auth/hooks/useAuth";
 import { DateTimePicker } from "../common/DateTimePicker";
 import { renderRightActions } from "../common/DeleteRightAction";
-import { useAuth } from "../auth/hooks/useAuth";
-import { Role } from "@/services/Firebase.service";
+import { SlotBlocker } from "./helper/SlotBlocker";
+import { SlotUnblocker } from "./helper/SlotUnblocker";
 
 const BookingCard = ({ item }: { item: BookingType }) => {
   const ref = useRef<any>(null);
@@ -35,11 +37,7 @@ const BookingCard = ({ item }: { item: BookingType }) => {
         >
           {item.date.toLocaleDateString()} {item.slot}
         </Text>
-        <Text
-          fontFamily={"$js4"}
-          color={themeColors.plat}
-          fontSize={16}
-        >
+        <Text fontFamily={"$js4"} color={themeColors.plat} fontSize={16}>
           Cancelled
         </Text>
       </XStack>
@@ -141,7 +139,6 @@ export const BookingList: FC<{
 
 export const AdminBookingList = () => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-  const [searchToken, setSearchToken] = useState<string>("");
   const [bookings, setBookings] = useState<any[]>([]);
   useEffect(() => {
     const unsub = BookingService.onBookingUpdate((data) => {
@@ -166,6 +163,10 @@ export const AdminBookingList = () => {
           }}
           value={selectedDate}
         />
+        <XStack justifyContent="space-between" alignItems="center">
+          <SlotBlocker selectedDate={selectedDate} />
+          <SlotUnblocker selectedDate={selectedDate} />
+        </XStack>
       </YStack>
       <BookingList
         bookings={bookings.filter((booking) => {
