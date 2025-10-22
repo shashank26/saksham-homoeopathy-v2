@@ -8,21 +8,13 @@ import { themeColors } from "@/themes/themes";
 import { toast } from "burnt";
 import { useEffect, useState } from "react";
 import { View } from "react-native";
-import {
-  Button,
-  Input,
-  ScrollView,
-  Select,
-  Text,
-  XStack,
-  YStack,
-} from "tamagui";
+import { Button, Input, ScrollView, Text, XStack, YStack } from "tamagui";
 import { useAuth } from "../auth/hooks/useAuth";
 import { DateTimePicker } from "../common/DateTimePicker";
 import { DrawerSheet } from "../common/DrawerSheet";
 import { FloatingRoundButton } from "../common/FloatingRoundButton";
-import { AdminBookingList, BookingList } from "./BookingList";
 import { Dropdown } from "../common/Select";
+import { AdminBookingList, BookingList } from "./BookingList";
 import { Role } from "@/services/Firebase.service";
 
 const slots: { label: string; value: SlotTime }[] = [
@@ -77,7 +69,8 @@ const BookingForm = ({
         MomentService.getDDMMMYYY(booking.date) ===
           MomentService.getDDMMMYYY(selectedDate) && booking.slot === slot.value
     );
-    return !isBooked;
+    const slotExpired = MomentService.isSlotExpired(selectedDate, slot.value);
+    return !isBooked && !slotExpired;
   });
   const { user } = useAuth();
   return (
@@ -295,9 +288,9 @@ const UserBooking = () => {
 export const BookingScreen = () => {
   const { role } = useAuth();
 
-  // if (role === Role.USER) {
-  return <UserBooking />;
-  // } else {
-  //   return <AdminBookingList />;
-  // }
+  if (role === Role.USER) {
+    return <UserBooking />;
+  } else {
+    return <AdminBookingList />;
+  }
 };

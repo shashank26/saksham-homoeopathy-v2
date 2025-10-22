@@ -4,20 +4,17 @@ import { Post, PostService } from "@/services/Posts.service";
 import { themeColors } from "@/themes/themes";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Text } from "@tamagui/core";
-import { Video } from "expo-av";
 import React, { useRef, useState } from "react";
-import { FlatList, Modal, Pressable, View } from "react-native";
+import { FlatList, View } from "react-native";
 import { Swipeable } from "react-native-gesture-handler";
-import ImageViewing from "react-native-image-viewing";
 import { Spinner, XStack, YStack } from "tamagui";
 import { useAuth } from "../auth/hooks/useAuth";
 import { ConfirmDialog } from "../common/Alert";
 import { renderRightActions } from "../common/DeleteRightAction";
+import { ImageViewer, VideoViewer } from "../common/MediaViewer";
 import { ShimmerImage } from "../common/ShimmerImage";
 import { CreatePost } from "./CreatePost";
 import usePosts from "./hooks/usePosts";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { ImageViewer, VideoViewer } from "../common/MediaViewer";
 
 const RenderPost: React.FC<{ item: Post }> = ({ item }) => {
   const [isMediaVisible, setMediaVisible] = useState(false);

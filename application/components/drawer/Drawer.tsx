@@ -10,10 +10,11 @@ import { Drawer } from "expo-router/drawer";
 import React from "react";
 import { Platform, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { YStack } from "tamagui";
+import { XStack, YStack } from "tamagui";
 import { useAuth } from "../auth/hooks/useAuth";
 import { ShimmerImage } from "../common/ShimmerImage";
 import { DrawerHeaderTitle } from "./DrawerHeaderTitle";
+import SocialMediaLinks from "../SocialMediaLinks";
 
 const drawerOptions = [
   {
@@ -120,6 +121,11 @@ const CustomDrawerContent = (props: any) => {
         </YStack>
       </View>
       <DrawerItemList {...props} />
+      <View>
+        <XStack gap={10} justifyContent="center" marginTop={40}>
+          <SocialMediaLinks />
+        </XStack>
+      </View>
     </DrawerContentScrollView>
   );
 };
