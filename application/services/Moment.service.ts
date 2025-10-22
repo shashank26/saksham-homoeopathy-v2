@@ -1,3 +1,5 @@
+import { SlotTime } from "./Booking.service";
+
 export class MomentService {
   static timeAgo(date: Date): string {
     const seconds = Math.floor((new Date().getTime() - date.getTime()) / 1000);
@@ -20,5 +22,17 @@ export class MomentService {
     const month = date.toLocaleString("default", { month: "short" });
     const year = date.getFullYear();
     return `${day} ${month} ${year}`;
+  }
+
+  static isSlotExpired(date: Date, slot: SlotTime): boolean {
+    const hours = date.getHours();
+    const minutes = date.getMinutes();
+    const [slotHours, slotMinutes] = slot.split(":").map(Number);
+    if (date.toDateString() === new Date().toDateString()) {
+      if (hours > slotHours || (hours === slotHours && minutes >= slotMinutes)) {
+        return true;
+      }
+    }
+    return false;
   }
 }

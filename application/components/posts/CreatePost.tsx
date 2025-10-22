@@ -75,6 +75,7 @@ const CreatePostForm = ({
             color={themeColors.accent}
             fontFamily={"$js5"}
             fontSize={"$1"}
+            marginTop={2}
           >
             {formData.title.length}/50
           </Text>
@@ -103,6 +104,7 @@ const CreatePostForm = ({
             color={themeColors.accent}
             fontFamily={"$js5"}
             fontSize={"$1"}
+            marginTop={2}
           >
             {formData.body.length}/250
           </Text>

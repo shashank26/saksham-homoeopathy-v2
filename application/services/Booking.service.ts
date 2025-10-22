@@ -37,12 +37,12 @@ export class BookingService {
         "phoneNumber",
         "==",
         phoneNumber
-      );
+      ).where("date", ">=", new Date());
     } else {
       collectionRef = this.BOOKING_COLLECTION;
     }
     const unsub = collectionRef.onSnapshot((snapshot) => {
-      snapshot.docChanges().forEach((change) => {
+      snapshot?.docChanges().forEach((change) => {
         if (change.type === "added" || change.type === "modified") {
           const data = change.doc.data();
           const newBooking: BookingType = {
