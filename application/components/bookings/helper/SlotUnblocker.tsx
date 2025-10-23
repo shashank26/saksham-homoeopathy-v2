@@ -89,7 +89,7 @@ const SlotBlockerForm = ({
           </Text>
         </Button>
 
-        <XStack gap={10} flexWrap="wrap">
+        <XStack gap={10} flexWrap="wrap" justifyContent="center">
           {blockedSlots.map((slot) => {
             return (
               <SlotButton
@@ -110,6 +110,8 @@ const SlotBlockerForm = ({
           })}
         </XStack>
         <Button
+          fontFamily={"$js4"}
+          fontSize={"$4"}
           disabled={selectedSlots.length === 0}
           disabledStyle={{ backgroundColor: themeColors.onyx + "80" }}
           onPress={() => {

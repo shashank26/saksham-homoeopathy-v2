@@ -58,7 +58,7 @@ const SlotBlockerForm = ({
   return (
     <View marginVertical={20}>
       <YStack gap={20} marginHorizontal={10}>
-        <Text fontFamily={"$js5"} fontSize={"$5"}>
+        <Text fontFamily={"$js4"} fontSize={"$4"} color={themeColors.onyx}>
           {selectedDate.toDateString()}
         </Text>
         <Button
@@ -78,7 +78,7 @@ const SlotBlockerForm = ({
           </Text>
         </Button>
 
-        <XStack gap={10} flexWrap="wrap">
+        <XStack gap={10} flexWrap="wrap" justifyContent="center">
           {availableSlots.map((slot) => {
             return (
               <SlotButton
@@ -99,6 +99,8 @@ const SlotBlockerForm = ({
           })}
         </XStack>
         <Button
+          fontFamily={"$js4"}
+          fontSize={"$4"}
           disabled={selectedSlots.length === 0}
           disabledStyle={{ backgroundColor: themeColors.onyx + "80" }}
           onPress={() => {

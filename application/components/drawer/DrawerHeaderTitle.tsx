@@ -1,12 +1,11 @@
 import { themeColors } from "@/themes/themes";
 import { ParamListBase, RouteProp } from "@react-navigation/native";
 import { Text, View } from "@tamagui/core";
+import { Link } from "expo-router";
 import { useRouteInfo } from "expo-router/build/hooks";
 import React from "react";
 import { XStack, YStack } from "tamagui";
 import { useAuth } from "../auth/hooks/useAuth";
-import { Pressable } from "react-native";
-import { Link } from "expo-router";
 
 export const DrawerHeaderTitle = ({
   route,
@@ -27,7 +26,7 @@ export const DrawerHeaderTitle = ({
           <Text
             fontFamily="$js7"
             fontSize="$10"
-            color="$onyx"
+            color={themeColors.onyx}
             textTransform="capitalize"
           >
             {title}
@@ -53,7 +52,7 @@ export const DrawerHeaderTitle = ({
             >
               <Text
                 fontFamily="$js4"
-                fontSize={12}
+                fontSize={"$4"}
                 color="#fff"
                 style={{ textAlign: "center" }}
               >
