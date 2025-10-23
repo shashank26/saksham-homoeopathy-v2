@@ -1,12 +1,7 @@
 import React from "react";
-import {
-  View,
-  TouchableOpacity,
-  Text,
-  Linking,
-  Image,
-  StyleSheet,
-} from "react-native";
+import { Image, Linking, StyleSheet, TouchableOpacity } from "react-native";
+
+import { Text } from "tamagui";
 
 const socialLinks = {
   instagram: "https://instagram.com/saksham_homoeopathy",
@@ -38,7 +33,7 @@ export default function SocialMediaLinks() {
           style={styles.button}
         >
           <Image source={{ uri: getIcon(key) }} style={styles.icon} />
-          <Text style={styles.text}>
+          <Text fontFamily="$js4" fontSize="$2" color={"#aaa"}>
             {key.charAt(0).toUpperCase() + key.slice(1)}
           </Text>
         </TouchableOpacity>
@@ -64,9 +59,5 @@ const styles = StyleSheet.create({
   icon: {
     width: 20,
     height: 20,
-  },
-  text: {
-    marginTop: 5,
-    fontSize: 12,
   },
 });

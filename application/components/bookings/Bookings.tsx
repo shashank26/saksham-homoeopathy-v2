@@ -191,7 +191,7 @@ const BookingForm = ({
               *
             </Text>
           </Text>
-          <XStack gap={10} flexWrap="wrap">
+          <XStack gap={10} flexWrap="wrap" justifyContent="center">
             {availableSlots.length === 0 ? (
               <Text
                 fontFamily={"$js4"}

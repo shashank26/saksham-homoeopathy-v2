@@ -21,7 +21,7 @@ export function Dropdown(
           maxWidth={220}
           iconAfter={<MaterialIcon name="arrow-drop-down" size={20} />}
         >
-          <Select.Value placeholder={props.value} />
+          <Select.Value placeholder={props.value} fontFamily={"$js5"} fontSize={"$2"} />
         </Select.Trigger>
       )}
 
@@ -77,7 +77,7 @@ export function Dropdown(
                       key={item.name}
                       value={item.name.toLowerCase()}
                     >
-                      <Select.ItemText>{item.name}</Select.ItemText>
+                      <Select.ItemText fontFamily={"$js5"} fontSize={"$2"}>{item.name}</Select.ItemText>
                       <Select.ItemIndicator marginLeft="auto">
                         <MaterialIcon
                           name="check"
@@ -118,7 +118,7 @@ export function Dropdown(
           justifyContent="center"
           position="relative"
           width="100%"
-          height="$3"
+          height="$4"
         >
           <YStack zIndex={10}>
             <MaterialIcon name="arrow-drop-down" size={20} />
