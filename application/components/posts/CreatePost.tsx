@@ -13,7 +13,7 @@ import { FloatingRoundButton } from "../common/FloatingRoundButton";
 import {
   ImagePreview,
   MediaPicker,
-  MediaPickerResult
+  MediaPickerResult,
 } from "../common/MediaPicker";
 import { LoaderButton } from "../controls/LoaderButton";
 
@@ -87,7 +87,7 @@ const CreatePostForm = ({
           <TextArea
             fontFamily={"$js5"}
             fontSize={"$4"}
-            maxLength={250}
+            maxLength={500}
             multiline={true}
             value={formData.body}
             onChangeText={(text) => {
@@ -106,7 +106,7 @@ const CreatePostForm = ({
             fontSize={"$1"}
             marginTop={2}
           >
-            {formData.body.length}/250
+            {formData.body.length}/500
           </Text>
         </YStack>
         <XStack
@@ -124,8 +124,8 @@ const CreatePostForm = ({
             <ImagePreview
               onRemove={(uri) => {
                 setSelectedMedia((prev) => {
-                  return prev.filter((media) =>
-                    ![media.uri, media.thumbnail].includes(uri)
+                  return prev.filter(
+                    (media) => ![media.uri, media.thumbnail].includes(uri)
                   );
                 });
               }}
@@ -150,7 +150,7 @@ const CreatePostForm = ({
           text="Post"
           isLoading={loading}
           onPress={async () => {
-            if (!valid() || !formData) return;
+            if (!valid()) return;
             setLoading(true);
             try {
               const media = selectedMedia.length > 0 ? selectedMedia[0] : null;
@@ -176,7 +176,7 @@ const CreatePostForm = ({
                   ? {
                       type: media?.thumbnail ? "video" : "image",
                       url: savedUri,
-                      thumbnail: thumbnailUri,
+                      thumbnail: thumbnailUri ?? null,
                     }
                   : undefined,
                 title: formData.title,
