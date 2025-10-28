@@ -6,6 +6,7 @@ import {
   View,
   Text,
   ActivityIndicator,
+  Platform,
 } from "react-native";
 import ImageViewing from "react-native-image-viewing";
 
@@ -39,7 +40,7 @@ export const VideoViewer = ({
             <View style={styles.controlsContainer}>
               <Button
                 title="Close"
-                color={"white"}
+                color={Platform.OS === "ios" ? "white" : "transparent"}
                 onPress={() => {
                   onClose();
                 }}

@@ -172,7 +172,7 @@ export const VideoPicker = ({
           }
           const asset = result.assets[0];
           // if file size is greater than 30mb, return null
-          if ((asset.fileSize || Number.POSITIVE_INFINITY) > 30000000) {
+          if ((asset.fileSize || Number.POSITIVE_INFINITY) > 100000000) {
             console.log("Video file size is more than 30mb, can't upload it.");
             onClose({
               error: "file_too_large",
