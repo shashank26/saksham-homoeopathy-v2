@@ -156,7 +156,6 @@ const BookingForm = ({
           <Dropdown
             defaultValue="other"
             onValueChange={(value) => {
-              console.log("Selected sex:", value);
               setSex(value);
             }}
             items={[
