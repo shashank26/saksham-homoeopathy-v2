@@ -100,18 +100,19 @@ export default function RootLayout() {
         }}
       />
       <Tabs.Screen
+        name="chat"
+        options={{
+          title: "Chat",
+          tabBarIconName: "chat-bubble-outline",
+          headerShown: false,
+
+        }}
+      />
+      <Tabs.Screen
         name="history"
         options={{
           title: "History",
           tabBarIconName: "history",
-          headerShown: false,
-        }}
-      />
-      <Tabs.Screen
-        name="profile"
-        options={{
-          title: "Profile",
-          tabBarIconName: "account-circle",
           headerShown: false,
         }}
       />

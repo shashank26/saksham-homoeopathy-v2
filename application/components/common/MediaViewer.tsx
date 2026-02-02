@@ -78,18 +78,20 @@ const styles = StyleSheet.create({
 });
 
 export const ImageViewer = ({
-  uri,
+  uris,
   show,
   onClose,
+  index = 0
 }: {
-  uri: string;
+  uris: { uri: string }[];
   show: boolean;
   onClose: () => void;
+  index?: number;
 }) => {
   return (
     <ImageViewing
-      images={[{ uri }]}
-      imageIndex={0}
+      images={uris}
+      imageIndex={index}
       visible={show}
       onRequestClose={() => onClose()}
     />

@@ -1,7 +1,7 @@
 import React from "react";
 import { Image, Linking, StyleSheet, TouchableOpacity } from "react-native";
 
-import { Text } from "tamagui";
+import { Text, XStack } from "tamagui";
 
 const socialLinks = {
   instagram: "https://instagram.com/saksham_homoeopathy",
@@ -25,7 +25,7 @@ export default function SocialMediaLinks() {
   };
 
   return (
-    <>
+    <XStack flexWrap="wrap" gap={10}>
       {Object.entries(socialLinks).map(([key, url]) => (
         <TouchableOpacity
           key={key}
@@ -38,7 +38,7 @@ export default function SocialMediaLinks() {
           </Text>
         </TouchableOpacity>
       ))}
-    </>
+    </XStack>
   );
 }
 

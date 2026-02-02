@@ -16,7 +16,7 @@ export const UserInfo = React.memo(
         style={{
           backgroundColor: themeColors.plat,
           width: "100%",
-          padding: 15,
+          padding: 5,
           borderRadius: 10,
           borderBottomColor: '#ccc',
           borderBottomWidth: 1,
@@ -27,23 +27,23 @@ export const UserInfo = React.memo(
             key={user.photoUrl}
             url={user.photoUrl}
             size={{
-              height: 64,
-              width: 64,
+              height: 48,
+              width: 48,
             }}
-            borderRadius={32}
+            borderRadius={24}
           />
         ) : (
           <View
             style={{
-              height: 64,
-              width: 64,
-              borderRadius: 32,
+              height: 48,
+              width: 48,
+              borderRadius: 24,
               backgroundColor: "#ccc",
               justifyContent: "center",
               alignItems: "center",
             }}
           >
-            <EvilIcons name="user" color={themeColors.accent} size={64} />
+            <EvilIcons name="user" color={themeColors.accent} size={48} />
           </View>
         )}
         <YStack justifyContent="center" gap={2}>

@@ -10,6 +10,9 @@ import storage from "@react-native-firebase/storage";
 
 export const userAuth = auth();
 export const db = firestore();
+db.settings({
+  persistence: true,
+});
 export const fileStore = storage();
 
 export enum Role {
