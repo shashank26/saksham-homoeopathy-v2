@@ -71,7 +71,6 @@ export const AuthProvider = ({ children }: React.PropsWithChildren) => {
     const notificationSubscriber = NotificationService.onNotificationsUpdate(
       user?.phoneNumber || "",
       (notifications) => {
-        console.log("notifications", notifications);
         setNotifications(notifications);
       }
     );

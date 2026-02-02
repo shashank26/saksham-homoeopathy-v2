@@ -63,6 +63,16 @@ export const MessageList = ({ chatId }: { chatId: string }) => {
     }, 800);
   }).current;
 
+  if (messages.length === 0) {
+    return (
+      <YStack style={{ flex: 1 }} justifyContent="center" alignItems="center">
+        <Text fontFamily={"$js5"} fontSize={"$4"} color={"#999"}>
+          No messages yet
+        </Text>
+      </YStack>
+    );
+  }
+
   return (
     <View style={{ flex: 1 }}>
       <DateToast date={visibleDate} visible={showDate} />
@@ -78,7 +88,12 @@ export const MessageList = ({ chatId }: { chatId: string }) => {
         renderItem={({ item, index }) => {
           const isOwnMessage = item.sender === profile?.id;
           return (
-            <YStack alignItems={isOwnMessage ? "flex-end" : "flex-start"} key={index} marginBottom={10} gap={4}>
+            <YStack
+              alignItems={isOwnMessage ? "flex-end" : "flex-start"}
+              key={index}
+              marginBottom={10}
+              gap={4}
+            >
               <Text
                 maxWidth={"70%"}
                 paddingHorizontal={10}
