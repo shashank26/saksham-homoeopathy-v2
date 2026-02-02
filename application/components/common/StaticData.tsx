@@ -2,12 +2,14 @@ import { ActivityIndicator, View } from "react-native";
 import { RenderHTML } from "react-native-render-html";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { styleSheets } from "../styles";
-import { ScrollView, Text } from "tamagui";
+import { Button, ScrollView, Text } from "tamagui";
 import { db } from "@/services/Firebase.service";
 import { useEffect, useState } from "react";
 
 export const StaticData: React.FC<{ docId: string }> = ({ docId }) => {
   const [staticData, setStaticData] = useState<string>("");
+  const [extraData, setExtraData] = useState<string>("");
+
   useEffect(() => {
     if (!docId) return;
     db.collection("static")
@@ -16,12 +18,13 @@ export const StaticData: React.FC<{ docId: string }> = ({ docId }) => {
       .then((doc) => {
         const data = doc.data();
         setStaticData(data?.html);
+        setExtraData(data?.extra || "");
       });
   }, [docId]);
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: "#eee" }}>
         <View
           style={{
             ...styleSheets.container,
@@ -37,7 +40,22 @@ export const StaticData: React.FC<{ docId: string }> = ({ docId }) => {
               horizontal={false}
               width={"100%"}
             >
-              <RenderHTML source={{ html: staticData }} />;
+              <RenderHTML source={{ html: staticData }} />
+              {extraData ? (
+                <Button
+                  fontFamily={"$js5"}
+                  fontSize={"$2"}
+                  style={{
+                    backgroundColor: "transparent",
+                  }}
+                  onPress={() => {
+                    setStaticData(staticData + extraData);
+                    setExtraData("");
+                  }}
+                >
+                  Read More...
+                </Button>
+              ) : null}
             </ScrollView>
           ) : (
             <>

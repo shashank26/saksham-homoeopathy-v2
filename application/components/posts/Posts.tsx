@@ -71,7 +71,7 @@ const RenderPost: React.FC<{ item: Post }> = ({ item }) => {
         <ImageViewer
           onClose={() => setMediaVisible(false)}
           show={isMediaVisible}
-          uri={item.media?.url as string}
+          uris={[{ uri: item.media?.url as string }]}
         />
       )}
     </YStack>

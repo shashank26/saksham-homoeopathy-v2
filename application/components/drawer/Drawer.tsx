@@ -77,6 +77,18 @@ const drawerOptions = [
       />
     ),
   },
+  {
+    title: "Profile",
+    name: "profile",
+    label: "Profile",
+    icon: (focused: boolean) => (
+      <MaterialIcons
+        name="person"
+        size={24}
+        color={focused ? themeColors.plat : themeColors.onyx}
+      />
+    ),
+  },
 ];
 const drawerButtonOptionsStyle = {
   drawerActiveTintColor: themeColors.plat, // Active button text color
