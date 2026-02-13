@@ -1,0 +1,59 @@
+Privacy Policy for Saksham Homoeopathy
+Effective Date: 27-6-2025
+
+Saksham Homoeopathy values your privacy. This Privacy Policy explains how we collect, use, and protect your information when you use our mobile application.
+
+1. Information We Collect
+We may collect the following types of information:
+
+Personal Information: such as name, email address, or phone number (only if you provide it via forms or login).
+
+Usage Data: anonymized data about how you use the app (e.g., screens viewed, time spent).
+
+Device Information: such as device model, OS version, IP address (for diagnostics or analytics).
+
+2. How We Use Your Information
+We use your information to:
+
+Provide and improve our services
+
+Respond to user inquiries
+
+Monitor app performance and fix bugs
+
+Comply with legal requirements
+
+3. Data Sharing and Disclosure
+We do not sell your data.
+
+We may share information with:
+
+Service providers (like Firebase or analytics tools) only for app functionality
+
+Authorities if required by law
+
+4. Data Security
+We implement appropriate measures to protect your data, including encryption and secure data storage.
+
+5. Children's Privacy
+Our app is not intended for children under 13. We do not knowingly collect personal data from children.
+
+6. Your Rights
+You may request:
+
+Access to your data
+
+Deletion of your personal information
+
+More information about how we use your data
+
+Contact us at: arniparth@gmail.com
+
+7. Changes to This Policy
+We may update this Privacy Policy. Any changes will be reflected on this page.
+
+8. Contact Us
+If you have any questions, contact:
+
+Shashank Sharma
+Email: arniparth@gmail.com
