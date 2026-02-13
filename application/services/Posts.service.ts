@@ -24,8 +24,8 @@ export type Post = {
 const postConverter = {
   toFirestore(post: CreatePostType): FirebaseFirestoreTypes.DocumentData {
     return {
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
       title: post.title,
       body: post.body,
       media: post.media || null,

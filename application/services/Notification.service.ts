@@ -1,3 +1,4 @@
+import { serverTimestamp } from "@react-native-firebase/firestore";
 import { db } from "./Firebase.service";
 
 export type NotificationType = {
@@ -17,7 +18,7 @@ export class NotificationService {
         userId,
         message,
         read: false,
-        timestamp: new Date(),
+        timestamp: serverTimestamp(),
       });
       return true;
     } catch (err) {

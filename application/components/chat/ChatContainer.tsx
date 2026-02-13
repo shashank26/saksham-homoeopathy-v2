@@ -3,8 +3,11 @@ import { KeyboardAvoidingView } from "react-native";
 import { YStack } from "tamagui";
 import { MessageList } from "./MessageList";
 import { MessageTextBox } from "./MessageTextBox";
+import { ChatContext } from "./ChatContext";
+import { useContext } from "react";
 
-export const ChatContainer = ({ chatId }: { chatId: string }) => {
+export const ChatContainer = () => {
+  const { chatId, receiverId } = useContext(ChatContext)!;
   return (
     <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
       <YStack
@@ -16,7 +19,7 @@ export const ChatContainer = ({ chatId }: { chatId: string }) => {
         <MessageList chatId={chatId} />
         <MessageTextBox
           onSend={(text) => {
-            return ChatService.send(text, chatId);
+            return ChatService.send(text, chatId, receiverId);
           }}
         />
       </YStack>

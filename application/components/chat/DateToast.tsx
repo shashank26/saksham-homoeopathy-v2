@@ -29,7 +29,7 @@ export const DateToast = ({
             y: -8,
           }}
         >
-          <Text color="white" fontSize="12">
+          <Text color="white" fontSize={12} fontFamily={"$js4"}>
             {date}
           </Text>
         </YStack>

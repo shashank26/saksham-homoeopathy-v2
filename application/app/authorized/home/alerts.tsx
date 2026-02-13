@@ -1,6 +1,6 @@
 import { useAuth } from "@/components/auth/hooks/useAuth";
 import { NotificationService } from "@/services/Notification.service";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { TouchableOpacity } from "react-native";
 import { FlatList } from "react-native-gesture-handler";
 import { Text, XStack, YStack } from "tamagui";
@@ -8,6 +8,16 @@ import { Text, XStack, YStack } from "tamagui";
 export default function Alerts() {
   const { notifications } = useAuth();
 
+  if (!notifications?.length) {
+    return (
+      <YStack alignItems="center" justifyContent="center" flex={1}>
+        <MaterialIcons name="check-circle-outline" size={64} color="gray" />
+        <Text fontFamily={"$js4"} fontSize={"$4"} color={"gray"}>
+          All caught up!
+        </Text>
+      </YStack>
+    );
+  }
   return (
     <FlatList
       data={notifications}

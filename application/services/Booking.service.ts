@@ -1,5 +1,7 @@
+import { serverTimestamp } from "@react-native-firebase/firestore";
 import { db } from "./Firebase.service";
 import { NotificationService } from "./Notification.service";
+import { MomentService } from "./Moment.service";
 
 export type SlotTime =
   | "11:30"
@@ -42,41 +44,47 @@ export class BookingService {
 
   static onBookingUpdate(
     callback: (bookings: BookingType[]) => void,
-    phoneNumber?: string
+    phoneNumber?: string,
   ) {
     let collectionRef;
     if (phoneNumber) {
       collectionRef = this.BOOKING_COLLECTION.where(
         "phoneNumber",
         "==",
-        phoneNumber
-      ).where("date", ">=", new Date());
+        phoneNumber,
+      ).where("date", ">=", MomentService.getDateWithoutTime(new Date()));
     } else {
       collectionRef = this.BOOKING_COLLECTION;
     }
-    const unsub = collectionRef.onSnapshot((snapshot) => {
-      snapshot?.docChanges().forEach((change) => {
-        if (change.type === "added" || change.type === "modified") {
-          const data = change.doc.data();
-          const newBooking: BookingType = {
-            phoneNumber: data.phoneNumber,
-            date: data.date.toDate(),
-            slot: data.slot as SlotTime,
-            id: change.doc.id, // Include the document ID
-            cancelled: data.cancelled || false,
-            person: {
-              name: data.person?.name,
-              age: data.person?.age,
-              sex: data.person?.sex,
-            },
-          };
-          this.bookingHash.set(change.doc.id, newBooking);
-        } else if (change.type === "removed") {
-          this.bookingHash.delete(change.doc.id);
-        }
-      });
-      callback(Array.from(this.bookingHash.values()));
-    });
+    const unsub = collectionRef.onSnapshot(
+      (snapshot) => {
+        snapshot?.docChanges().forEach((change) => {
+          if (change.type === "added" || change.type === "modified") {
+            console.log("is snapshot from cache:", snapshot.metadata.fromCache);
+            const data = change.doc.data();
+            const newBooking: BookingType = {
+              phoneNumber: data.phoneNumber,
+              date: data.date.toDate(),
+              slot: data.slot as SlotTime,
+              id: change.doc.id, // Include the document ID
+              cancelled: data.cancelled || false,
+              person: {
+                name: data.person?.name,
+                age: data.person?.age,
+                sex: data.person?.sex,
+              },
+            };
+            this.bookingHash.set(change.doc.id, newBooking);
+          } else if (change.type === "removed") {
+            this.bookingHash.delete(change.doc.id);
+          }
+        });
+        callback(Array.from(this.bookingHash.values()));
+      },
+      (error) => {
+        console.error("Error in booking update listener:", error);
+      },
+    );
     return unsub;
   }
 
@@ -84,7 +92,7 @@ export class BookingService {
     try {
       const isAvailable = await this.isSlotAvailable(
         booking.date,
-        booking.slot
+        booking.slot,
       );
       if (!isAvailable) {
         console.warn("Slot is not available");
@@ -134,7 +142,7 @@ export class BookingService {
         booking.phoneNumber,
         `Your booking has been cancelled for ${booking.date.toLocaleDateString()} at ${
           booking.slot
-        }.`
+        }.`,
       );
       return true;
     } catch (err) {
@@ -161,14 +169,14 @@ export class BookingService {
 
   static getBlockedSlotsUpdate(
     date: Date,
-    cb: (slots: SlotTime[]) => void
+    cb: (slots: SlotTime[]) => void,
   ): () => void {
     const unsub = this.BLOCKED_BOOKINGS.doc(date.toDateString()).onSnapshot(
       (doc) => {
         const data = doc.data();
         const blockedSlots: SlotTime[] = data?.slots || [];
         cb(blockedSlots);
-      }
+      },
     );
     return unsub;
   }
