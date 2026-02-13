@@ -2,9 +2,11 @@ import { ChatMessage, ChatService } from "@/services/Chat.service";
 import { MomentService } from "@/services/Moment.service";
 import { useEffect, useRef, useState } from "react";
 import { FlatList } from "react-native";
-import { Text, View, YStack } from "tamagui";
+import { View, YStack } from "tamagui";
+import { Text } from "react-native";
 import { useAuth } from "../auth/hooks/useAuth";
 import { DateToast } from "./DateToast";
+import { themeColors } from "@/themes/themes";
 
 export const MessageList = ({ chatId }: { chatId: string }) => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -42,13 +44,13 @@ export const MessageList = ({ chatId }: { chatId: string }) => {
 
     if (olderMessages.length) {
       setMessages((prev) => [...prev, ...olderMessages]);
-      lastDocRef.current = lastDocRef.current; // updated internally by Firestore
+      lastDocRef.current = lastDocRef.current;
     }
 
     loadingOlder.current = false;
   };
 
-  const onViewableItemsChanged = useRef(({ viewableItems }) => {
+  const onViewableItemsChanged = useRef(({ viewableItems }: any) => {
     if (!viewableItems.length) return;
 
     const firstItem = viewableItems[viewableItems.length - 1].item;
@@ -66,7 +68,7 @@ export const MessageList = ({ chatId }: { chatId: string }) => {
   if (messages.length === 0) {
     return (
       <YStack style={{ flex: 1 }} justifyContent="center" alignItems="center">
-        <Text fontFamily={"$js5"} fontSize={"$4"} color={"#999"}>
+        <Text style={{ color: "#999", fontSize: 16 }}>
           No messages yet
         </Text>
       </YStack>
@@ -95,17 +97,21 @@ export const MessageList = ({ chatId }: { chatId: string }) => {
               gap={4}
             >
               <Text
-                maxWidth={"70%"}
-                paddingHorizontal={10}
-                paddingVertical={5}
-                borderRadius={15}
-                backgroundColor={isOwnMessage ? "$accent" : "$onyx"}
-                color={"$light"}
+                style={{
+                  paddingHorizontal: 10,
+                  paddingVertical: 5,
+                  borderRadius: 15,
+                  backgroundColor: isOwnMessage
+                    ? themeColors.accent
+                    : themeColors.onyx,
+                  color: themeColors.light,
+                  maxWidth: "80%",
+                }}
                 key={index}
               >
                 {item.message}
               </Text>
-              <Text fontSize={"10"} color={"#999"}>
+              <Text style={{ fontSize: 10, color: themeColors.light }}>
                 {MomentService.getTimeHHMM(item.sentAt)}
               </Text>
             </YStack>

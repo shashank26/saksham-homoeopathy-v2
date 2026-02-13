@@ -37,8 +37,10 @@ yarn-error.*
 
 app-example
 
-GoogleService-Info.plist
-google-services.json
+# GoogleService-Info.plist
+# google-services.json
 
 ios
 android
+
+expo-notification.json

@@ -17,8 +17,7 @@ import { FloatingRoundButton } from "../common/FloatingRoundButton";
 import { Dropdown } from "../common/Select";
 import { AdminBookingList, BookingList } from "./BookingList";
 import { Role } from "@/services/Firebase.service";
-
-
+import { useRouter } from "expo-router";
 
 export const SlotButton = ({
   slot,
@@ -61,24 +60,25 @@ const BookingForm = ({
     { label: string; value: SlotTime }[]
   >([]);
   const { user } = useAuth();
+  const router = useRouter();
 
   useEffect(() => {
     BookingService.getBlockedSlots(selectedDate).then((blockedSlots) => {
       const allSlots = slots.filter((slot) => {
         const isBlocked = blockedSlots.some(
-          (blockedSlot) => blockedSlot === slot.value
+          (blockedSlot) => blockedSlot === slot.value,
         );
 
         const isBooked = currentBookings.some(
           (booking) =>
             MomentService.getDDMMMYYY(booking.date) ===
               MomentService.getDDMMMYYY(selectedDate) &&
-            booking.slot === slot.value
+            booking.slot === slot.value,
         );
 
         const isSlotExpired = MomentService.isSlotExpired(
           selectedDate,
-          slot.value
+          slot.value,
         );
         return !isBlocked && !isBooked && !isSlotExpired;
       });
@@ -241,6 +241,7 @@ const BookingForm = ({
                   preset: "done",
                   duration: 5,
                 });
+                
               } else {
                 toast({
                   title: "Booking Failed",
@@ -251,7 +252,7 @@ const BookingForm = ({
               }
               onClose();
               console.log(
-                `Booking confirmed for ${selectedDate.toLocaleDateString()} at ${selectedSlot}`
+                `Booking confirmed for ${selectedDate.toLocaleDateString()} at ${selectedSlot}`,
               );
             } else {
               console.warn("Please select a slot.");
@@ -269,6 +270,7 @@ const UserBooking = () => {
   const [bookings, setBookings] = useState<any[]>([]);
   const { user } = useAuth();
   useEffect(() => {
+    if (!user?.phoneNumber) return;
     const unsubscribe = BookingService.onBookingUpdate((data) => {
       setBookings(data);
     }, user?.phoneNumber || "");

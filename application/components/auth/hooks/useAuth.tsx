@@ -1,16 +1,17 @@
 import { AuthService, UserProfile } from "@/services/Auth.service";
-import { Role } from "@/services/Firebase.service";
+import { db, Role } from "@/services/Firebase.service";
 import {
   NotificationService,
   NotificationType,
 } from "@/services/Notification.service";
+import { registerForPushNotifications } from "@/services/notifications/Notifications";
 import { FirebaseAuthTypes } from "@react-native-firebase/auth";
 import React, { useEffect, useState } from "react";
 
 export type AuthContextType = {
   user: FirebaseAuthTypes.User | null;
   signIn?: (
-    phoneNumber: number
+    phoneNumber: number,
   ) => Promise<FirebaseAuthTypes.ConfirmationResult>;
   signOut?: () => Promise<void>;
   isLoading: boolean;
@@ -37,7 +38,7 @@ export const AuthProvider = ({ children }: React.PropsWithChildren) => {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<FirebaseAuthTypes.PhoneAuthError | null>(
-    null
+    null,
   );
   const [notifications, setNotifications] = useState<NotificationType[]>([]);
 
@@ -67,12 +68,26 @@ export const AuthProvider = ({ children }: React.PropsWithChildren) => {
   };
 
   useEffect(() => {
+    if (!profile) return;
+    (async () => {
+      const token = await registerForPushNotifications();
+
+      if (token) {
+        await db
+          .collection("users")
+          .doc(profile.id)
+          .set({ expoPushToken: token }, { merge: true });
+      }
+    })();
+  }, [profile]);
+
+  useEffect(() => {
     if (!user?.phoneNumber) return;
     const notificationSubscriber = NotificationService.onNotificationsUpdate(
       user?.phoneNumber || "",
       (notifications) => {
         setNotifications(notifications);
-      }
+      },
     );
 
     return () => {

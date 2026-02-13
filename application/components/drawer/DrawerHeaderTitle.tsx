@@ -38,7 +38,7 @@ export const DrawerHeaderTitle = ({
             backgroundColor={themeColors.accent}
           />
         </YStack>
-        {unreadNotifications?.length && (
+        {unreadNotifications?.length ? (
           <Link href={"/authorized/home/alerts"}>
             <View
               style={{
@@ -60,6 +60,8 @@ export const DrawerHeaderTitle = ({
               </Text>
             </View>
           </Link>
+        ) : (
+          <></>
         )}
       </XStack>
     </View>

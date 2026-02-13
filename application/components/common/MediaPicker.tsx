@@ -1,6 +1,5 @@
 import { themeColors } from "@/themes/themes";
 import { MaterialIcons } from "@expo/vector-icons";
-import {} from "@react-native-firebase/firestore";
 import { Text } from "@tamagui/core";
 import * as ExpoImagePicker from "expo-image-picker";
 import { Button, Image, XStack, YStack } from "tamagui";
@@ -20,7 +19,7 @@ const compressImage = async (uri: string, ratio: number) => {
       ratio * 1000,
       1000,
       "JPEG",
-      70
+      70,
     );
     return resizedImage.uri; // path to compressed image
   } catch (err) {
@@ -33,7 +32,7 @@ const compressVideo = async (
   uri: string,
   maxSize: number,
   started: (cancellationId: string) => void,
-  setProgress: (progress: number) => void
+  setProgress: (progress: number) => void,
 ) => {
   try {
     const compressedVideo = await VideoCompresser.Video.compress(
@@ -48,7 +47,7 @@ const compressVideo = async (
       },
       (progress) => {
         setProgress(progress);
-      }
+      },
     );
     return compressedVideo; // path to compressed video
   } catch (err) {
@@ -190,7 +189,7 @@ export const VideoPicker = ({
             (progress) => {
               setCompressionProgress(progress);
               console.log(`Compression progress: ${progress}%`);
-            }
+            },
           );
           setCompressing(null);
           if (!compressedVideo) {
@@ -202,7 +201,7 @@ export const VideoPicker = ({
           const thumbnail = await getThumbnailAsync(asset.uri);
           const compressedThumbnail = await compressImage(
             thumbnail.uri,
-            asset.width / asset.height
+            asset.width / asset.height,
           );
           onClose({
             blob,

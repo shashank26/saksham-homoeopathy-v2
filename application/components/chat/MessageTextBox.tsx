@@ -14,7 +14,7 @@ export const MessageTextBox = ({
       <Input
         fontFamily={"$js5"}
         style={{ flex: 1 }}
-        fontSize={"$4"}
+        fontSize={14}
         placeholder="Type a message..."
         value={text}
         onChangeText={(text) => {

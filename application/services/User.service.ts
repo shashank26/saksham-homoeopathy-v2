@@ -24,9 +24,7 @@ export class UserService {
             id: change.doc.id,
             role: change.doc.data().role || "user",
           };
-          if (userProfile.role === "user") {
-            this.userHash.set(change.doc.id, userProfile);
-          }
+          this.userHash.set(change.doc.id, userProfile);
         } else if (change.type === "removed") {
           this.userHash.delete(change.doc.id);
         }
