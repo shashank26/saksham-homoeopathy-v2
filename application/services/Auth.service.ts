@@ -1,4 +1,4 @@
-import auth, { FirebaseAuthTypes } from "@react-native-firebase/auth";
+import { FirebaseAuthTypes } from "@react-native-firebase/auth";
 import { db, Role, userAuth } from "./Firebase.service";
 
 export type CountryCode = `+${number}`;
@@ -59,7 +59,7 @@ export class AuthService {
       .collection("users")
       .doc(this.user.uid)
       .onSnapshot((doc) => {
-        if (doc.exists) {
+        if (doc.exists()) {
           const data = doc.data();
           cb({
             displayName: data?.displayName || "",
@@ -77,7 +77,7 @@ export class AuthService {
     }
     const userDocRef = db.collection("users").doc(this.user.uid);
     const doc = await userDocRef.get();
-    if (doc.exists) {
+    if (doc.exists()) {
       const data = doc.data();
       return {
         displayName: data?.displayName || "",

@@ -1,5 +1,7 @@
+import { Role } from "@/services/Firebase.service";
 import { CreatePostType, PostService } from "@/services/Posts.service";
 import { StorageService } from "@/services/Storage.service";
+import { themeColors } from "@/themes/themes";
 import * as Crypto from "expo-crypto";
 import { Dispatch, useState } from "react";
 import { StyleSheet, View } from "react-native";
@@ -9,13 +11,11 @@ import { OverlayActivityIndicator } from "../common/Alert";
 import { DrawerSheet } from "../common/DrawerSheet";
 import { FloatingRoundButton } from "../common/FloatingRoundButton";
 import {
-  ImagePicker,
   ImagePreview,
+  MediaPicker,
   MediaPickerResult,
 } from "../common/MediaPicker";
 import { LoaderButton } from "../controls/LoaderButton";
-import { Role } from "@/services/Firebase.service";
-import { themeColors } from "@/themes/themes";
 
 const CreatePostButton = ({
   setOpen,
@@ -75,6 +75,7 @@ const CreatePostForm = ({
             color={themeColors.accent}
             fontFamily={"$js5"}
             fontSize={"$1"}
+            marginTop={2}
           >
             {formData.title.length}/50
           </Text>
@@ -86,7 +87,7 @@ const CreatePostForm = ({
           <TextArea
             fontFamily={"$js5"}
             fontSize={"$4"}
-            maxLength={250}
+            maxLength={500}
             multiline={true}
             value={formData.body}
             onChangeText={(text) => {
@@ -103,27 +104,32 @@ const CreatePostForm = ({
             color={themeColors.accent}
             fontFamily={"$js5"}
             fontSize={"$1"}
+            marginTop={2}
           >
-            {formData.body.length}/250
+            {formData.body.length}/500
           </Text>
         </YStack>
         <XStack
           gap={5}
           style={{ alignItems: "center", justifyContent: "center" }}
         >
-          <ImagePicker
-            onClose={(imageData) => {
-              setSelectedMedia([imageData]);
+          <MediaPicker
+            onClose={(media) => {
+              setSelectedMedia((prev) => {
+                return [...prev, media];
+              });
             }}
           />
           {selectedMedia.length > 0 && (
             <ImagePreview
               onRemove={(uri) => {
                 setSelectedMedia((prev) => {
-                  return prev.filter((media) => media.uri !== uri);
+                  return prev.filter(
+                    (media) => ![media.uri, media.thumbnail].includes(uri)
+                  );
                 });
               }}
-              uris={selectedMedia.map((media) => media.uri)}
+              uris={selectedMedia.map((media) => media.thumbnail || media.uri)}
             />
           )}
         </XStack>
@@ -144,23 +150,33 @@ const CreatePostForm = ({
           text="Post"
           isLoading={loading}
           onPress={async () => {
-            if (!valid() || !formData) return;
+            if (!valid()) return;
             setLoading(true);
             try {
               const media = selectedMedia.length > 0 ? selectedMedia[0] : null;
-              let savedUri;
+              let savedUri, thumbnailUri;
               if (media) {
                 savedUri = await StorageService.setItem(
                   Crypto.randomUUID(),
                   media.blob
                 );
+                if (media?.thumbnail) {
+                  const thumbnailBlob = await fetch(media.thumbnail).then(
+                    (res) => res.blob()
+                  );
+                  thumbnailUri = await StorageService.setItem(
+                    Crypto.randomUUID(),
+                    thumbnailBlob
+                  );
+                }
               }
               const res = await PostService.create({
                 body: formData.body,
                 media: savedUri
                   ? {
-                      type: "image",
+                      type: media?.thumbnail ? "video" : "image",
                       url: savedUri,
+                      thumbnail: thumbnailUri ?? null,
                     }
                   : undefined,
                 title: formData.title,

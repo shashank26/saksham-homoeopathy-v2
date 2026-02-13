@@ -1,7 +1,5 @@
-import {
-    BookingService,
-    BookingType
-} from "@/services/Booking.service";
+import { BookingService, BookingType } from "@/services/Booking.service";
+import { Role } from "@/services/Firebase.service";
 import { MomentService } from "@/services/Moment.service";
 import { themeColors } from "@/themes/themes";
 import { toast } from "burnt";
@@ -9,27 +7,74 @@ import { FC, useEffect, useRef, useState } from "react";
 import { FlatList, View } from "react-native";
 import { Swipeable } from "react-native-gesture-handler";
 import { Text, XStack, YStack } from "tamagui";
+import { useAuth } from "../auth/hooks/useAuth";
 import { DateTimePicker } from "../common/DateTimePicker";
 import { renderRightActions } from "../common/DeleteRightAction";
+import { SlotBlocker } from "./helper/SlotBlocker";
+import { SlotUnblocker } from "./helper/SlotUnblocker";
 
 const BookingCard = ({ item }: { item: BookingType }) => {
   const ref = useRef<any>(null);
+  const { role } = useAuth();
+
+  if (item.cancelled) {
+    return (
+      <XStack
+        style={{
+          padding: 10,
+          margin: 5,
+          borderRadius: 5,
+          backgroundColor: themeColors.onyx,
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <Text
+          fontFamily={"$js4"}
+          color={themeColors.plat}
+          fontSize={20}
+          style={{ textDecorationLine: "line-through" }}
+        >
+          {item.date.toLocaleDateString()} {item.slot}
+        </Text>
+        <Text fontFamily={"$js4"} color={themeColors.plat} fontSize={16}>
+          Cancelled
+        </Text>
+      </XStack>
+    );
+  }
+
   return (
     <Swipeable
       ref={ref}
       renderRightActions={() =>
         renderRightActions(async () => {
-          const res = await BookingService.deleteBooking(item.id as string);
-          if (res) {
-            toast({
-              title: "Booking Deleted",
-              preset: "done",
-            });
+          if (role === Role.ADMIN || role === Role.DOCTOR) {
+            const res = await BookingService.cancelBooking(item);
+            if (res) {
+              toast({
+                title: "Booking Cancelled",
+                preset: "done",
+              });
+            } else {
+              toast({
+                title: "Failed to cancel booking",
+                preset: "error",
+              });
+            }
           } else {
-            toast({
-              title: "Failed to delete booking",
-              preset: "error",
-            });
+            const res = await BookingService.deleteBooking(item.id as string);
+            if (res) {
+              toast({
+                title: "Booking Deleted",
+                preset: "done",
+              });
+            } else {
+              toast({
+                title: "Failed to delete booking",
+                preset: "error",
+              });
+            }
           }
           console.log(
             `Delete booking for ${item.date.toLocaleDateString()} at ${
@@ -49,13 +94,17 @@ const BookingCard = ({ item }: { item: BookingType }) => {
         }}
       >
         <YStack gap={5} justifyContent="space-between">
-          <XStack gap={5} alignItems="center">
-            <Text fontFamily={"$js5"} color={themeColors.plat} fontSize={24}>
+          <XStack gap={5} justifyContent="space-between" width={"100%"}>
+            <Text fontFamily={"$js4"} color={themeColors.plat} fontSize={20}>
               {item.date.toLocaleDateString()} {item.slot}
             </Text>
+            <Text fontFamily={"$js4"} color={themeColors.plat} fontSize={16}>
+              {item.phoneNumber}
+            </Text>
           </XStack>
+
           <Text fontFamily={"$js4"} color={themeColors.plat} fontSize={16}>
-            {item.phoneNumber}
+            {item.person.name}, {item.person.age}, {item.person.sex}
           </Text>
         </YStack>
       </XStack>
@@ -66,12 +115,20 @@ const BookingCard = ({ item }: { item: BookingType }) => {
 export const BookingList: FC<{
   bookings: BookingType[];
 }> = ({ bookings }) => {
+  if (bookings.length === 0) {
+    return (
+      <YStack alignItems="center" marginTop={50}>
+        <Text fontFamily={"$js4"} fontSize={"$4"} color={themeColors.onyx}>
+          No bookings for this date.
+        </Text>
+      </YStack>
+    );
+  }
   return (
     <FlatList
-      data={bookings
-        .sort((a, b) => {
-          return a.date.getTime() - b.date.getTime();
-        })}
+      data={bookings.sort((a, b) => {
+        return a.date.getTime() - b.date.getTime();
+      })}
       keyExtractor={(item) =>
         item.date.getTime() + item.slot + item.phoneNumber
       }
@@ -82,7 +139,6 @@ export const BookingList: FC<{
 
 export const AdminBookingList = () => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-  const [searchToken, setSearchToken] = useState<string>("");
   const [bookings, setBookings] = useState<any[]>([]);
   useEffect(() => {
     const unsub = BookingService.onBookingUpdate((data) => {
@@ -107,6 +163,10 @@ export const AdminBookingList = () => {
           }}
           value={selectedDate}
         />
+        <XStack justifyContent="space-between" alignItems="center">
+          <SlotBlocker selectedDate={selectedDate} />
+          <SlotUnblocker selectedDate={selectedDate} />
+        </XStack>
       </YStack>
       <BookingList
         bookings={bookings.filter((booking) => {

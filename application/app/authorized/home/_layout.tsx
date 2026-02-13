@@ -103,8 +103,9 @@ export default function RootLayout() {
         name="chat"
         options={{
           title: "Chat",
-          tabBarIconName: "chat",
+          tabBarIconName: "chat-bubble-outline",
           headerShown: false,
+
         }}
       />
       <Tabs.Screen
@@ -116,11 +117,12 @@ export default function RootLayout() {
         }}
       />
       <Tabs.Screen
-        name="profile"
+        name="alerts"
         options={{
-          title: "Profile",
-          tabBarIconName: "account-circle",
+          title: "Alerts",
+          tabBarIconName: "notifications",
           headerShown: false,
+
         }}
       />
     </Tabs>
@@ -135,7 +137,7 @@ const styles = StyleSheet.create({
     height: 80,
     justifyContent: "space-around",
     alignItems: "flex-start",
-    paddingTop: 5
+    paddingTop: 5,
   },
   tabItem: {
     flex: 1,
@@ -147,6 +149,6 @@ const styles = StyleSheet.create({
     height: 45,
     borderRadius: 50,
     alignItems: "center",
-    justifyContent: "center"
+    justifyContent: "center",
   },
 });

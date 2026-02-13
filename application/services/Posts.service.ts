@@ -10,6 +10,7 @@ export type CreatePostType = {
   media?: {
     type: "image" | "video";
     url: string;
+    thumbnail?: string; // Optional thumbnail for videos
   };
 };
 
@@ -23,8 +24,8 @@ export type Post = {
 const postConverter = {
   toFirestore(post: CreatePostType): FirebaseFirestoreTypes.DocumentData {
     return {
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
       title: post.title,
       body: post.body,
       media: post.media || null,

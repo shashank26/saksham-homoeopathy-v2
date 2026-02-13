@@ -10,10 +10,11 @@ import { Drawer } from "expo-router/drawer";
 import React from "react";
 import { Platform, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { YStack } from "tamagui";
+import { XStack, YStack } from "tamagui";
 import { useAuth } from "../auth/hooks/useAuth";
 import { ShimmerImage } from "../common/ShimmerImage";
 import { DrawerHeaderTitle } from "./DrawerHeaderTitle";
+import SocialMediaLinks from "../SocialMediaLinks";
 
 const drawerOptions = [
   {
@@ -65,24 +66,24 @@ const drawerOptions = [
     ),
   },
   {
-    title: "Testimonials",
-    name: "testimonials",
-    label: "Testimnonials",
-    icon: (focused: boolean) => (
-      <MaterialIcons
-        name="format-quote"
-        size={24}
-        color={focused ? themeColors.plat : themeColors.onyx}
-      />
-    ),
-  },
-  {
     title: "Awards & Accolades",
     name: "awards",
     label: "Awards & Accolades",
     icon: (focused: boolean) => (
       <MaterialIcons
         name="stars"
+        size={24}
+        color={focused ? themeColors.plat : themeColors.onyx}
+      />
+    ),
+  },
+  {
+    title: "Profile",
+    name: "profile",
+    label: "Profile",
+    icon: (focused: boolean) => (
+      <MaterialIcons
+        name="person"
         size={24}
         color={focused ? themeColors.plat : themeColors.onyx}
       />
@@ -132,6 +133,11 @@ const CustomDrawerContent = (props: any) => {
         </YStack>
       </View>
       <DrawerItemList {...props} />
+      <View>
+        <XStack gap={10} justifyContent="center" marginTop={40}>
+          <SocialMediaLinks />
+        </XStack>
+      </View>
     </DrawerContentScrollView>
   );
 };
@@ -144,7 +150,7 @@ export const AppDrawer = () => {
         screenOptions={({ route }) => ({
           headerTitle: () => <DrawerHeaderTitle route={route} />,
           headerStyle: {
-            height: Platform.OS === "ios" ? 120 : 80,
+            height: 120,
           },
           headerTitleAlign: "left",
           headerLeft: () => (

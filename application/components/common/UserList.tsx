@@ -1,4 +1,5 @@
 import { UserProfile } from "@/services/Auth.service";
+import { Role } from "@/services/Firebase.service";
 import { UserService } from "@/services/User.service";
 import { themeColors } from "@/themes/themes";
 import { EvilIcons } from "@expo/vector-icons";
@@ -6,7 +7,6 @@ import React, { useEffect, useState } from "react";
 import { FlatList, TouchableOpacity, View } from "react-native";
 import { Input, Text, XStack, YStack } from "tamagui";
 import { ShimmerImage } from "./ShimmerImage";
-import { useRouter } from "expo-router";
 
 export const UserInfo = React.memo(
   ({ user, onPress }: { user: UserProfile; onPress?: () => void }) => {
@@ -16,9 +16,9 @@ export const UserInfo = React.memo(
         style={{
           backgroundColor: themeColors.plat,
           width: "100%",
-          padding: 15,
+          padding: 5,
           borderRadius: 10,
-          borderBottomColor: '#ccc',
+          borderBottomColor: "#ccc",
           borderBottomWidth: 1,
         }}
       >
@@ -27,30 +27,30 @@ export const UserInfo = React.memo(
             key={user.photoUrl}
             url={user.photoUrl}
             size={{
-              height: 64,
-              width: 64,
+              height: 48,
+              width: 48,
             }}
-            borderRadius={32}
+            borderRadius={24}
           />
         ) : (
           <View
             style={{
-              height: 64,
-              width: 64,
-              borderRadius: 32,
+              height: 48,
+              width: 48,
+              borderRadius: 24,
               backgroundColor: "#ccc",
               justifyContent: "center",
               alignItems: "center",
             }}
           >
-            <EvilIcons name="user" color={themeColors.accent} size={64} />
+            <EvilIcons name="user" color={themeColors.accent} size={48} />
           </View>
         )}
         <YStack justifyContent="center" gap={2}>
-          <Text fontFamily={"$js6"} fontSize={"$6"} color={themeColors.onyx}>
+          <Text fontFamily={"$js5"} fontSize={"$4"} color={themeColors.onyx}>
             {user.displayName}
           </Text>
-          <Text fontFamily={"$js4"} fontSize={"$3"} color={"#aaa"}>
+          <Text fontFamily={"$js4"} fontSize={"$2"} color={"#999"}>
             {user.phoneNumber}
           </Text>
         </YStack>
@@ -68,16 +68,25 @@ export const UserInfo = React.memo(
       prev.user.photoUrl === next.user.photoUrl &&
       prev.user.displayName === next.user.displayName
     );
-  }
+  },
 );
 
-export const UserList = () => {
+export const UserList = ({
+  filter = (user) => user.role === Role.USER,
+  sort = (a, b) => a.displayName.localeCompare(b.displayName),
+  onPress,
+  Renderer,
+}: {
+  filter?: (user: UserProfile) => boolean;
+  sort?: (a: UserProfile, b: UserProfile) => number;
+  onPress: (user: UserProfile) => void;
+  Renderer?: React.FC<{ user: UserProfile; onPress?: () => void }>;
+}) => {
   const [userList, setUserList] = useState<UserProfile[]>([]);
   const [searchToken, setSearchToken] = useState<string>("");
-  const router = useRouter();
   useEffect(() => {
     const unsub = UserService.onUserUpdate((users) => {
-      setUserList(users);
+      setUserList(users.filter(filter));
     });
     return unsub;
   }, []);
@@ -102,19 +111,16 @@ export const UserList = () => {
         data={userList.filter(
           (user) =>
             user.displayName.startsWith(searchToken) ||
-            user.phoneNumber.slice(3).startsWith(searchToken)
-        )}
+            user.phoneNumber.slice(3).startsWith(searchToken),
+        ).sort(sort)}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <UserInfo
-            user={item}
-            onPress={() => {
-              router.push(`./${item.id}`, {
-                relativeToDirectory: true,
-              });
-            }}
-          />
-        )}
+        renderItem={({ item }) =>
+          Renderer ? (
+            <Renderer user={item} onPress={() => onPress(item)} />
+          ) : (
+            <UserInfo user={item} onPress={() => onPress(item)} />
+          )
+        }
       />
     </View>
   );
