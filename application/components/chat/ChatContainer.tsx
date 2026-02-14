@@ -11,7 +11,7 @@ import { useHeaderHeight } from "@react-navigation/elements";
 export const ChatContainer = () => {
   const { chatId, receiverId } = useContext(ChatContext)!;
   const headerHeight = useHeaderHeight();
-  const offset = Platform.OS === "ios" ? headerHeight : headerHeight + 20;
+  const offset = headerHeight;
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}

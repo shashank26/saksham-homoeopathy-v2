@@ -53,17 +53,6 @@ export default function RootLayout() {
         />
       </Auth>
     );
-    if (Platform.OS === "android") {
-      return (
-        <SafeAreaView
-          style={{
-            flex: 1,
-          }}
-        >
-          {content}
-        </SafeAreaView>
-      );
-    }
     return content;
   };
 

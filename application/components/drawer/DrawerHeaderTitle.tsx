@@ -25,7 +25,7 @@ export const DrawerHeaderTitle = ({
         <YStack>
           <Text
             fontFamily="$js7"
-            fontSize="$10"
+            fontSize="$6"
             color={themeColors.onyx}
             textTransform="capitalize"
           >

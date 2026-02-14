@@ -70,24 +70,6 @@ const CustomTabBar: React.FC<BottomTabBarProps> = ({
   descriptors,
   navigation,
 }) => {
-  const [keyboardVisible, setKeyboardVisible] = useState(false);
-
-  useEffect(() => {
-    if (Platform.OS === "ios") return;
-    const showSub = Keyboard.addListener("keyboardDidShow", () => {
-      setKeyboardVisible(true);
-    });
-    const hideSub = Keyboard.addListener("keyboardDidHide", () => {
-      setKeyboardVisible(false);
-    });
-
-    return () => {
-      showSub.remove();
-      hideSub.remove();
-    };
-  }, []);
-
-  if (keyboardVisible) return null;
   return (
     <View style={styles.tabBar}>
       {state.routes.map((route, index) => {
