@@ -4,7 +4,13 @@ import { useRouter } from "expo-router";
 import { TouchableOpacity } from "react-native";
 import { XStack } from "tamagui";
 
-export const BackHeader = ({ title }: { title: JSX.Element }) => {
+export const BackHeader = ({
+  title,
+  onPress,
+}: {
+  title: JSX.Element;
+  onPress?: () => void;
+}) => {
   const router = useRouter();
 
   return (
@@ -12,8 +18,8 @@ export const BackHeader = ({ title }: { title: JSX.Element }) => {
       style={{
         backgroundColor: themeColors.plat,
         margin: 5,
-        alignItems: 'center',
-        borderRadius: 10
+        alignItems: "center",
+        borderRadius: 10,
       }}
     >
       <TouchableOpacity
@@ -22,6 +28,10 @@ export const BackHeader = ({ title }: { title: JSX.Element }) => {
           padding: 5,
         }}
         onPress={() => {
+          if (onPress) {
+            onPress();
+            return;
+          }
           router.back();
         }}
       >

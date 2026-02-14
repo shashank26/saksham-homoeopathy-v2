@@ -5,10 +5,12 @@ import { ChatMetadataContext } from "./ChatContext";
 import { useContext } from "react";
 import { MomentService } from "@/services/Moment.service";
 import { ChatUserInfo } from "./ChatUserInfo";
+import { useAuth } from "../auth/hooks/useAuth";
 
 export const PatientChatScreen = () => {
   const router = useRouter();
   const chatMetadata = useContext(ChatMetadataContext);
+  const { profile } = useAuth();
   return (
     <UserList
       filter={(user) => user.role === Role.DOCTOR}
@@ -28,9 +30,9 @@ export const PatientChatScreen = () => {
       Renderer={ChatUserInfo}
       onPress={(user) => {
         router.push({
-          pathname: "/authorized/home/chat/[user]",
+          pathname: "/authorized/home/chat/[id]",
           params: {
-            user: user.id,
+            id: `${profile?.id}-${user.id}`,
           },
         });
       }}

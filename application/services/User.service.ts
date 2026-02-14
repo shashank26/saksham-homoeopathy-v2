@@ -33,7 +33,20 @@ export class UserService {
     });
   }
 
-  static getUser(id: string) {
+  static async getUser(id: string) {
+    if (!this.userHash.has(id)) {
+      const doc = await this.USER_COLLECTION.doc(id).get();
+      if (doc.exists()) {
+        const userProfile: UserProfile = {
+          displayName: doc.data()?.displayName,
+          phoneNumber: doc.data()?.phoneNumber,
+          photoUrl: doc.data()?.photoUrl,
+          id: doc.id,
+          role: doc.data()?.role || "user",
+        };
+        this.userHash.set(doc.id, userProfile);
+      }
+    }
     return this.userHash.get(id);
   }
 

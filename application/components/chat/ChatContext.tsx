@@ -20,20 +20,15 @@ export const ChatMetadataContext = createContext<Map<string, ChatMetadata>>(
 );
 
 export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
-  const { user: id } = useLocalSearchParams();
-  const { role, profile: authProfile } = useAuth();
+  const { id: chatId } = useLocalSearchParams();
+  const { profile: authProfile } = useAuth();
   const [chatInitiated, setChatInitiated] = useState<-1 | 0 | 1>(-1);
-
-  const chatId =
-    id && authProfile?.id
-      ? role === Role.DOCTOR
-        ? `${id}-${authProfile?.id}`
-        : `${authProfile?.id}-${id}`
-      : null;
+  const [userA, userB] = (chatId as string).split("-");
+  console.log("got this chat Id:", chatId);
 
   useEffect(() => {
     if (!authProfile || !chatId) return;
-    ChatService.createChat(chatId, authProfile.id, id as string)
+    ChatService.createChat(chatId as string, userA, userB)
       .then(() => {
         setChatInitiated(1);
       })
@@ -41,18 +36,18 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
         console.error("Error initiating chat", err);
         setChatInitiated(0);
       });
-  }, [authProfile, chatId]);
+  }, [chatId]);
 
-  if (chatInitiated === -1 || !authProfile || !chatId || !id) {
+  if (chatInitiated === -1 || !chatId) {
     return null;
   }
 
   return (
     <ChatContext.Provider
       value={{
-        chatId,
+        chatId: chatId as string,
         userId: authProfile?.id as string,
-        receiverId: id as string,
+        receiverId: userA === authProfile?.id ? userB : userA,
         chatInitiated,
         profile: authProfile as UserProfile,
       }}
