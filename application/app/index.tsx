@@ -18,8 +18,8 @@ export default function Index() {
         .chatId as string;
 
       router.navigate({
-        pathname: "/authorized/home/chat/[user]",
-        params: { user: chatId },
+        pathname: "/authorized/home/chat/[id]",
+        params: { id: chatId },
       });
     });
   }, []);

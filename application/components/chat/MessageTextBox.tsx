@@ -10,7 +10,10 @@ export const MessageTextBox = ({
 }) => {
   const [text, setText] = useState("");
   return (
-    <XStack justifyContent="center" gap={5} alignContent="center">
+    <XStack justifyContent="center" gap={5} alignContent="center" style={{
+      position: 'fixed',
+      bottom: 0
+    }}>
       <Input
         fontFamily={"$js5"}
         style={{ flex: 1 }}

@@ -1,7 +1,7 @@
 import { ChatMessage, ChatService } from "@/services/Chat.service";
 import { MomentService } from "@/services/Moment.service";
 import { useEffect, useRef, useState } from "react";
-import { FlatList } from "react-native";
+import { Dimensions, FlatList } from "react-native";
 import { View, YStack } from "tamagui";
 import { Text } from "react-native";
 import { useAuth } from "../auth/hooks/useAuth";
@@ -17,6 +17,7 @@ export const MessageList = ({ chatId }: { chatId: string }) => {
   const hideTimeout = useRef<NodeJS.Timeout | null>(null);
   const lastDocRef = useRef<any>(null);
   const loadingOlder = useRef(false);
+  const { height } = Dimensions.get("window");
 
   useEffect(() => {
     const unsub = ChatService.listenToLatestMessages(
@@ -68,15 +69,17 @@ export const MessageList = ({ chatId }: { chatId: string }) => {
   if (messages.length === 0) {
     return (
       <YStack style={{ flex: 1 }} justifyContent="center" alignItems="center">
-        <Text style={{ color: "#999", fontSize: 16 }}>
-          No messages yet
-        </Text>
+        <Text style={{ color: "#999", fontSize: 16 }}>No messages yet</Text>
       </YStack>
     );
   }
 
   return (
-    <View style={{ flex: 1 }}>
+    <View
+      style={{
+        flex: 1,
+      }}
+    >
       <DateToast date={visibleDate} visible={showDate} />
 
       <FlatList

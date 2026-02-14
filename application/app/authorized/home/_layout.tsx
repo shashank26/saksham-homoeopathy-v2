@@ -2,8 +2,14 @@ import { themeColors } from "@/themes/themes";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import type { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 import { Tabs } from "expo-router";
-import React, { useEffect } from "react";
-import { StyleSheet, TouchableOpacity, View } from "react-native";
+import React, { useEffect, useState } from "react";
+import {
+  Keyboard,
+  Platform,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -64,6 +70,24 @@ const CustomTabBar: React.FC<BottomTabBarProps> = ({
   descriptors,
   navigation,
 }) => {
+  const [keyboardVisible, setKeyboardVisible] = useState(false);
+
+  useEffect(() => {
+    if (Platform.OS === "ios") return;
+    const showSub = Keyboard.addListener("keyboardDidShow", () => {
+      setKeyboardVisible(true);
+    });
+    const hideSub = Keyboard.addListener("keyboardDidHide", () => {
+      setKeyboardVisible(false);
+    });
+
+    return () => {
+      showSub.remove();
+      hideSub.remove();
+    };
+  }, []);
+
+  if (keyboardVisible) return null;
   return (
     <View style={styles.tabBar}>
       {state.routes.map((route, index) => {
@@ -105,7 +129,6 @@ export default function RootLayout() {
           title: "Chat",
           tabBarIconName: "chat-bubble-outline",
           headerShown: false,
-
         }}
       />
       <Tabs.Screen
@@ -122,7 +145,6 @@ export default function RootLayout() {
           title: "Alerts",
           tabBarIconName: "notifications",
           headerShown: false,
-
         }}
       />
     </Tabs>

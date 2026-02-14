@@ -9,7 +9,9 @@ import { ToastProvider } from "@tamagui/toast";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import { useEffect, useState } from "react";
+import { Platform, StatusBar } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { PortalProvider } from "tamagui";
 
 const config = createTamagui({
@@ -42,7 +44,7 @@ export default function RootLayout() {
     if (!fontsLoaded) {
       return <LoaderScreen />;
     }
-    return (
+    const content = (
       <Auth>
         <Stack
           screenOptions={{
@@ -51,6 +53,18 @@ export default function RootLayout() {
         />
       </Auth>
     );
+    if (Platform.OS === "android") {
+      return (
+        <SafeAreaView
+          style={{
+            flex: 1,
+          }}
+        >
+          {content}
+        </SafeAreaView>
+      );
+    }
+    return content;
   };
 
   const [appCheckInitialized, setAppCheckInitialized] = useState(false);
@@ -71,6 +85,13 @@ export default function RootLayout() {
       <AuthProvider>
         <TamaguiProvider config={config} defaultTheme="light">
           <PortalProvider>
+            {Platform.OS === "android" && (
+              <StatusBar
+                barStyle="dark-content"
+                translucent={false}
+                backgroundColor="#fff"
+              />
+            )}
             <ToastProvider>{getUI()}</ToastProvider>
           </PortalProvider>
         </TamaguiProvider>

@@ -150,7 +150,7 @@ export const AppDrawer = () => {
         screenOptions={({ route }) => ({
           headerTitle: () => <DrawerHeaderTitle route={route} />,
           headerStyle: {
-            height: 120,
+            height: Platform.OS === 'ios' ? 110 : undefined,
           },
           headerTitleAlign: "left",
           headerLeft: () => (
