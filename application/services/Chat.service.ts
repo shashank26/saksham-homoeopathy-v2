@@ -4,7 +4,7 @@ import {
   serverTimestamp,
 } from "@react-native-firebase/firestore";
 import { AuthService } from "./Auth.service";
-import { db } from "./Firebase.service";
+import { db, Role } from "./Firebase.service";
 
 export type ChatMessage = {
   message: string;
@@ -90,17 +90,19 @@ export class ChatService {
     return chatRef.onSnapshot(
       (snapshot) => {
         if (!snapshot || snapshot.empty) return new Map<string, ChatMetadata>();
-        const data = snapshot.docs.map((doc) => doc.data());
+        const data = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          data: doc.data(),
+        }));
         callback(
           new Map(
             data.map((d) => [
-              d.participants.find((p: string) => p !== currentUserId) ||
-                "Unknown",
+              d.id as string,
               {
-                lastMessage: d.lastMessage,
-                lastMessageAt: d?.lastMessageAt?.toDate(),
-                participants: d.participants,
-                unreadCount: d.unreadCount,
+                lastMessage: d.data.lastMessage,
+                lastMessageAt: d.data?.lastMessageAt?.toDate(),
+                participants: d.data.participants,
+                unreadCount: d.data.unreadCount,
               },
             ]),
           ),
@@ -112,17 +114,20 @@ export class ChatService {
     );
   }
 
-  static async createChat(chatId: string, userA: string, userB: string) {
-    const participants = [userA, userB];
-    const currentUser = AuthService.getUser().uid;
+  static async createChat(chatId: string, participants: string[]) {
+    const currentUser = await AuthService.getUserProfile();
+    const uid =
+      currentUser?.role === Role.DOCTOR ? Role.DOCTOR : currentUser?.id;
+    const participantObject: { [key: string]: number } = {};
+    participants.forEach((p) => {
+      participantObject[p] = 0;
+    });
 
     const chatDoc = await this.collection.doc(chatId).get();
     if (chatDoc.exists()) {
       return this.collection.doc(chatId).update({
         participants,
-        unreadCount: {
-          [currentUser]: 0,
-        },
+        [`unreadCount.${uid}`]: 0,
       });
     }
 
@@ -132,10 +137,7 @@ export class ChatService {
         createdAt: serverTimestamp(),
         lastMessage: "",
         lastMessageAt: serverTimestamp(),
-        unreadCount: {
-          [userA]: 0,
-          [userB]: 0,
-        },
+        unreadCount: participantObject,
       },
       {
         merge: true,
@@ -145,7 +147,7 @@ export class ChatService {
 
   static async send(message: string, chatId: string, receiverId: string) {
     const chatRef = this.collection.doc(chatId);
-    console.log('Sending message to chatId:', chatId)
+    console.log("Sending message to chatId:", chatId);
     const messageData: ChatMessage = {
       message,
       sender: AuthService.getUser().uid,

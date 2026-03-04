@@ -2,8 +2,14 @@ import { themeColors } from "@/themes/themes";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import type { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 import { Tabs } from "expo-router";
-import React, { useEffect } from "react";
-import { StyleSheet, TouchableOpacity, View } from "react-native";
+import React, { useEffect, useState } from "react";
+import {
+  Keyboard,
+  Platform,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -105,7 +111,6 @@ export default function RootLayout() {
           title: "Chat",
           tabBarIconName: "chat-bubble-outline",
           headerShown: false,
-
         }}
       />
       <Tabs.Screen
@@ -122,7 +127,6 @@ export default function RootLayout() {
           title: "Alerts",
           tabBarIconName: "notifications",
           headerShown: false,
-
         }}
       />
     </Tabs>

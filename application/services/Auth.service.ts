@@ -66,6 +66,7 @@ export class AuthService {
             phoneNumber: data?.phoneNumber || "",
             photoUrl: data?.photoUrl || "",
             id: doc.id,
+            role: data?.role || Role.USER,
           });
         }
       });
@@ -84,6 +85,7 @@ export class AuthService {
         phoneNumber: data?.phoneNumber || "",
         photoUrl: data?.photoUrl || "",
         id: doc.id,
+        role: data?.role || Role.USER,
       };
     }
     return undefined;
@@ -99,7 +101,7 @@ export class AuthService {
         ...profile,
         phoneNumber: this.user.phoneNumber,
       },
-      { merge: true }
+      { merge: true },
     );
     return {
       displayName: profile.displayName,

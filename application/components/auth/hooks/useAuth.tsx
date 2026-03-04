@@ -46,19 +46,6 @@ export const AuthProvider = ({ children }: React.PropsWithChildren) => {
     if (user) {
       AuthService.setUser(user);
       setUser(user);
-      let userProfile = await AuthService.getUserProfile();
-      if (userProfile) {
-        setProfile(userProfile);
-      } else {
-        userProfile = (await AuthService.putUserProfile({
-          displayName: user.displayName || user.phoneNumber || "",
-          phoneNumber: user.phoneNumber || "",
-          photoUrl: user.photoURL || "",
-        })) as UserProfile;
-      }
-      let role = await AuthService.getUserRole();
-      setRole(role || Role.USER);
-      setProfile(userProfile);
     } else {
       setUser(null);
       setProfile(null);
@@ -89,6 +76,21 @@ export const AuthProvider = ({ children }: React.PropsWithChildren) => {
         setNotifications(notifications);
       },
     );
+    (async () => {
+      let userProfile = await AuthService.getUserProfile();
+      if (userProfile) {
+        setProfile(userProfile);
+      } else {
+        userProfile = (await AuthService.putUserProfile({
+          displayName: user.displayName || user.phoneNumber || "",
+          phoneNumber: user.phoneNumber || "",
+          photoUrl: user.photoURL || "",
+        })) as UserProfile;
+      }
+      let role = await AuthService.getUserRole();
+      setRole(role || Role.USER);
+      setProfile(userProfile);
+    })();
 
     return () => {
       notificationSubscriber();
