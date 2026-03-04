@@ -42,12 +42,7 @@ const ProfileAvatar: FC<{
           }}
         >
           <Button
-            icon={
-              <Ionicons
-                name="cloud-upload"
-                size={20}
-              />
-            }
+            icon={<Ionicons name="cloud-upload" size={20} />}
             backgroundColor={"transparent"}
           >
             <Text fontFamily={"$js5"} fontSize={"$4"}>
@@ -96,7 +91,7 @@ export const ProfileScreen = () => {
   };
 
   return (
-    <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
+    <KeyboardAvoidingView style={{ flex: 1, width: "100%" }} behavior="padding">
       <ScrollView
         contentContainerStyle={{
           flexGrow: 1,
@@ -107,6 +102,7 @@ export const ProfileScreen = () => {
             flex: 1,
             padding: 20,
             backgroundColor: themeColors.plat,
+            width: "100%",
           }}
           pointerEvents={popup.visible ? "none" : "auto"}
         >
@@ -132,7 +128,7 @@ export const ProfileScreen = () => {
               FC={ProfileAvatar}
               Child={ImagePicker}
               onClose={async (data) => {
-                if (!data || !profile || 'error' in data) return;
+                if (!data || !profile || "error" in data) return;
                 setPopup({
                   visible: true,
                   description: "Updating your profile picture...",
@@ -141,7 +137,7 @@ export const ProfileScreen = () => {
                 try {
                   const storageUrl = await UserService.uploadProfileImage(
                     profile.id,
-                    data.blob as Blob
+                    data.blob as Blob,
                   );
                   updateProfile?.({
                     ...profile,

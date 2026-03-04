@@ -1,11 +1,14 @@
+import { themeColors } from "@/themes/themes";
+import { Text } from "@tamagui/core";
 import { FC, PropsWithChildren } from "react";
+import { YStack } from "tamagui";
+import { LoaderScreen } from "../LoaderScreen";
+import { ProfileScreen } from "../profile/ProfileScreen";
 import { Login } from "./Login";
 import { useAuth } from "./hooks/useAuth";
-import { Text } from "@tamagui/core";
-import { LoaderScreen } from "../LoaderScreen";
 
 export const Auth: FC<PropsWithChildren> = ({ children }) => {
-  const { user, isLoading, error } = useAuth();
+  const { user, isLoading, error, profile } = useAuth();
 
   if (isLoading) {
     return <LoaderScreen />;
@@ -17,6 +20,28 @@ export const Auth: FC<PropsWithChildren> = ({ children }) => {
 
   if (!user) {
     return <Login />;
+  }
+
+  if (user && !profile) {
+    return <LoaderScreen />;
+  }
+
+  if (
+    !profile?.displayName.trim() ||
+    profile.displayName.trim() === profile.phoneNumber
+  ) {
+    return (
+      <YStack
+        flex={1}
+        justifyContent="center"
+        alignContent="center"
+        alignItems="center"
+        paddingTop={100}
+        backgroundColor={themeColors.plat}
+      >
+        <ProfileScreen />
+      </YStack>
+    );
   }
 
   return <>{children}</>;

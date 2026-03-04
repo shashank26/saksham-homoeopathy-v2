@@ -1,15 +1,14 @@
-import { useRouter } from "expo-router";
-import { UserList } from "../common/UserList";
-import { ChatUserInfo } from "./ChatUserInfo";
-import { useContext } from "react";
-import { ChatMetadataContext } from "./ChatContext";
 import { MomentService } from "@/services/Moment.service";
-import { useAuth } from "../auth/hooks/useAuth";
+import { useRouter } from "expo-router";
+import { useContext, useEffect } from "react";
+import { UserList } from "../common/UserList";
+import { ChatMetadataContext } from "./ChatContext";
+import { ChatUserInfo } from "./ChatUserInfo";
 
 export const DoctorChatScreen = () => {
   const router = useRouter();
-  const { profile } = useAuth();
   const chatMetadata = useContext(ChatMetadataContext);
+
   return (
     <UserList
       sort={(a, b) => {
@@ -29,7 +28,7 @@ export const DoctorChatScreen = () => {
       onPress={(user) => {
         router.push({
           pathname: `/authorized/home/chat/[id]`,
-          params: { id: `${user.id}-${profile?.id}` },
+          params: { id: `${user.id}` },
         });
       }}
     />

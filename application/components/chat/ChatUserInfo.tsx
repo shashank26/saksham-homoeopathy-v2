@@ -9,13 +9,17 @@ import { useAuth } from "../auth/hooks/useAuth";
 import { ShimmerImage } from "../common/ShimmerImage";
 import { ChatMetadataContext } from "./ChatContext";
 import { MomentService } from "@/services/Moment.service";
+import { Role } from "@/services/Firebase.service";
 
 export const ChatUserInfo = React.memo(
   ({ user, onPress }: { user: UserProfile; onPress?: () => void }) => {
     const { profile } = useAuth()!;
     const chatMetadataMap = useContext(ChatMetadataContext)!;
     const metaData = chatMetadataMap.get(user.id);
-    const unreadCount = metaData?.unreadCount[profile?.id as string] || 0;
+    const unreadCount =
+      metaData?.unreadCount[
+        profile?.role === Role.DOCTOR ? Role.DOCTOR : (profile?.id as string)
+      ] || 0;
     const lastMessage = metaData?.lastMessage || "";
     const lastMessageAt = lastMessage ? metaData?.lastMessageAt : "";
 

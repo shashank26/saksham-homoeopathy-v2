@@ -4,6 +4,7 @@ import { createContext, useEffect, useState } from "react";
 import { useAuth } from "../auth/hooks/useAuth";
 import { UserProfile } from "@/services/Auth.service";
 import { useLocalSearchParams } from "expo-router";
+import { UserService } from "@/services/User.service";
 
 export type ChatContextType = {
   chatId: string;
@@ -23,12 +24,21 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
   const { id: chatId } = useLocalSearchParams();
   const { profile: authProfile } = useAuth();
   const [chatInitiated, setChatInitiated] = useState<-1 | 0 | 1>(-1);
-  const [userA, userB] = (chatId as string).split("-");
-  console.log("got this chat Id:", chatId);
+  const [participants, setParticipants] = useState<string[]>([]);
 
   useEffect(() => {
-    if (!authProfile || !chatId) return;
-    ChatService.createChat(chatId as string, userA, userB)
+    const patient = chatId as string;
+    UserService.getDoctors().then((doctors) => {
+      const participants = [];
+      participants.push(...doctors.map((doctor) => doctor.id));
+      participants.push(patient);
+      setParticipants(participants);
+    });
+  }, [chatId]);
+
+  useEffect(() => {
+    if (!authProfile || participants.length === 0) return;
+    ChatService.createChat(chatId as string, participants)
       .then(() => {
         setChatInitiated(1);
       })
@@ -36,7 +46,7 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
         console.error("Error initiating chat", err);
         setChatInitiated(0);
       });
-  }, [chatId]);
+  }, [participants, authProfile]);
 
   if (chatInitiated === -1 || !chatId) {
     return null;
@@ -47,7 +57,8 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
       value={{
         chatId: chatId as string,
         userId: authProfile?.id as string,
-        receiverId: userA === authProfile?.id ? userB : userA,
+        receiverId:
+          authProfile?.id === chatId ? Role.DOCTOR : (chatId as string),
         chatInitiated,
         profile: authProfile as UserProfile,
       }}

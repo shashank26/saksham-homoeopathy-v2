@@ -90,7 +90,7 @@ export const MessageList = ({ chatId }: { chatId: string }) => {
         onEndReachedThreshold={0.1}
         onViewableItemsChanged={onViewableItemsChanged}
         viewabilityConfig={{ itemVisiblePercentThreshold: 20 }}
-        renderItem={({ item, index }) => {
+        renderItem={({ item, index }: { item: ChatMessage; index: number }) => {
           const isOwnMessage = item.sender === profile?.id;
           return (
             <YStack
@@ -114,7 +114,7 @@ export const MessageList = ({ chatId }: { chatId: string }) => {
               >
                 {item.message}
               </Text>
-              <Text style={{ fontSize: 10, color: themeColors.light }}>
+              <Text style={{ fontSize: 10, color: "#888" }}>
                 {MomentService.getTimeHHMM(item.sentAt)}
               </Text>
             </YStack>

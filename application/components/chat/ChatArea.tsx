@@ -1,34 +1,39 @@
+import { UserProfile } from "@/services/Auth.service";
 import { UserService } from "@/services/User.service";
+import { router } from "expo-router";
 import { useContext, useEffect, useState } from "react";
 import { Text, View } from "react-native";
 import { BackHeader } from "../common/BackHeader";
 import { UserInfo } from "../common/UserList";
 import { ChatContainer } from "./ChatContainer";
 import { ChatContext } from "./ChatContext";
-import { UserProfile } from "@/services/Auth.service";
-import { Spinner } from "tamagui";
-import { themeColors } from "@/themes/themes";
-import { router } from "expo-router";
+import { Role } from "@/services/Firebase.service";
 
 export const ChatArea = () => {
   const { chatInitiated, receiverId } = useContext(ChatContext)!;
-  const [receiverProfile, setReceiverProfile] = useState<UserProfile>();
-  const [loading, setLoading] = useState<boolean>(true);
+  const [receiverProfile, setReceiverProfile] = useState<UserProfile | null>(
+    null,
+  );
 
   useEffect(() => {
-    setLoading(true);
-    UserService.getUser(receiverId as string)
-      .then((profile) => {
-        setReceiverProfile(profile);
-      })
-      .finally(() => {
-        setLoading(false);
+    if (receiverId === Role.DOCTOR) {
+      UserService.getDoctors().then((doctors) => {
+        const doctorProfile: UserProfile = {
+          displayName:
+            doctors.find((doc) => doc.displayName)?.displayName || "Doctor",
+          id: Role.DOCTOR,
+          phoneNumber: doctors.map((doc) => doc.phoneNumber).join(", "),
+          photoUrl: doctors.find((doc) => doc.photoUrl)?.photoUrl || "",
+          role: Role.DOCTOR,
+        };
+        setReceiverProfile(doctorProfile);
       });
+    } else {
+      UserService.getUser(receiverId).then((patient) => {
+        setReceiverProfile(patient as UserProfile);
+      });
+    }
   }, [receiverId]);
-
-  if (loading) {
-    return <Spinner color={themeColors.plat} />;
-  }
 
   if (chatInitiated === -1 || !receiverProfile) {
     return <></>;
@@ -49,12 +54,16 @@ export const ChatArea = () => {
 
   return (
     <View style={{ flex: 1 }}>
-      <BackHeader
-        title={<UserInfo user={receiverProfile} />}
-        onPress={() => {
-          router.navigate("/authorized/home/chat");
-        }}
-      />
+      {receiverId !== Role.DOCTOR ? (
+        <BackHeader
+          title={<UserInfo user={receiverProfile} />}
+          onPress={() => {
+            router.navigate("/authorized/home/chat");
+          }}
+        />
+      ) : (
+        <UserInfo user={receiverProfile} />
+      )}
       <ChatContainer />
     </View>
   );
