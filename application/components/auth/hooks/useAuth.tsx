@@ -19,6 +19,7 @@ export type AuthContextType = {
   setError?: (err: any) => void;
   profile?: UserProfile | null;
   updateProfile?: (profile: UserProfile) => Promise<void>;
+  deleteAccount?: () => Promise<void>;
   role?: Role | null;
   notifications?: NotificationType[];
 };
@@ -133,6 +134,9 @@ export const AuthProvider = ({ children }: React.PropsWithChildren) => {
         },
         signOut: () => {
           return AuthService.signOut();
+        },
+        deleteAccount: () => {
+          return AuthService.deleteAccount();
         },
         isLoading: loading,
         setError,

@@ -14,7 +14,9 @@ import { XStack, YStack } from "tamagui";
 import { useAuth } from "../auth/hooks/useAuth";
 import { ShimmerImage } from "../common/ShimmerImage";
 import { DrawerHeaderTitle } from "./DrawerHeaderTitle";
+import { LegalLinks } from "../common/LegalLinks";
 import SocialMediaLinks from "../SocialMediaLinks";
+import Constants from "expo-constants";
 
 const drawerOptions = [
   {
@@ -133,8 +135,18 @@ const CustomDrawerContent = (props: any) => {
         </YStack>
       </View>
       <DrawerItemList {...props} />
-      <View>
-        <XStack gap={10} justifyContent="center" marginTop={40}>
+      <View style={{ marginTop: 24, paddingHorizontal: 12 }}>
+        <LegalLinks compact />
+        <Text
+          fontFamily="$js2"
+          fontSize="$2"
+          color="#aaa"
+          marginTop={12}
+          marginLeft={4}
+        >
+          Version {Constants.expoConfig?.version ?? "1.0.0"}
+        </Text>
+        <XStack gap={10} justifyContent="center" marginTop={24}>
           <SocialMediaLinks />
         </XStack>
       </View>

@@ -15,7 +15,20 @@ export const Auth: FC<PropsWithChildren> = ({ children }) => {
   }
 
   if (error) {
-    return <Text>Error occurred</Text>;
+    return (
+      <YStack
+        flex={1}
+        justifyContent="center"
+        padding="$4"
+        backgroundColor={themeColors.plat}
+      >
+        <Text fontFamily="$js5" fontSize="$5" textAlign="center">
+          Something went wrong while signing you in. Please close the app and
+          try again. If the problem continues, contact support from the login
+          screen.
+        </Text>
+      </YStack>
+    );
   }
 
   if (!user) {

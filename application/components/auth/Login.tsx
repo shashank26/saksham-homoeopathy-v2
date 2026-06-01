@@ -1,4 +1,6 @@
-import LogoSvg from "@/assets/images/svg/logo.svg";
+import { Logo } from "@/components/Images";
+import { HealthDisclaimer } from "@/components/common/HealthDisclaimer";
+import { LegalLinks } from "@/components/common/LegalLinks";
 import { FirebaseAuthTypes } from "@react-native-firebase/auth";
 import * as burnt from "burnt";
 import { FC, useState } from "react";
@@ -113,7 +115,7 @@ export const Login: FC = () => {
               alignItems: "center",
             }}
           >
-            <LogoSvg />
+            <Logo width={160} height={160} />
           </View>
           <H2
             marginBottom={50}
@@ -203,6 +205,8 @@ export const Login: FC = () => {
               )}
             </>
           )}
+          <HealthDisclaimer />
+          <LegalLinks compact />
         </YStack>
       </ScrollView>
     </KeyboardAvoidingView>

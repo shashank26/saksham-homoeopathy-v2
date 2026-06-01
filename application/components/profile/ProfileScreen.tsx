@@ -1,10 +1,11 @@
+import { LegalLinks } from "@/components/common/LegalLinks";
 import { UserProfile } from "@/services/Auth.service";
-import { StorageService } from "@/services/Storage.service";
 import { themeColors } from "@/themes/themes";
 import { Ionicons } from "@expo/vector-icons";
 import { Text } from "@tamagui/core";
+import Constants from "expo-constants";
 import { FC, useState } from "react";
-import { KeyboardAvoidingView, Platform, View } from "react-native";
+import { Alert, KeyboardAvoidingView, View } from "react-native";
 import { Button, Form, Input, Label, XStack, YStack } from "tamagui";
 import { useAuth } from "../auth/hooks/useAuth";
 import { OverlayActivityIndicator } from "../common/Alert";
@@ -68,7 +69,8 @@ const ProfileAvatar: FC<{
 };
 
 export const ProfileScreen = () => {
-  const { profile, updateProfile, signOut } = useAuth();
+  const { profile, updateProfile, signOut, deleteAccount } = useAuth();
+  const appVersion = Constants.expoConfig?.version ?? "1.0.0";
   const [name, setName] = useState(profile?.displayName || "");
   const [popup, setPopup] = useState({
     visible: false,
@@ -167,7 +169,12 @@ export const ProfileScreen = () => {
                 fontFamily={"$js5"}
                 style={{ flex: 1 }}
                 fontSize={"$4"}
-                defaultValue={profile?.displayName}
+                defaultValue={
+                  profile?.displayName === profile?.phoneNumber
+                    ? ""
+                    : profile?.displayName
+                }
+                placeholder="Please provide your name"
                 onChangeText={(text) => {
                   setName(text);
                 }}
@@ -220,6 +227,58 @@ export const ProfileScreen = () => {
                 Sign out
               </Text>
             </Button>
+            <Button
+              onPress={() => {
+                if (!deleteAccount) return;
+                Alert.alert(
+                  "Delete account",
+                  "This permanently deletes your profile, bookings, chat history, and medicine records from our systems. This cannot be undone.",
+                  [
+                    { text: "Cancel", style: "cancel" },
+                    {
+                      text: "Delete",
+                      style: "destructive",
+                      onPress: async () => {
+                        setPopup({
+                          visible: true,
+                          description: "Deleting your account...",
+                          title: "Please wait",
+                        });
+                        try {
+                          await deleteAccount();
+                        } catch {
+                          Alert.alert(
+                            "Deletion failed",
+                            "We could not delete your account. Please try again or email support.",
+                          );
+                        } finally {
+                          setPopup({
+                            visible: false,
+                            description: "",
+                            title: "",
+                          });
+                        }
+                      },
+                    },
+                  ],
+                );
+              }}
+              borderRadius={5}
+              width={"100%"}
+              backgroundColor={"#8b0000"}
+            >
+              <Text
+                color={themeColors.plat}
+                fontFamily={"$js5"}
+                fontSize={"$4"}
+              >
+                Delete account
+              </Text>
+            </Button>
+            <Text fontFamily="$js2" fontSize="$2" color="#888" textAlign="center">
+              App version {appVersion}
+            </Text>
+            <LegalLinks compact />
           </YStack>
         </View>
       </ScrollView>
