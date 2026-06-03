@@ -32,10 +32,10 @@ const getFont = (family: string) => {
 };
 
 export const themeColors = {
-  accent: "#994636",
-  light: "#FBF8F4",
+  accent: "#f06b24",
+  light: "#FFFFFF",
   onyx: "#393E41",
-  plat: "#E7E5DF",
+  plat: "#FFFFFF",
 };
 
 export const getFonts = () => {

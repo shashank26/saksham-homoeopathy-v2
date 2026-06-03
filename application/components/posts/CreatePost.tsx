@@ -1,154 +1,112 @@
+import { LoginPrimaryButton } from "@/components/auth/login/LoginPrimaryButton";
+import { BookingTextField } from "@/components/bookings/user/BookingTextField";
 import { Role } from "@/services/Firebase.service";
 import { CreatePostType, PostService } from "@/services/Posts.service";
 import { StorageService } from "@/services/Storage.service";
-import { themeColors } from "@/themes/themes";
+import { loginSpacing } from "@/themes/loginDesign";
+import { useVitalityFonts } from "@/hooks/useVitalityFonts";
 import * as Crypto from "expo-crypto";
 import { Dispatch, useState } from "react";
-import { StyleSheet, View } from "react-native";
-import { Input, Label, Text, TextArea, XStack, YStack } from "tamagui";
+import { ScrollView, StyleSheet, View } from "react-native";
 import { useAuth } from "../auth/hooks/useAuth";
 import { OverlayActivityIndicator } from "../common/Alert";
-import { DrawerSheet } from "../common/DrawerSheet";
 import { FloatingRoundButton } from "../common/FloatingRoundButton";
 import {
   ImagePreview,
-  MediaPicker,
   MediaPickerResult,
 } from "../common/MediaPicker";
-import { LoaderButton } from "../controls/LoaderButton";
+import {
+  VitalityDrawerFooter,
+  VitalityDrawerSheet,
+} from "../common/VitalityDrawerSheet";
+import { CreatePostAuthorRow } from "./create/CreatePostAuthorRow";
+import { CreatePostHeader } from "./create/CreatePostHeader";
+import { CreatePostMediaTiles } from "./create/CreatePostMediaTiles";
+import { PostContentField } from "./create/PostContentField";
 
 const CreatePostButton = ({
   setOpen,
 }: {
   setOpen: Dispatch<React.SetStateAction<boolean>>;
-}) => {
-  return (
-    <FloatingRoundButton
-      onPress={() => {
-        setOpen(true);
-      }}
-    />
-  );
-};
+}) => (
+  <FloatingRoundButton
+    onPress={() => {
+      setOpen(true);
+    }}
+  />
+);
 
 const CreatePostForm = ({
   onClose,
 }: {
   onClose: (result: boolean) => void;
 }) => {
-  const [selectedMedia, setSelectedMedia] = useState<MediaPickerResult[]>([]);
+  const fonts = useVitalityFonts();
+  const [selectedMedia, setSelectedMedia] = useState<
+    Extract<MediaPickerResult, { uri: string }>[]
+  >([]);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState<CreatePostType>({
     title: "",
     body: "",
   });
-  const valid = () => {
-    if (formData?.title && formData.body) {
-      return true;
-    }
-    return false;
-  };
+
+  const valid = () => Boolean(formData.title && formData.body);
+
+  const dismiss = () => onClose(false);
+
+  if (!fonts) {
+    return null;
+  }
 
   return (
-    <View style={styles.container}>
-      <YStack gap={5} width={"100%"}>
-        <YStack gap={2} width={"100%"}>
-          <Label fontFamily={"$js5"} fontSize={"$5"}>
-            Title
-          </Label>
-          <Input
-            fontFamily={"$js5"}
-            fontSize={"$4"}
-            maxLength={50}
-            onChangeText={(text) => {
-              setFormData((prev) => {
-                return {
-                  ...(prev || {}),
-                  title: text,
-                };
-              });
-            }}
-            value={formData.title}
-          />
-          <Text
-            alignSelf="flex-end"
-            color={themeColors.accent}
-            fontFamily={"$js5"}
-            fontSize={"$1"}
-            marginTop={2}
-          >
-            {formData.title.length}/50
-          </Text>
-        </YStack>
-        <YStack height={"200"}>
-          <Label fontFamily={"$js5"} fontSize={"$4"}>
-            Content
-          </Label>
-          <TextArea
-            fontFamily={"$js5"}
-            fontSize={"$4"}
-            maxLength={500}
-            multiline={true}
-            value={formData.body}
-            onChangeText={(text) => {
-              setFormData((prev) => {
-                return {
-                  ...(prev || {}),
-                  body: text,
-                };
-              });
-            }}
-          />
-          <Text
-            alignSelf="flex-end"
-            color={themeColors.accent}
-            fontFamily={"$js5"}
-            fontSize={"$1"}
-            marginTop={2}
-          >
-            {formData.body.length}/500
-          </Text>
-        </YStack>
-        <XStack
-          gap={5}
-          style={{ alignItems: "center", justifyContent: "center" }}
-        >
-          <MediaPicker
-            onClose={(media) => {
-              setSelectedMedia((prev) => {
-                return [...prev, media];
-              });
-            }}
-          />
-          {selectedMedia.length > 0 && (
-            <ImagePreview
-              onRemove={(uri) => {
-                setSelectedMedia((prev) => {
-                  return prev.filter(
-                    (media) => ![media.uri, media.thumbnail].includes(uri)
-                  );
-                });
-              }}
-              uris={selectedMedia.map((media) => media.thumbnail || media.uri)}
-            />
-          )}
-        </XStack>
-        <OverlayActivityIndicator
-          description={"Creating new post..."}
-          title={"Please wait..."}
-          icon={<></>}
-          visible={loading}
+    <View style={styles.formRoot}>
+      <CreatePostHeader onClose={dismiss} />
+      <ScrollView
+        style={styles.scroll}
+        contentContainerStyle={styles.scrollContent}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
+        <CreatePostAuthorRow />
+        <BookingTextField
+          label="Post Title"
+          value={formData.title}
+          onChangeText={(text) =>
+            setFormData((prev) => ({ ...prev, title: text }))
+          }
+          placeholder="e.g. Clinical Notes on Lycopodium"
+          maxLength={50}
+          showCount
         />
-        <LoaderButton
+        <PostContentField
+          value={formData.body}
+          onChangeText={(text) =>
+            setFormData((prev) => ({ ...prev, body: text }))
+          }
+        />
+        <CreatePostMediaTiles
+          onMediaPicked={(media) => setSelectedMedia([media])}
+        />
+        {selectedMedia.length > 0 ? (
+          <ImagePreview
+            onRemove={(uri) => {
+              setSelectedMedia((prev) =>
+                prev.filter(
+                  (m) => ![m.uri, m.thumbnail].includes(uri),
+                ),
+              );
+            }}
+            uris={selectedMedia.map((m) => m.thumbnail || m.uri)}
+          />
+        ) : null}
+      </ScrollView>
+      <VitalityDrawerFooter>
+        <LoginPrimaryButton
+          label="Post Content"
+          loadingLabel="Posting..."
           disabled={!valid()}
-          theme={"accent"}
-          style={{
-            fontSize: 20,
-            fontWeight: "bold",
-          }}
-          message="Posting..."
-          text="Post"
-          isLoading={loading}
+          loading={loading}
           onPress={async () => {
             if (!valid()) return;
             setLoading(true);
@@ -158,43 +116,45 @@ const CreatePostForm = ({
               if (media) {
                 savedUri = await StorageService.setItem(
                   Crypto.randomUUID(),
-                  media.blob
+                  media.blob,
                 );
                 if (media?.thumbnail) {
                   const thumbnailBlob = await fetch(media.thumbnail).then(
-                    (res) => res.blob()
+                    (res) => res.blob(),
                   );
                   thumbnailUri = await StorageService.setItem(
                     Crypto.randomUUID(),
-                    thumbnailBlob
+                    thumbnailBlob,
                   );
                 }
               }
-              const res = await PostService.create({
+              await PostService.create({
                 body: formData.body,
                 media: savedUri
                   ? {
                       type: media?.thumbnail ? "video" : "image",
                       url: savedUri,
-                      thumbnail: thumbnailUri ?? null,
+                      thumbnail: thumbnailUri,
                     }
                   : undefined,
                 title: formData.title,
               });
-              console.log(res);
             } catch (err) {
               console.log("Error while posting", err);
             }
-            setFormData({
-              body: "",
-              title: "",
-            });
+            setFormData({ body: "", title: "" });
             setSelectedMedia([]);
             onClose(true);
             setLoading(false);
           }}
         />
-      </YStack>
+      </VitalityDrawerFooter>
+      <OverlayActivityIndicator
+        description="Creating new post..."
+        title="Please wait..."
+        icon={<></>}
+        visible={loading}
+      />
     </View>
   );
 };
@@ -204,27 +164,27 @@ export const CreatePost = () => {
 
   if (role === Role.DOCTOR) {
     return (
-      <DrawerSheet<Boolean>
+      <VitalityDrawerSheet<Boolean>
         FC={CreatePostButton}
         Child={CreatePostForm}
-        onClose={async (data) => {}}
-      ></DrawerSheet>
+        onClose={async () => {}}
+      />
     );
   }
-  return <></>;
+  return null;
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    width: "100%",
-    paddingBottom: 20,
+  formRoot: {
+    flexShrink: 1,
+    maxHeight: "100%",
   },
-  text: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#333",
+  scroll: {
+    flexGrow: 0,
+    flexShrink: 1,
+  },
+  scrollContent: {
+    paddingHorizontal: loginSpacing.containerMargin,
+    paddingBottom: loginSpacing.stackMd,
   },
 });

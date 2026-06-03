@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Vitalis Homeopathy - Loading State</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-primary-fixed": "#360f00",
+                    "on-primary-fixed-variant": "#7c2e00",
+                    "inverse-on-surface": "#eaf1ff",
+                    "background": "#f8f9ff",
+                    "on-secondary-fixed-variant": "#005227",
+                    "primary-fixed": "#ffdbcd",
+                    "on-primary": "#ffffff",
+                    "on-surface": "#0b1c30",
+                    "on-tertiary": "#ffffff",
+                    "tertiary-fixed-dim": "#85cfff",
+                    "on-tertiary-fixed-variant": "#004c6c",
+                    "surface-dim": "#cbdbf5",
+                    "primary": "#a33f00",
+                    "tertiary-fixed": "#c7e7ff",
+                    "outline-variant": "#e0c0b3",
+                    "tertiary": "#00658f",
+                    "surface": "#f8f9ff",
+                    "surface-container-highest": "#d3e4fe",
+                    "on-secondary-fixed": "#00210c",
+                    "error": "#ba1a1a",
+                    "on-error-container": "#93000a",
+                    "surface-container-high": "#dce9ff",
+                    "on-secondary-container": "#007238",
+                    "tertiary-container": "#399cd1",
+                    "primary-container": "#f06b24",
+                    "on-tertiary-container": "#003046",
+                    "error-container": "#ffdad6",
+                    "primary-fixed-dim": "#ffb595",
+                    "surface-tint": "#a33f00",
+                    "secondary": "#006d36",
+                    "surface-container": "#e5eeff",
+                    "on-surface-variant": "#584238",
+                    "inverse-surface": "#213145",
+                    "surface-variant": "#d3e4fe",
+                    "surface-container-low": "#eff4ff",
+                    "secondary-fixed-dim": "#70dc8f",
+                    "secondary-container": "#89f6a6",
+                    "on-secondary": "#ffffff",
+                    "surface-bright": "#f8f9ff",
+                    "secondary-fixed": "#8cf9a9",
+                    "on-tertiary-fixed": "#001e2e",
+                    "on-background": "#0b1c30",
+                    "outline": "#8c7166",
+                    "inverse-primary": "#ffb595",
+                    "surface-container-lowest": "#ffffff",
+                    "on-primary-container": "#501b00",
+                    "on-error": "#ffffff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "stack-md": "16px",
+                    "container-margin": "24px",
+                    "base": "8px",
+                    "stack-sm": "8px",
+                    "stack-lg": "32px",
+                    "section-gap": "64px",
+                    "gutter": "16px"
+            },
+            "fontFamily": {
+                    "body-lg": ["Manrope"],
+                    "label-sm": ["Manrope"],
+                    "label-md": ["Manrope"],
+                    "headline-lg": ["Manrope"],
+                    "headline-md": ["Manrope"],
+                    "headline-xl": ["Manrope"],
+                    "headline-lg-mobile": ["Manrope"],
+                    "body-md": ["Manrope"]
+            },
+            "fontSize": {
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "headline-xl": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        @keyframes spin-vitalis {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .animate-spin-vitalis {
+            animation: spin-vitalis 1s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body-md text-body-md antialiased overflow-hidden">
+<!-- Top AppBar (from JSON) -->
+<header class="bg-surface dark:bg-on-surface w-full top-0 sticky border-b border-outline-variant dark:border-outline flex items-center justify-between px-container-margin h-16 w-full z-40">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary">menu</span>
+<h1 class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed-dim">Vitalis Homeopathy</h1>
+</div>
+<div class="flex items-center">
+<span class="material-symbols-outlined text-primary">account_circle</span>
+</div>
+</header>
+<!-- Main Content Canvas (Blurred Background) -->
+<main class="max-w-[1200px] mx-auto px-container-margin py-stack-lg space-y-section-gap">
+<!-- Dashboard Greeting -->
+<section class="space-y-4">
+<h2 class="font-headline-lg text-headline-lg text-on-surface">Good Morning, Patient</h2>
+<p class="text-on-surface-variant max-w-2xl">Welcome back to your personalized wellness journey. Your upcoming homeopathic consultations and remedy plan are updated for today.</p>
+</section>
+<!-- Bento Grid Layout for Dashboard -->
+<section class="grid grid-cols-1 md:grid-cols-12 gap-gutter">
+<!-- Active Treatment Card -->
+<div class="md:col-span-8 bg-surface-container-lowest border border-outline-variant p-stack-md rounded-xl space-y-4">
+<div class="flex justify-between items-center">
+<span class="bg-secondary-container text-on-secondary-container px-3 py-1 rounded-full font-label-md text-label-md">Current Plan: Acute Recovery</span>
+<span class="text-on-surface-variant font-label-sm text-label-sm">Day 4 of 7</span>
+</div>
+<h3 class="font-headline-md text-headline-md">Arnica Montana (30C)</h3>
+<div class="h-2 w-full bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-primary-container w-[60%]"></div>
+</div>
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">event_note</span>
+<span class="font-label-md text-label-md">Next Dose: 2:00 PM</span>
+</div>
+</div>
+<!-- Quick Stats -->
+<div class="md:col-span-4 bg-primary-container text-on-primary-container p-stack-md rounded-xl flex flex-col justify-between">
+<span class="material-symbols-outlined text-4xl">medical_information</span>
+<div>
+<div class="font-headline-lg text-headline-lg">12</div>
+<div class="font-label-md text-label-md opacity-90">Completed Remedies</div>
+</div>
+</div>
+<!-- Recent Activity List -->
+<div class="md:col-span-12 lg:col-span-12 bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden">
+<div class="px-stack-md py-4 border-b border-outline-variant bg-surface-container-low">
+<h4 class="font-label-md text-label-md">Recent Activity</h4>
+</div>
+<div class="divide-y divide-outline-variant">
+<div class="p-stack-md flex items-center justify-between">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 bg-surface-container-high rounded-full flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">clinical_notes</span>
+</div>
+<div>
+<div class="font-label-md text-label-md text-on-surface">Consultation with Dr. Elena</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant">Clinical Assessment • 2 days ago</div>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+</div>
+<div class="p-stack-md flex items-center justify-between">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 bg-surface-container-high rounded-full flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined">receipt_long</span>
+</div>
+<div>
+<div class="font-label-md text-label-md text-on-surface">New Prescription Added</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant">Herbal Remedy • 5 days ago</div>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Informational Cards -->
+<section class="grid grid-cols-1 md:grid-cols-2 gap-gutter pb-32">
+<div class="relative h-64 rounded-xl overflow-hidden group cursor-pointer border border-outline-variant">
+<img alt="Yoga Background" class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" data-alt="A serene indoor yoga studio filled with warm natural morning light filtering through large windows. A minimalist wooden floor reflects the soft glow. The atmosphere is peaceful and clinical, emphasizing holistic health and recovery. The color palette features soft whites, natural wood tones, and hints of forest green, perfectly aligned with a Vitality Core wellness aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCuvS__WUDACg3G5ghP8CEW2BDDXw0P9awLVqLAlrQGxqLyBqqWaBjpcFUfUAIBdth_5d0XO58rxEi-yZOF7UVp7IewgyTP34w3Qltdpym6fVw9KreOaNGZ53A109eGk-qr0MKxIG5kg-PSqiA-YMrcEZQF8jPebzavSqajO2yHjcyI66sUR5G86ORD1oWGMDVpk_DtX0Bs-PzEyJbNGqXwUT5_x6Cxe32tfFPUbQMHtRjL6ZfNCwGyqaatg-cCnO7pNb8oY1mB8q0"/>
+<div class="absolute inset-0 bg-gradient-to-t from-on-surface/80 to-transparent flex flex-col justify-end p-stack-md">
+<h5 class="text-white font-headline-md text-headline-md">Holistic Living Tips</h5>
+<p class="text-white/80 font-body-md text-body-md">Enhance your remedies with daily mindfulness.</p>
+</div>
+</div>
+<div class="bg-surface-container border border-outline-variant p-stack-md rounded-xl flex flex-col justify-center items-center text-center space-y-4">
+<span class="material-symbols-outlined text-primary text-5xl">search_check</span>
+<h5 class="font-headline-md text-headline-md">Remedy Finder</h5>
+<p class="text-on-surface-variant">Search our clinical database for traditional homeopathic solutions.</p>
+<button class="bg-primary text-on-primary px-container-margin py-3 rounded-full font-label-md text-label-md transition-all active:scale-95 shadow-sm">
+                    Open Finder
+                </button>
+</div>
+</section>
+</main>
+<!-- Overlay Activity Indicator (The Target Component) -->
+<div class="fixed inset-0 z-[100] flex flex-col items-center justify-center transition-opacity duration-300 backdrop-blur-md bg-white/40 dark:bg-on-surface/40" id="loading-overlay">
+<!-- Spinner Container -->
+<div class="relative flex items-center justify-center">
+<!-- Background Ring -->
+<div class="w-16 h-16 rounded-full border-4 border-outline-variant opacity-25"></div>
+<!-- Branded Spinner -->
+<div class="absolute w-16 h-16 rounded-full border-4 border-t-primary-container border-r-transparent border-b-transparent border-l-transparent animate-spin-vitalis"></div>
+<!-- Center Branding Dot -->
+<div class="absolute w-2 h-2 bg-primary rounded-full"></div>
+</div>
+<!-- Loading Text -->
+<div class="mt-stack-md text-center">
+<span class="font-label-md text-label-md text-on-surface tracking-wider uppercase">Loading...</span>
+<p class="font-label-sm text-label-sm text-on-surface-variant mt-1 opacity-70">Preparing your wellness dashboard</p>
+</div>
+<!-- Progress Micro-detail (Optional visual flourish) -->
+<div class="mt-8 w-48 h-1 bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-primary-container w-0 transition-all duration-300 ease-out" id="progress-bar"></div>
+</div>
+</div>
+<!-- Navigation (Hidden on load for focus, usually toggled with content) -->
+<!-- BottomNavBar (from JSON) - Rendered as shell anchor but partially obscured by overlay -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-20 px-4 pb-safe bg-surface dark:bg-on-surface border-t border-outline-variant dark:border-outline shadow-sm">
+<a class="flex flex-col items-center justify-center bg-primary-container dark:bg-primary text-on-primary-container dark:text-on-primary rounded-xl px-4 py-1 active:scale-90 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">medical_services</span>
+<span class="font-label-md text-label-md">Remedies</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high transition-all" href="#">
+<span class="material-symbols-outlined">clinical_notes</span>
+<span class="font-label-md text-label-md">Activity</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high transition-all" href="#">
+<span class="material-symbols-outlined">event_note</span>
+<span class="font-label-md text-label-md">Plan</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high transition-all" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="font-label-md text-label-md">Profile</span>
+</a>
+</nav>
+<script>
+        // Simulate loading progress for the overlay
+        const progressBar = document.getElementById('progress-bar');
+        const loadingOverlay = document.getElementById('loading-overlay');
+        let progress = 0;
+
+        const interval = setInterval(() => {
+            progress += Math.random() * 15;
+            if (progress > 100) progress = 100;
+            progressBar.style.width = `${progress}%`;
+
+            if (progress === 100) {
+                clearInterval(interval);
+                // In a real app, we might fade out here:
+                // setTimeout(() => {
+                //    loadingOverlay.classList.add('opacity-0', 'pointer-events-none');
+                //    document.body.classList.remove('overflow-hidden');
+                // }, 500);
+            }
+        }, 400);
+
+        // Allow clicking the overlay to "complete" for demo purposes
+        loadingOverlay.addEventListener('click', () => {
+            loadingOverlay.classList.add('opacity-0', 'pointer-events-none');
+            document.body.classList.remove('overflow-hidden');
+        });
+    </script>
+</body></html>

@@ -1,5 +1,5 @@
 import { BookingService, slots, SlotTime } from "@/services/Booking.service";
-import { SlotButton } from "../Bookings";
+import { SlotButton } from "../SlotButton";
 import { useEffect, useState } from "react";
 import { Button, XStack, YStack, Text, View } from "tamagui";
 import { themeColors } from "@/themes/themes";

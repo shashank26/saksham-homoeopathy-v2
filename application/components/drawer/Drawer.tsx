@@ -94,7 +94,7 @@ const drawerOptions = [
 ];
 const drawerButtonOptionsStyle = {
   drawerActiveTintColor: themeColors.plat, // Active button text color
-  drawerActiveBackgroundColor: themeColors.onyx, // Active button background
+  drawerActiveBackgroundColor: themeColors.accent, // Active button background
   drawerInactiveTintColor: themeColors.onyx,
   drawerInactiveBackgroundColor: themeColors.plat, // Inactive button text color
 };
@@ -134,22 +134,26 @@ const CustomDrawerContent = (props: any) => {
           </Text>
         </YStack>
       </View>
-      <DrawerItemList {...props} />
-      <View style={{ marginTop: 24, paddingHorizontal: 12 }}>
-        <LegalLinks compact />
-        <Text
-          fontFamily="$js2"
-          fontSize="$2"
-          color="#aaa"
-          marginTop={12}
-          marginLeft={4}
-        >
-          Version {Constants.expoConfig?.version ?? "1.0.0"}
-        </Text>
-        <XStack gap={10} justifyContent="center" marginTop={24}>
-          <SocialMediaLinks />
-        </XStack>
-      </View>
+      <YStack style={{ height: "100%", justifyContent: "space-between" }}>
+        <View>
+          <DrawerItemList {...props} />
+        </View>
+        <View style={{ marginTop: 24, paddingHorizontal: 12 }}>
+          <LegalLinks compact />
+          <XStack gap={10} justifyContent="center" marginTop={24}>
+            <SocialMediaLinks />
+          </XStack>
+          <Text
+            fontFamily="$js2"
+            fontSize="$1"
+            color="#aaa"
+            marginTop={12}
+            marginLeft={4}
+          >
+            Version {Constants.expoConfig?.version ?? "1.0.0"}
+          </Text>
+        </View>
+      </YStack>
     </DrawerContentScrollView>
   );
 };
@@ -171,14 +175,15 @@ export const AppDrawer = () => {
           ...drawerButtonOptionsStyle,
           drawerStyle: {
             width: "70%",
-            rowGap: 5,
+            rowGap: 0,
           },
           drawerLabelStyle: {
-            fontSize: 18,
+            fontSize: 16,
             fontFamily: "JosefinSans-400",
+            height: 24,
           },
           drawerItemStyle: {
-            marginVertical: 5, // Adds space between buttons
+            marginVertical: 0, // Adds space between buttons
           },
         })}
       >

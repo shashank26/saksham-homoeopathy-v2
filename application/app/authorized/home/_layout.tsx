@@ -64,6 +64,13 @@ const TabItem: React.FC<TabItemProps> = ({
   );
 };
 
+const TAB_ICONS: Record<string, keyof typeof MaterialIcons.glyphMap> = {
+  index: "home-filled",
+  chat: "chat-bubble-outline",
+  history: "history",
+  alerts: "notifications",
+};
+
 // 🔹 Custom Tab Bar Component
 const CustomTabBar: React.FC<BottomTabBarProps> = ({
   state,
@@ -81,9 +88,7 @@ const CustomTabBar: React.FC<BottomTabBarProps> = ({
           <TabItem
             key={route.key}
             label={label}
-            iconName={
-              options.tabBarIconName as keyof typeof MaterialIcons.glyphMap
-            }
+            iconName={TAB_ICONS[route.name] ?? "home-filled"}
             focused={isFocused}
             onPress={() => navigation.navigate(route.name)}
           />
@@ -101,7 +106,6 @@ export default function RootLayout() {
         name="index"
         options={{
           title: "Home",
-          tabBarIconName: "home-filled",
           headerShown: false,
         }}
       />
@@ -109,7 +113,6 @@ export default function RootLayout() {
         name="chat"
         options={{
           title: "Chat",
-          tabBarIconName: "chat-bubble-outline",
           headerShown: false,
         }}
       />
@@ -117,7 +120,6 @@ export default function RootLayout() {
         name="history"
         options={{
           title: "History",
-          tabBarIconName: "history",
           headerShown: false,
         }}
       />
@@ -125,7 +127,6 @@ export default function RootLayout() {
         name="alerts"
         options={{
           title: "Alerts",
-          tabBarIconName: "notifications",
           headerShown: false,
         }}
       />

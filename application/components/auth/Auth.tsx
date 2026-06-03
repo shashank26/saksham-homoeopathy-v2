@@ -43,18 +43,7 @@ export const Auth: FC<PropsWithChildren> = ({ children }) => {
     !profile?.displayName.trim() ||
     profile.displayName.trim() === profile.phoneNumber
   ) {
-    return (
-      <YStack
-        flex={1}
-        justifyContent="center"
-        alignContent="center"
-        alignItems="center"
-        paddingTop={100}
-        backgroundColor={themeColors.plat}
-      >
-        <ProfileScreen />
-      </YStack>
-    );
+    return <ProfileScreen variant="onboarding" />;
   }
 
   return <>{children}</>;

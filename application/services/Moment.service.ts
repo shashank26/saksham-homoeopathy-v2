@@ -31,18 +31,16 @@ export class MomentService {
   }
 
   static isSlotExpired(date: Date, slot: SlotTime): boolean {
-    const hours = date.getHours();
-    const minutes = date.getMinutes();
     const [slotHours, slotMinutes] = slot.split(":").map(Number);
-    if (date.toDateString() === new Date().toDateString()) {
-      if (
-        hours > slotHours ||
-        (hours === slotHours && minutes >= slotMinutes)
-      ) {
-        return true;
-      }
+    if (date.toDateString() !== new Date().toDateString()) {
+      return false;
     }
-    return false;
+    const now = new Date();
+    const hours = now.getHours();
+    const minutes = now.getMinutes();
+    return (
+      hours > slotHours || (hours === slotHours && minutes >= slotMinutes)
+    );
   }
 
   static formatTimeMeridian(date: Date): string {

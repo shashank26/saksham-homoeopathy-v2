@@ -58,9 +58,9 @@ export class AuthService {
   static async onProfileUpdate(cb: (userProfile: UserProfile) => void) {
     await db
       .collection("users")
-      .doc(this.user.uid)
+      .doc(this.user?.uid)
       .onSnapshot((doc) => {
-        if (doc.exists()) {
+        if (doc?.exists()) {
           const data = doc.data();
           cb({
             displayName: data?.displayName || "",

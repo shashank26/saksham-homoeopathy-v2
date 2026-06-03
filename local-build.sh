@@ -15,10 +15,10 @@ cd "$(dirname "$0")/application"
 
 case "$PROFILE" in
   production)
-    eas build --platform android --profile production --local
+    npm run build:android:production
     ;;
   development)
-    eas build --platform android --profile development --local
+    npm run build:android:development
     ;;
   *)
     echo "Unknown profile: $PROFILE (use production or development)"
