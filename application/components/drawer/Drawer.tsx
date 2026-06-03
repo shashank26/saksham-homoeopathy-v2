@@ -17,6 +17,7 @@ import { DrawerHeaderTitle } from "./DrawerHeaderTitle";
 import { LegalLinks } from "../common/LegalLinks";
 import SocialMediaLinks from "../SocialMediaLinks";
 import Constants from "expo-constants";
+import { loginTypography } from "@/themes/loginDesign";
 
 const drawerOptions = [
   {
@@ -27,7 +28,7 @@ const drawerOptions = [
       <MaterialIcons
         name="house"
         size={24}
-        color={focused ? themeColors.plat : themeColors.onyx}
+        color={focused ? themeColors.onyx : themeColors.gray}
       />
     ),
   },
@@ -39,7 +40,7 @@ const drawerOptions = [
       <MaterialIcons
         name="calendar-month"
         size={24}
-        color={focused ? themeColors.plat : themeColors.onyx}
+        color={focused ? themeColors.onyx : themeColors.gray}
       />
     ),
   },
@@ -51,7 +52,7 @@ const drawerOptions = [
       <MaterialIcons
         name="info"
         size={24}
-        color={focused ? themeColors.plat : themeColors.onyx}
+        color={focused ? themeColors.onyx : themeColors.gray}
       />
     ),
   },
@@ -63,7 +64,7 @@ const drawerOptions = [
       <MaterialIcons
         name="check-circle"
         size={24}
-        color={focused ? themeColors.plat : themeColors.onyx}
+        color={focused ? themeColors.onyx : themeColors.gray}
       />
     ),
   },
@@ -75,7 +76,7 @@ const drawerOptions = [
       <MaterialIcons
         name="stars"
         size={24}
-        color={focused ? themeColors.plat : themeColors.onyx}
+        color={focused ? themeColors.onyx : themeColors.gray}
       />
     ),
   },
@@ -87,15 +88,15 @@ const drawerOptions = [
       <MaterialIcons
         name="person"
         size={24}
-        color={focused ? themeColors.plat : themeColors.onyx}
+        color={focused ? themeColors.onyx : themeColors.gray}
       />
     ),
   },
 ];
 const drawerButtonOptionsStyle = {
-  drawerActiveTintColor: themeColors.plat, // Active button text color
-  drawerActiveBackgroundColor: themeColors.accent, // Active button background
-  drawerInactiveTintColor: themeColors.onyx,
+  drawerActiveTintColor: themeColors.onyx, // Active button text color
+  drawerActiveBackgroundColor: themeColors.lightGray, // Active button background
+  drawerInactiveTintColor: themeColors.gray,
   drawerInactiveBackgroundColor: themeColors.plat, // Inactive button text color
 };
 
@@ -109,21 +110,22 @@ const CustomDrawerContent = (props: any) => {
           borderBottomWidth: 1,
           marginBottom: 10,
           paddingBottom: 10,
+          paddingTop: 10,
           gap: 20,
         }}
       >
         <ShimmerImage
           url={profile?.photoUrl || "https://picsum.photos/200"}
-          borderRadius={50}
+          borderRadius={40}
           size={{
-            height: 100,
-            width: 100,
+            height: 80,
+            width: 80,
           }}
         />
-        <YStack>
+        <YStack borderBottomWidth={1} borderBottomColor={themeColors.lightGray} paddingBottom={10}>
           <Text
-            fontFamily="$js5"
-            fontSize="$6"
+            fontFamily="$js6"
+            fontSize="$3"
             color={themeColors.onyx}
             marginLeft={10}
           >
@@ -139,8 +141,8 @@ const CustomDrawerContent = (props: any) => {
           <DrawerItemList {...props} />
         </View>
         <View style={{ marginTop: 24, paddingHorizontal: 12 }}>
-          <LegalLinks compact />
-          <XStack gap={10} justifyContent="center" marginTop={24}>
+          <LegalLinks horizontal />
+          <XStack gap={10} marginTop={24} justifyContent="center">
             <SocialMediaLinks />
           </XStack>
           <Text
@@ -178,9 +180,7 @@ export const AppDrawer = () => {
             rowGap: 0,
           },
           drawerLabelStyle: {
-            fontSize: 16,
-            fontFamily: "JosefinSans-400",
-            height: 24,
+            ...loginTypography.labelMd,
           },
           drawerItemStyle: {
             marginVertical: 0, // Adds space between buttons

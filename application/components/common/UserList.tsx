@@ -18,7 +18,7 @@ export const UserInfo = React.memo(
           width: "100%",
           padding: 5,
           borderRadius: 10,
-          borderBottomColor: "#ccc",
+          borderBottomColor: "#eee",
           borderBottomWidth: 1,
         }}
       >
@@ -38,7 +38,7 @@ export const UserInfo = React.memo(
               height: 48,
               width: 48,
               borderRadius: 24,
-              backgroundColor: "#ccc",
+              backgroundColor: "#fff",
               justifyContent: "center",
               alignItems: "center",
             }}

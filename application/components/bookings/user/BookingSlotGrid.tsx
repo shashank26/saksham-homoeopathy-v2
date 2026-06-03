@@ -12,23 +12,33 @@ type SlotOption = { label: string; value: SlotTime };
 
 type BookingSlotGridProps = {
   slots: SlotOption[];
-  selectedSlot: string;
   onSelectSlot: (value: SlotTime) => void;
+  selectedSlot?: string;
+  selectedSlots?: SlotTime[];
+  sectionTitle?: string;
+  emptyMessage?: string;
+  compact?: boolean;
 };
 
 export const BookingSlotGrid: FC<BookingSlotGridProps> = ({
   slots,
-  selectedSlot,
+  selectedSlot = "",
+  selectedSlots,
   onSelectSlot,
+  sectionTitle = "AVAILABLE SLOTS",
+  emptyMessage = "No slots available for this date.",
+  compact,
 }) => (
-  <View style={styles.section}>
-    <Text style={styles.sectionTitle}>AVAILABLE SLOTS</Text>
+  <View style={[styles.section, compact && styles.sectionCompact]}>
+    <Text style={styles.sectionTitle}>{sectionTitle}</Text>
     {slots.length === 0 ? (
-      <Text style={styles.empty}>No slots available for this date.</Text>
+      <Text style={styles.empty}>{emptyMessage}</Text>
     ) : (
       <View style={styles.grid}>
         {slots.map((slot) => {
-          const selected = selectedSlot === slot.value;
+          const selected = selectedSlots
+            ? selectedSlots.includes(slot.value)
+            : selectedSlot === slot.value;
           return (
             <Pressable
               key={slot.value}
@@ -66,6 +76,9 @@ const SLOT_WIDTH_PERCENT = "31%";
 const styles = StyleSheet.create({
   section: {
     marginTop: loginSpacing.stackLg,
+  },
+  sectionCompact: {
+    marginTop: 0,
   },
   sectionTitle: {
     ...loginTypography.labelMd,

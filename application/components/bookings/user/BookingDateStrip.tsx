@@ -23,16 +23,25 @@ import {
 type BookingDateStripProps = {
   selectedDate: Date;
   onSelectDate: (date: Date) => void;
+  dateRange?: Date[];
+  isFirstSection?: boolean;
 };
 
 export const BookingDateStrip: FC<BookingDateStripProps> = ({
   selectedDate,
   onSelectDate,
+  dateRange,
+  isFirstSection,
 }) => {
-  const days = getBookingDateRange();
+  const days = dateRange ?? getBookingDateRange();
 
   return (
-    <View style={styles.section}>
+    <View
+      style={[
+        styles.section,
+        isFirstSection && styles.sectionFirst,
+      ]}
+    >
       <Text style={styles.sectionTitle}>SELECT DATE</Text>
       <ScrollView
         horizontal
@@ -80,6 +89,9 @@ export const BookingDateStrip: FC<BookingDateStripProps> = ({
 const styles = StyleSheet.create({
   section: {
     marginTop: loginSpacing.sectionGap,
+  },
+  sectionFirst: {
+    marginTop: loginSpacing.stackLg,
   },
   sectionTitle: {
     ...loginTypography.labelMd,
