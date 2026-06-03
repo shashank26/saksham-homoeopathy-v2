@@ -1,18 +1,21 @@
-import { DrawerSheet } from "@/components/common/DrawerSheet";
+import { LoginPrimaryButton } from "@/components/auth/login/LoginPrimaryButton";
+import { BookingTextField } from "@/components/bookings/user/BookingTextField";
 import { FloatingRoundButton } from "@/components/common/FloatingRoundButton";
-import { LoaderButton } from "@/components/controls/LoaderButton";
+import { VitalityDrawerHeader } from "@/components/common/VitalityDrawerHeader";
+import {
+  VitalityDrawerFooter,
+  VitalityDrawerSheet,
+} from "@/components/common/VitalityDrawerSheet";
+import { useVitalityFonts } from "@/hooks/useVitalityFonts";
 import { UserProfile } from "@/services/Auth.service";
 import { HistoryService, MedicineType } from "@/services/History.service";
-import { MomentService } from "@/services/Moment.service";
-import { themeColors } from "@/themes/themes";
-import DatePicker from "react-native-date-picker";
+import { loginColors, loginSpacing } from "@/themes/loginDesign";
 import { useState } from "react";
-import { Platform } from "react-native";
-import { Button, Input, ScrollView, Text, View, XStack, YStack } from "tamagui";
-import { DateTimePicker } from "@/components/common/DateTimePicker";
+import { ScrollView, StyleSheet, View } from "react-native";
+import { MedicineDateField } from "./MedicineDateField";
 
 const medicineFormValid = (
-  medicineForm: Partial<MedicineType>
+  medicineForm: Partial<MedicineType>,
 ): MedicineType | false => {
   if (
     !medicineForm.name ||
@@ -36,6 +39,8 @@ const MedicineForm = ({
   onClose: (data: void) => void;
   user: UserProfile;
 }) => {
+  const fontsLoaded = useVitalityFonts();
+  const [loading, setLoading] = useState(false);
   const [medicineForm, setMedicineForm] = useState<Partial<MedicineType>>({
     startDate: new Date(),
     endDate: new Date(),
@@ -43,146 +48,146 @@ const MedicineForm = ({
   const [startDate, setStartDate] = useState<Date>(new Date());
   const [endDate, setEndDate] = useState<Date>(new Date());
 
+  const dismiss = () => onClose();
+  const isValid = medicineFormValid(medicineForm) !== false;
+
+  if (!fontsLoaded) {
+    return null;
+  }
+
   return (
-    <ScrollView width={"100%"}>
-      <YStack gap={10} marginBottom={50}>
-        <YStack gap={5} alignItems="flex-start">
-          <Text fontFamily={"$js4"} fontSize={"$4"} color={themeColors.onyx}>
-            Name
-            <Text fontFamily={"$js4"} fontSize={"$4"} color={"red"}>
-              *
-            </Text>
-          </Text>
-          <Input
-            fontFamily={"$js4"}
-            fontSize={"$4"}
-            maxLength={50}
-            style={{ width: "100%" }}
-            onChangeText={(text) => {
-              setMedicineForm((prev) => {
-                return {
-                  ...prev,
-                  name: text,
-                };
-              });
-            }}
-          ></Input>
-          <Text
-            alignSelf="flex-end"
-            fontFamily={"$js4"}
-            fontSize={"$1"}
-            color={themeColors.accent}
-          >
-            {medicineForm.name?.length || 0}/50
-          </Text>
-        </YStack>
-        <YStack gap={5} alignItems="flex-start">
-          <Text fontFamily={"$js4"} fontSize={"$4"} color={themeColors.onyx}>
-            Dosage
-            <Text fontFamily={"$js4"} fontSize={"$4"} color={"red"}>
-              *
-            </Text>
-          </Text>
-          <Input
-            fontFamily={"$js4"}
-            fontSize={"$4"}
-            maxLength={50}
-            style={{ width: "100%" }}
-            onChangeText={(text) => {
-              setMedicineForm((prev) => {
-                return {
-                  ...prev,
-                  dosage: text,
-                };
-              });
-            }}
-          ></Input>
-          <Text
-            alignSelf="flex-end"
-            fontFamily={"$js4"}
-            fontSize={"$1"}
-            color={themeColors.accent}
-          >
-            {medicineForm.dosage?.length || 0}/50
-          </Text>
-        </YStack>
-        <YStack gap={5}>
-          <Text fontFamily={"$js4"} fontSize={"$4"} color={themeColors.onyx}>
-            Prescribed Date
-            <Text fontFamily={"$js4"} fontSize={"$4"} color={"red"}>
-              *
-            </Text>
-          </Text>
-          <DateTimePicker
-            mode="date"
-            value={startDate}
-            onChange={(date) => {
-              setStartDate(date);
-              setMedicineForm((prev) => {
-                return {
-                  ...prev,
-                  startDate: date,
-                };
-              });
-            }}
-          />
-        </YStack>
-        <YStack gap={5}>
-          <Text fontFamily={"$js4"} fontSize={"$4"} color={themeColors.onyx}>
-            End Date
-            <Text fontFamily={"$js4"} fontSize={"$4"} color={"red"}>
-              *
-            </Text>
-          </Text>
-          <DateTimePicker
-            value={endDate}
-            mode="date"
-            minDate={startDate}
-            onChange={(date) => {
-              setEndDate(date);
-              setMedicineForm((prev) => {
-                return {
-                  ...prev,
-                  endDate: date,
-                };
-              });
-            }}
-          />
-        </YStack>
-        <LoaderButton
-          style={{ marginTop: 20, marginBottom: 10 }}
-          disabled={medicineFormValid(medicineForm) === false}
-          text="Add"
-          message="Adding..."
-          theme={"accent"}
-          isLoading={false}
-          onPress={() => {
+    <View style={styles.formRoot}>
+      <VitalityDrawerHeader title="Add Medicine" onClose={dismiss} />
+      <ScrollView
+        style={styles.scroll}
+        contentContainerStyle={styles.scrollContent}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
+        <BookingTextField
+          label="Medicine Name"
+          value={medicineForm.name ?? ""}
+          onChangeText={(text) =>
+            setMedicineForm((prev) => ({ ...prev, name: text }))
+          }
+          placeholder="e.g. Rhus Tox 30"
+          required
+          maxLength={50}
+          showCount
+        />
+        <BookingTextField
+          label="Dosage"
+          value={medicineForm.dosage ?? ""}
+          onChangeText={(text) =>
+            setMedicineForm((prev) => ({ ...prev, dosage: text }))
+          }
+          placeholder="e.g. 2 drops • Twice daily"
+          required
+          maxLength={50}
+          showCount
+        />
+        <View style={styles.dateRow}>
+          <View style={styles.dateColStart}>
+            <MedicineDateField
+              label="Prescribed Date"
+              value={startDate}
+              required
+              icon="calendar-today"
+              onChange={(date) => {
+                setStartDate(date);
+                setMedicineForm((prev) => {
+                  const next = { ...prev, startDate: date };
+                  if (prev.endDate && date > prev.endDate) {
+                    setEndDate(date);
+                    next.endDate = date;
+                  }
+                  return next;
+                });
+              }}
+            />
+          </View>
+          <View style={styles.dateColEnd}>
+            <MedicineDateField
+              label="End Date"
+              value={endDate}
+              required
+              icon="event"
+              minDate={startDate}
+              onChange={(date) => {
+                setEndDate(date);
+                setMedicineForm((prev) => ({ ...prev, endDate: date }));
+              }}
+            />
+          </View>
+        </View>
+      </ScrollView>
+      <VitalityDrawerFooter
+        backgroundColor={loginColors.surfaceContainerLowest}
+      >
+        <LoginPrimaryButton
+          label="Add Medicine"
+          loadingLabel="Adding..."
+          disabled={!isValid}
+          loading={loading}
+          style={styles.submitButton}
+          onPress={async () => {
             const form = medicineFormValid(medicineForm);
-            if (form && user.phoneNumber) {
-              HistoryService.addMedicine({
+            if (!form || !user.phoneNumber) return;
+            setLoading(true);
+            try {
+              await HistoryService.addMedicine({
                 ...form,
                 phoneNumber: user.phoneNumber,
-              }).then(() => {
-                onClose();
               });
+              onClose();
+            } catch (err) {
+              console.log("Error adding medicine", err);
+            } finally {
+              setLoading(false);
             }
           }}
         />
-      </YStack>
-    </ScrollView>
-  );
-};
-
-export const AddMedicine = ({ user }: { user: UserProfile }) => {
-  return (
-    <View style={{ flex: 1, backgroundColor: themeColors.plat }}>
-      <DrawerSheet<void>
-        FC={({ setOpen }) => (
-          <FloatingRoundButton onPress={() => setOpen(true)} />
-        )}
-        Child={({ onClose }) => <MedicineForm onClose={onClose} user={user} />}
-        onClose={async (data) => {}}
-      ></DrawerSheet>
+      </VitalityDrawerFooter>
     </View>
   );
 };
+
+export const AddMedicine = ({ user }: { user: UserProfile }) => (
+  <VitalityDrawerSheet<void>
+    frameBackgroundColor={loginColors.surfaceContainerLowest}
+    FC={({ setOpen }) => (
+      <FloatingRoundButton onPress={() => setOpen(true)} />
+    )}
+    Child={({ onClose }) => <MedicineForm onClose={onClose} user={user} />}
+    onClose={async () => {}}
+  />
+);
+
+const styles = StyleSheet.create({
+  formRoot: {
+    flexShrink: 1,
+    maxHeight: "100%",
+  },
+  scroll: {
+    flexGrow: 0,
+    flexShrink: 1,
+  },
+  scrollContent: {
+    paddingHorizontal: loginSpacing.containerMargin,
+    paddingBottom: loginSpacing.stackLg,
+  },
+  dateRow: {
+    flexDirection: "row",
+    marginBottom: loginSpacing.stackMd,
+  },
+  dateColStart: {
+    flex: 1,
+    marginRight: loginSpacing.stackMd,
+  },
+  dateColEnd: {
+    flex: 1,
+  },
+  submitButton: {
+    marginTop: 0,
+  },
+});

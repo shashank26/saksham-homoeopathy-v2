@@ -1,214 +1,130 @@
-import { Logo } from "@/components/Images";
-import { HealthDisclaimer } from "@/components/common/HealthDisclaimer";
-import { LegalLinks } from "@/components/common/LegalLinks";
+import { LoaderScreen } from "@/components/LoaderScreen";
+import { loginColors, loginSpacing } from "@/themes/loginDesign";
 import { FirebaseAuthTypes } from "@react-native-firebase/auth";
 import * as burnt from "burnt";
-import { FC, useState } from "react";
-import { KeyboardAvoidingView, View } from "react-native";
-import { H2, Input, ScrollView, YStack } from "tamagui";
-import { LoaderButton } from "../controls/LoaderButton";
+import { FC, useCallback, useEffect, useRef, useState } from "react";
+import {
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  View,
+} from "react-native";
 import { useAuth } from "./hooks/useAuth";
-
-type OTPAuthCode = "auth/invalid-verification-code" | "auth/code-expired";
-type OTPAuthMessage = { code: OTPAuthCode; message: string } | null;
-
-const OTPAuth: FC<{
-  confirm: FirebaseAuthTypes.ConfirmationResult;
-  onResendOTP: (message: string) => void;
-}> = ({ confirm, onResendOTP }) => {
-  const [otp, setOtp] = useState<string>("");
-  const [verifying, setVerifying] = useState<boolean>(false);
-  const { setError } = useAuth();
-  const [message, setMessage] = useState<OTPAuthMessage>(null);
-
-  return (
-    <>
-      <Input
-        fontFamily={"$js4"}
-        fontSize={"$4"}
-        borderWidth={2}
-        keyboardType="numeric"
-        placeholder="Enter 6 Digit Code"
-        maxLength={6}
-        readOnly={verifying}
-        secureTextEntry={true}
-        onChangeText={(e) => {
-          const filteredValue = e.replace(/[^0-9]/g, "");
-          setOtp(filteredValue);
-        }}
-      />
-      <LoaderButton
-        isLoading={verifying}
-        message="Logging in..."
-        text="Login"
-        disabled={otp.length !== 6 || verifying}
-        theme={"accent"}
-        onPress={async () => {
-          if (verifying) return;
-          onResendOTP("");
-          setVerifying(true);
-          try {
-            const resp = await confirm.confirm(otp);
-          } catch (err: any) {
-            // TODO: Log to crashylitics
-            console.log(err);
-            let message = "Login failed!";
-            if (err.code === "auth/invalid-verification-code") {
-              message = "Invalid OTP. Please try again.";
-            } else if (err.code === "auth/code-expired") {
-              message = "OTP expired. Please request a new OTP.";
-              onResendOTP(message);
-            }
-            setError?.(err);
-            setMessage({
-              code: err.code as OTPAuthCode,
-              message,
-            });
-            burnt.toast({
-              title: "Error",
-              message,
-              preset: "error",
-              shouldDismissByDrag: true,
-              duration: 10,
-            });
-          }
-          setVerifying(false);
-        }}
-      ></LoaderButton>
-      {message && (
-        <>
-          <H2
-            fontFamily="$js6"
-            color="$accent"
-            size="$4"
-            style={{
-              textAlign: "center",
-              color: "red",
-            }}
-          >
-            {message.message}
-          </H2>
-        </>
-      )}
-    </>
-  );
-};
+import { LoginBrandSection } from "./login/LoginBrandSection";
+import { LoginCard } from "./login/LoginCard";
+import { LoginDisclaimer } from "./login/LoginDisclaimer";
+import { LoginFooter } from "./login/LoginFooter";
+import { LoginHeader } from "./login/LoginHeader";
+import { LoginSectionDivider } from "./login/LoginSectionDivider";
+import { OtpVerificationForm } from "./login/OtpVerificationForm";
+import { PhoneNumberForm } from "./login/PhoneNumberForm";
+import { useLoginFonts } from "./login/useLoginFonts";
 
 export const Login: FC = () => {
+  const fontsLoaded = useLoginFonts();
   const { isLoading, signIn } = useAuth();
-  const [fetchingOTP, setFetchingOTP] = useState<boolean>(false);
-  const [phoneNumber, setPhoneNumber] = useState<string>("");
+  const [fetchingOTP, setFetchingOTP] = useState(false);
+  const [phoneNumber, setPhoneNumber] = useState("");
   const [confirm, setConfirm] =
     useState<FirebaseAuthTypes.ConfirmationResult | null>(null);
-  const [resendOTP, setResendOTP] = useState<string>("");
+  const [statusMessage, setStatusMessage] = useState("");
+  const scrollViewRef = useRef<ScrollView>(null);
+
+  const requestOtp = useCallback(async () => {
+    if (isLoading || !signIn || !phoneNumber) return;
+    try {
+      setStatusMessage("Fetching OTP...");
+      setFetchingOTP(true);
+      const confirmation = await signIn(parseInt(phoneNumber, 10));
+      setConfirm(confirmation);
+      setStatusMessage("");
+    } catch (err) {
+      console.log(err);
+      burnt.toast({
+        title: "Error",
+        message: "Login failed!",
+        preset: "error",
+        duration: 4,
+      });
+      setStatusMessage("Failed to fetch OTP. Please try again.");
+    }
+    setFetchingOTP(false);
+  }, [isLoading, phoneNumber, signIn]);
+
+  useEffect(() => {
+    if (!confirm) return;
+    const timer = setTimeout(() => {
+      scrollViewRef.current?.scrollToEnd({ animated: true });
+    }, 150);
+    return () => clearTimeout(timer);
+  }, [confirm]);
+
+  if (!fontsLoaded) {
+    return <LoaderScreen />;
+  }
 
   return (
-    <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
-      <ScrollView
-        contentContainerStyle={{
-          flexGrow: 1,
-        }}
+    <View style={styles.screen}>
+      <LoginHeader />
+      <KeyboardAvoidingView
+        style={styles.flex}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
       >
-        <YStack flex={1} padding={"$6"} gap={"$4"} justifyContent="center">
-          <View
-            style={{
-              alignItems: "center",
-            }}
-          >
-            <Logo width={160} height={160} />
-          </View>
-          <H2
-            marginBottom={50}
-            fontFamily="$js6"
-            color="$accent"
-            size="$14"
-            style={{
-              textAlign: "center",
-              lineHeight: "50",
-            }}
-          >
-            Saksham Homoeopathy
-          </H2>
-          <Input
-            fontFamily={"$js4"}
-            fontSize={"$4"}
-            borderWidth={2}
-            readOnly={fetchingOTP || isLoading}
-            keyboardType="numeric"
-            placeholder="Phone number"
-            onChangeText={(e: string) => {
-              const filteredValue = e.replace(/[^0-9]/g, "");
-              setPhoneNumber(filteredValue);
-            }}
-            maxLength={10}
-            value={phoneNumber.toString()}
-          />
-          {confirm ? (
-            <OTPAuth
-              confirm={confirm}
-              onResendOTP={(message) => {
-                if (message === "") {
-                  setResendOTP("");
-                  return;
-                }
-                setConfirm(null);
-                setResendOTP(message);
-                setFetchingOTP(false);
-              }}
-            ></OTPAuth>
-          ) : (
-            <>
-              <LoaderButton
-                disabled={phoneNumber.length !== 10 || fetchingOTP || isLoading}
-                theme={"accent"}
-                style={{
-                  fontSize: 20,
-                  fontWeight: "bold",
-                }}
-                message="Sending..."
-                text={"Get OTP"}
+        <ScrollView
+          ref={scrollViewRef}
+          contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View style={styles.main}>
+            <LoginBrandSection />
+            <LoginCard>
+              <PhoneNumberForm
+                phoneNumber={phoneNumber}
+                onPhoneNumberChange={setPhoneNumber}
+                disabled={isLoading}
+                otpSent={!!confirm}
                 isLoading={fetchingOTP || isLoading}
-                onPress={async () => {
-                  if (isLoading || !signIn || !phoneNumber) return;
-                  try {
-                    setResendOTP("Fetching OTP...");
-                    setFetchingOTP(true);
-                    const confirm = await signIn(parseInt(phoneNumber));
-                    setConfirm(confirm);
-                  } catch (err) {
-                    console.log(err);
-                    burnt.toast({
-                      title: "Error",
-                      message: "Login failed!",
-                      preset: "error",
-                      duration: 4,
-                    });
-                    setResendOTP("Failed to fetch OTP. Please try again.");
-                  }
-                  setFetchingOTP(false);
-                }}
-              ></LoaderButton>
-              {resendOTP && (
+                statusMessage={statusMessage}
+                onSendOtp={requestOtp}
+              />
+              {confirm ? (
                 <>
-                  <H2
-                    fontFamily="$js6"
-                    color="$accent"
-                    size="$4"
-                    style={{
-                      textAlign: "center",
-                      color: "red",
-                    }}
-                  >
-                    {resendOTP}
-                  </H2>
+                  <LoginSectionDivider />
+                  <OtpVerificationForm
+                    key={confirm.verificationId}
+                    confirm={confirm}
+                    onResend={requestOtp}
+                  />
                 </>
-              )}
-            </>
-          )}
-          <HealthDisclaimer />
-          <LegalLinks compact />
-        </YStack>
-      </ScrollView>
-    </KeyboardAvoidingView>
+              ) : null}
+            </LoginCard>
+            <LoginDisclaimer />
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+      <LoginFooter />
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  screen: {
+    flex: 1,
+    backgroundColor: loginColors.background,
+  },
+  flex: {
+    flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
+    paddingHorizontal: loginSpacing.containerMargin,
+    paddingVertical: loginSpacing.stackLg,
+    alignItems: "center",
+  },
+  main: {
+    width: "100%",
+    maxWidth: 480,
+    alignItems: "center",
+  },
+});

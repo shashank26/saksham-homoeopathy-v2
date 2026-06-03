@@ -1,5 +1,6 @@
 import { themeColors } from "@/themes/themes";
 import { Ionicons } from "@expo/vector-icons";
+import type { ReactElement } from "react";
 import { TouchableOpacity, StyleSheet, View } from "react-native";
 
 export const FloatingRoundButton = ({
@@ -7,7 +8,7 @@ export const FloatingRoundButton = ({
   icon = <Ionicons name="add" size={24} color="white" />,
 }: {
   onPress: () => void;
-  icon?: JSX.Element;
+  icon?: ReactElement;
 }) => {
   return (
     <View style={styles.floatingButtonContainer}>

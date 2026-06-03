@@ -1,11 +1,8 @@
-import {
-  initializeAppCheck,
-  ReactNativeFirebaseAppCheckProvider,
-} from "@react-native-firebase/app-check";
+import { initializeAppCheck } from "@react-native-firebase/app-check";
+import ReactNativeFirebaseAppCheckProvider from "@react-native-firebase/app-check/dist/module/ReactNativeFirebaseAppCheckProvider.js";
 import { getApp } from "@react-native-firebase/app";
 
 export async function initializeFirebaseAppCheck() {
-
   try {
     const rnfbProvider = new ReactNativeFirebaseAppCheckProvider();
     const debugToken = __DEV__
