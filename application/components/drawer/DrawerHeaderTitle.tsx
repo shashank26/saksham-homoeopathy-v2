@@ -1,23 +1,23 @@
 import { themeColors } from "@/themes/themes";
 import { ParamListBase, RouteProp } from "@react-navigation/native";
 import { Text, View } from "@tamagui/core";
-import { Link } from "expo-router";
-import { useRouteInfo } from "expo-router/build/hooks";
+import { Link, useSegments } from "expo-router";
 import React from "react";
 import { XStack, YStack } from "tamagui";
 import { useAuth } from "../auth/hooks/useAuth";
+import { loginColors } from "@/themes/loginDesign";
 
 export const DrawerHeaderTitle = ({
   route,
 }: {
   route: RouteProp<ParamListBase, string>;
 }) => {
-  const info = useRouteInfo();
+  const segments = useSegments();
   const { notifications } = useAuth();
   const unreadNotifications = notifications?.filter((n) => !n.read);
   const title =
-    info.segments.length > 2
-      ? info.segments[2]
+    segments.length > 2
+      ? segments[2]
       : ((route?.params as any)?.title as string) || route?.name;
   return (
     <View alignItems="flex-end">
@@ -35,7 +35,7 @@ export const DrawerHeaderTitle = ({
             borderRadius={2}
             height={5}
             width={"70%"}
-            backgroundColor={themeColors.accent}
+            backgroundColor={loginColors.primaryContainer}
           />
         </YStack>
         {unreadNotifications?.length ? (

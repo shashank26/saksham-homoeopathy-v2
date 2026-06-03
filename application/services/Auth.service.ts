@@ -1,4 +1,5 @@
 import { FirebaseAuthTypes } from "@react-native-firebase/auth";
+import { callDeleteUserAccount } from "./AccountDeletion.service";
 import { db, Role, userAuth } from "./Firebase.service";
 
 export type CountryCode = `+${number}`;
@@ -57,9 +58,9 @@ export class AuthService {
   static async onProfileUpdate(cb: (userProfile: UserProfile) => void) {
     await db
       .collection("users")
-      .doc(this.user.uid)
+      .doc(this.user?.uid)
       .onSnapshot((doc) => {
-        if (doc.exists()) {
+        if (doc?.exists()) {
           const data = doc.data();
           cb({
             displayName: data?.displayName || "",
@@ -117,5 +118,15 @@ export class AuthService {
 
   static async signOut() {
     return this.Auth.signOut();
+  }
+
+  static async deleteAccount() {
+    if (!this.user) {
+      throw new Error("User not authenticated");
+    }
+
+    const idToken = await this.user.getIdToken(true);
+    await callDeleteUserAccount(idToken);
+    await this.Auth.signOut();
   }
 }

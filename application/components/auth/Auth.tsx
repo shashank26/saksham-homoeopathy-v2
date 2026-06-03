@@ -15,7 +15,20 @@ export const Auth: FC<PropsWithChildren> = ({ children }) => {
   }
 
   if (error) {
-    return <Text>Error occurred</Text>;
+    return (
+      <YStack
+        flex={1}
+        justifyContent="center"
+        padding="$4"
+        backgroundColor={themeColors.plat}
+      >
+        <Text fontFamily="$js5" fontSize="$5" textAlign="center">
+          Something went wrong while signing you in. Please close the app and
+          try again. If the problem continues, contact support from the login
+          screen.
+        </Text>
+      </YStack>
+    );
   }
 
   if (!user) {
@@ -30,18 +43,7 @@ export const Auth: FC<PropsWithChildren> = ({ children }) => {
     !profile?.displayName.trim() ||
     profile.displayName.trim() === profile.phoneNumber
   ) {
-    return (
-      <YStack
-        flex={1}
-        justifyContent="center"
-        alignContent="center"
-        alignItems="center"
-        paddingTop={100}
-        backgroundColor={themeColors.plat}
-      >
-        <ProfileScreen />
-      </YStack>
-    );
+    return <ProfileScreen variant="onboarding" />;
   }
 
   return <>{children}</>;

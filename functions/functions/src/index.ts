@@ -3,6 +3,7 @@ admin.initializeApp();
 
 import { setUserRoleFunction } from "./setUserRole";
 import { onNewMessageFunction } from "./pushNotifications";
+import { deleteUserAccountFunction } from "./deleteUserAccount";
 
 // const seed = () => {
 // admin.auth().createUser({
@@ -24,3 +25,4 @@ if (isEmulator) {
 
 export const setUserRole = setUserRoleFunction;
 export const onNewMessage = onNewMessageFunction;
+export const deleteUserAccount = deleteUserAccountFunction;

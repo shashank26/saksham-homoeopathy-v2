@@ -1,6 +1,7 @@
 import { themeColors } from "@/themes/themes";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import type { ReactElement } from "react";
 import { TouchableOpacity } from "react-native";
 import { XStack } from "tamagui";
 
@@ -8,7 +9,7 @@ export const BackHeader = ({
   title,
   onPress,
 }: {
-  title: JSX.Element;
+  title: ReactElement;
   onPress?: () => void;
 }) => {
   const router = useRouter();

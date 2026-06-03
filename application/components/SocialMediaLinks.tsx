@@ -25,7 +25,7 @@ export default function SocialMediaLinks() {
   };
 
   return (
-    <XStack flexWrap="wrap" gap={10}>
+    <XStack flexWrap="wrap" gap={6}>
       {Object.entries(socialLinks).map(([key, url]) => (
         <TouchableOpacity
           key={key}
@@ -33,7 +33,7 @@ export default function SocialMediaLinks() {
           style={styles.button}
         >
           <Image source={{ uri: getIcon(key) }} style={styles.icon} />
-          <Text fontFamily="$js4" fontSize="$2" color={"#aaa"}>
+          <Text fontFamily="$js4" fontSize="$1" color={"#aaa"}>
             {key.charAt(0).toUpperCase() + key.slice(1)}
           </Text>
         </TouchableOpacity>

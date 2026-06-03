@@ -1,6 +1,6 @@
 import { View } from "react-native";
 import { H2, Spinner } from "tamagui";
-import { LogoSvg } from "./Images";
+import { Logo } from "./Images";
 
 export const LoaderScreen = () => {
   return (
@@ -15,7 +15,9 @@ export const LoaderScreen = () => {
         padding: 10,
       }}
     >
-      <LogoSvg viewBox="0 0 160 160" height={"50%"} width={"100%"} />
+      <Logo
+        style={{ width: "70%", aspectRatio: 1, maxHeight: 280 }}
+      />
       <H2
         fontFamily="$js6"
         color="$accent"
