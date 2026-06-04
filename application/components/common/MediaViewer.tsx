@@ -49,7 +49,7 @@ export const VideoViewer = ({
             <VideoView
               style={styles.video}
               player={vp}
-              allowsFullscreen
+              fullscreenOptions={{ enable: true }}
               allowsPictureInPicture
             />
           </>

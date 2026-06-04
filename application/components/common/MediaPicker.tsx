@@ -1,12 +1,12 @@
 import { themeColors } from "@/themes/themes";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Text } from "@tamagui/core";
+import { toast } from "burnt";
+import { useState } from "react";
+import { Pressable, View } from "react-native";
 import { Button, Image, XStack, YStack } from "tamagui";
 import { styleSheets } from "../styles";
-import { Pressable, View } from "react-native";
 import { OverlayActivityIndicator } from "./Alert";
-import { useState } from "react";
-import { toast } from "burnt";
 import {
   isMediaPickerSuccess,
   MediaPickerResult,
@@ -15,8 +15,8 @@ import {
   VideoCompresser,
 } from "./mediaPickerCore";
 
-export type { MediaPickerResult };
 export { isMediaPickerSuccess };
+export type { MediaPickerResult };
 
 export const ImagePicker = ({
   onClose,
@@ -64,6 +64,7 @@ export const VideoPicker = ({
 }) => {
   const [compressing, setCompressing] = useState<string | null>(null);
   const [compressionProgress, setCompressionProgress] = useState<number>(0);
+  
   return (
     <YStack gap={10} alignItems="center">
       <Button

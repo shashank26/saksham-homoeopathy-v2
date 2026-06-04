@@ -33,7 +33,7 @@ export default function SocialMediaLinks() {
           style={styles.button}
         >
           <Image source={{ uri: getIcon(key) }} style={styles.icon} />
-          <Text fontFamily="$js4" fontSize="$1" color={"#aaa"}>
+          <Text fontFamily="$js4" style={{ fontSize: 8 }} color={"#aaa"}>
             {key.charAt(0).toUpperCase() + key.slice(1)}
           </Text>
         </TouchableOpacity>
@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   icon: {
-    width: 20,
-    height: 20,
+    width: 16,
+    height: 16,
   },
 });

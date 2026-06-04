@@ -1,18 +1,31 @@
 import * as Notifications from "expo-notifications";
 
+type PermissionSettings = Notifications.NotificationPermissionsStatus & {
+  granted?: boolean;
+};
+
+function isNotificationPermissionGranted(settings: PermissionSettings) {
+  return (
+    settings.granted === true ||
+    settings.ios?.status === Notifications.IosAuthorizationStatus.AUTHORIZED ||
+    settings.ios?.status === Notifications.IosAuthorizationStatus.PROVISIONAL
+  );
+}
+
 export async function registerForPushNotifications() {
   let token;
 
-  const { status: existingStatus } = await Notifications.getPermissionsAsync();
+  const existingSettings =
+    (await Notifications.getPermissionsAsync()) as PermissionSettings;
+  let granted = isNotificationPermissionGranted(existingSettings);
 
-  let finalStatus = existingStatus;
-
-  if (existingStatus !== "granted") {
-    const { status } = await Notifications.requestPermissionsAsync();
-    finalStatus = status;
+  if (!granted) {
+    const requestedSettings =
+      (await Notifications.requestPermissionsAsync()) as PermissionSettings;
+    granted = isNotificationPermissionGranted(requestedSettings);
   }
 
-  if (finalStatus !== "granted") {
+  if (!granted) {
     return null;
   }
 
