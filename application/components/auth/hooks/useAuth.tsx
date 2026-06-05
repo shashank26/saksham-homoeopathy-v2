@@ -1,4 +1,5 @@
 import { AuthService, UserProfile } from "@/services/Auth.service";
+import { Monitoring } from "@/services/Monitoring.service";
 import { db, Role } from "@/services/Firebase.service";
 import {
   NotificationService,
@@ -47,7 +48,9 @@ export const AuthProvider = ({ children }: React.PropsWithChildren) => {
     if (user) {
       AuthService.setUser(user);
       setUser(user);
+      Monitoring.setUser({ id: user.uid });
     } else {
+      Monitoring.clearUser();
       setUser(null);
       setProfile(null);
       setRole(null);
@@ -58,13 +61,20 @@ export const AuthProvider = ({ children }: React.PropsWithChildren) => {
   useEffect(() => {
     if (!profile) return;
     (async () => {
-      const token = await registerForPushNotifications();
+      try {
+        const token = await registerForPushNotifications();
 
-      if (token) {
-        await db
-          .collection("users")
-          .doc(profile.id)
-          .set({ expoPushToken: token }, { merge: true });
+        if (token) {
+          await db
+            .collection("users")
+            .doc(profile.id)
+            .set({ expoPushToken: token }, { merge: true });
+        }
+      } catch (err) {
+        Monitoring.captureException(err, {
+          area: "notifications",
+          action: "registerPushToken",
+        });
       }
     })();
   }, [profile]);
@@ -91,6 +101,10 @@ export const AuthProvider = ({ children }: React.PropsWithChildren) => {
       let role = await AuthService.getUserRole();
       setRole(role || Role.USER);
       setProfile(userProfile);
+      Monitoring.setUser({
+        id: user.uid,
+        role: role || Role.USER,
+      });
     })();
 
     return () => {
@@ -119,6 +133,10 @@ export const AuthProvider = ({ children }: React.PropsWithChildren) => {
           try {
             return AuthService.signIn("+91", phoneNumber);
           } catch (err) {
+            Monitoring.captureException(err, {
+              area: "auth",
+              action: "signIn",
+            });
             setError(err as any);
             throw err;
           }
@@ -128,6 +146,10 @@ export const AuthProvider = ({ children }: React.PropsWithChildren) => {
             const updatedProfile = await AuthService.putUserProfile(profile);
             setProfile(updatedProfile as UserProfile);
           } catch (err) {
+            Monitoring.captureException(err, {
+              area: "auth",
+              action: "updateProfile",
+            });
             setError(err as any);
             throw err;
           }

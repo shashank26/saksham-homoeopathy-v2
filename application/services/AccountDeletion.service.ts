@@ -1,3 +1,5 @@
+import { Monitoring } from "@/services/Monitoring.service";
+
 const FIREBASE_PROJECT_ID = "saksham-homoeopathy-66ec9";
 const FIREBASE_FUNCTIONS_REGION = "us-central1";
 
@@ -26,6 +28,11 @@ export async function callDeleteUserAccount(idToken: string): Promise<void> {
     const message =
       body?.error?.message ??
       `Account deletion failed (${response.status})`;
+    Monitoring.captureException(new Error(message), {
+      area: "account",
+      action: "deleteAccount",
+      status: response.status,
+    });
     throw new Error(message);
   }
 }

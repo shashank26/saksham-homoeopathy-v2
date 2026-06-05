@@ -4,6 +4,7 @@ import { LegalLinks } from "@/components/common/LegalLinks";
 import { LoaderScreen } from "@/components/LoaderScreen";
 import { useVitalityFonts } from "@/hooks/useVitalityFonts";
 import { UserProfile } from "@/services/Auth.service";
+import { Monitoring } from "@/services/Monitoring.service";
 import { UserService } from "@/services/User.service";
 import {
   loginColors,
@@ -64,7 +65,14 @@ export const ProfileScreen: FC<ProfileScreenProps> = ({
 
   const handleUpdate = async (updated: UserProfile) => {
     setLoading(true, "Please wait", "Updating your profile...");
-    await updateProfile?.(updated);
+    try {
+      await updateProfile?.(updated);
+    } catch (err) {
+      Monitoring.captureException(err, {
+        area: "profile",
+        action: "updateProfile",
+      });
+    }
     setLoading(false, "", "");
   };
 
@@ -108,8 +116,11 @@ export const ProfileScreen: FC<ProfileScreenProps> = ({
                   ...profile,
                   photoUrl: storageUrl as string,
                 });
-              } catch {
-                // upload failed silently as before
+              } catch (err) {
+                Monitoring.captureException(err, {
+                  area: "profile",
+                  action: "uploadProfileImage",
+                });
               }
               setLoading(false, "", "");
             }}
@@ -148,7 +159,11 @@ export const ProfileScreen: FC<ProfileScreenProps> = ({
                 setLoading(true, "Please wait", "Deleting your account...");
                 try {
                   await deleteAccount();
-                } catch {
+                } catch (err) {
+                  Monitoring.captureException(err, {
+                    area: "profile",
+                    action: "deleteAccount",
+                  });
                   Alert.alert(
                     "Deletion failed",
                     "We could not delete your account. Please try again or email support.",

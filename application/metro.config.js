@@ -1,16 +1,16 @@
 const path = require("path");
-const { getDefaultConfig } = require("expo/metro-config");
-const { withNativeWind } = require('nativewind/metro');
+const { getSentryExpoConfig } = require("@sentry/react-native/metro");
+const { withNativeWind } = require("nativewind/metro");
 
 module.exports = (() => {
   const projectRoot = __dirname;
-  const config = getDefaultConfig(projectRoot);
+  const config = getSentryExpoConfig(projectRoot);
 
   const { transformer, resolver } = config;
 
   config.transformer = {
     ...transformer,
-    babelTransformerPath: require.resolve("react-native-svg-transformer/expo")
+    babelTransformerPath: require.resolve("react-native-svg-transformer/expo"),
   };
   config.resolver = {
     ...resolver,
@@ -18,9 +18,12 @@ module.exports = (() => {
     sourceExts: [...resolver.sourceExts, "svg"],
     extraNodeModules: {
       ...resolver.extraNodeModules,
-      "@tamagui/portal": path.resolve(projectRoot, "node_modules/@tamagui/portal"),
+      "@tamagui/portal": path.resolve(
+        projectRoot,
+        "node_modules/@tamagui/portal",
+      ),
     },
   };
 
-  return withNativeWind(config, { input: './global.css' });
+  return withNativeWind(config, { input: "./global.css" });
 })();

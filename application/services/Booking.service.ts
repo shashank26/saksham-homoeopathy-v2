@@ -1,3 +1,4 @@
+import { Monitoring } from "@/services/Monitoring.service";
 import { serverTimestamp } from "@react-native-firebase/firestore";
 import { db } from "./Firebase.service";
 import { NotificationService } from "./Notification.service";
@@ -83,6 +84,10 @@ export class BookingService {
       },
       (error) => {
         console.error("Error in booking update listener:", error);
+        Monitoring.captureException(error, {
+          area: "booking",
+          action: "onBookingUpdate",
+        });
       },
     );
     return unsub;
@@ -109,6 +114,7 @@ export class BookingService {
       return res;
     } catch (err) {
       console.error("Error adding booking:", err);
+      Monitoring.captureException(err, { area: "booking", action: "addBooking" });
       return null;
     }
   }
@@ -121,6 +127,10 @@ export class BookingService {
       })
       .catch((error) => {
         console.error("Error checking slot availability: ", error);
+        Monitoring.captureException(error, {
+          area: "booking",
+          action: "isSlotAvailable",
+        });
         return false;
       });
   }
@@ -131,6 +141,10 @@ export class BookingService {
       return true;
     } catch (err) {
       console.error("Error deleting booking:", err);
+      Monitoring.captureException(err, {
+        area: "booking",
+        action: "deleteBooking",
+      });
       return false;
     }
   }
@@ -147,6 +161,10 @@ export class BookingService {
       return true;
     } catch (err) {
       console.error("Error cancelling booking:", err);
+      Monitoring.captureException(err, {
+        area: "booking",
+        action: "cancelBooking",
+      });
       return false;
     }
   }

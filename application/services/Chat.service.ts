@@ -1,3 +1,4 @@
+import { Monitoring } from "@/services/Monitoring.service";
 import {
   FirebaseFirestoreTypes,
   increment,
@@ -49,6 +50,10 @@ export class ChatService {
         },
         (error) => {
           console.error("Error fetching messages: ", error);
+          Monitoring.captureException(error, {
+            area: "chat",
+            action: "listenToLatestMessages",
+          });
         },
       );
   }
@@ -110,6 +115,10 @@ export class ChatService {
       },
       (error) => {
         console.error("Error fetching chat metadata: ", error);
+        Monitoring.captureException(error, {
+          area: "chat",
+          action: "listenToChatMetadata",
+        });
       },
     );
   }
@@ -167,6 +176,7 @@ export class ChatService {
       console.log("Message sent successfully");
     } catch (error) {
       console.error("Error sending message: ", error);
+      Monitoring.captureException(error, { area: "chat", action: "send" });
     }
   }
 }

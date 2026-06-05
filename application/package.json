@@ -10,8 +10,8 @@
     "web": "expo start --web",
     "test": "jest --watchAll",
     "lint": "expo lint",
-    "build:android:production": "npx eas@latest build --platform android --profile production --local",
-    "build:android:development": "npx eas@latest build --platform android --profile development --local"
+    "build:android:production": "bash scripts/eas-local-build.sh --platform android --profile production --local",
+    "build:android:development": "bash scripts/eas-local-build.sh --platform android --profile development --local"
   },
   "jest": {
     "preset": "jest-expo"
@@ -28,6 +28,7 @@
     "@react-navigation/bottom-tabs": "^7.2.0",
     "@react-navigation/drawer": "^7.1.1",
     "@react-navigation/native": "^7.0.14",
+    "@sentry/react-native": "~7.11.0",
     "@shopify/flash-list": "2.0.2",
     "@tamagui/config": "1.144.4",
     "@tamagui/core": "1.144.4",

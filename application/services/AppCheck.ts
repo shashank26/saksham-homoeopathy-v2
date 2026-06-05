@@ -1,3 +1,4 @@
+import { Monitoring } from "@/services/Monitoring.service";
 import { initializeAppCheck } from "@react-native-firebase/app-check";
 import ReactNativeFirebaseAppCheckProvider from "@react-native-firebase/app-check/dist/module/ReactNativeFirebaseAppCheckProvider.js";
 import { getApp } from "@react-native-firebase/app";
@@ -36,5 +37,7 @@ export async function initializeFirebaseAppCheck() {
     }
   } catch (error) {
     console.error("❌ App Check initialization failed:", error);
+    Monitoring.captureException(error, { area: "appCheck", action: "init" });
+    Monitoring.logError("App Check initialization failed");
   }
 }

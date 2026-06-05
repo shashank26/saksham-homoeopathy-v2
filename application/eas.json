@@ -17,6 +17,19 @@
       "autoIncrement": true,
       "android": {
         "buildType": "app-bundle"
+      },
+      "env": {
+        "SENTRY_ORG": "arniparth-fq",
+        "SENTRY_PROJECT": "react-native"
+      }
+    },
+    "production-local": {
+      "autoIncrement": true,
+      "android": {
+        "buildType": "app-bundle"
+      },
+      "env": {
+        "SENTRY_DISABLE_AUTO_UPLOAD": "true"
       }
     }
   },
