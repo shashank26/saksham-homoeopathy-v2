@@ -81,6 +81,18 @@ const drawerOptions = [
     ),
   },
   {
+    title: "Send Feedback",
+    name: "feedback",
+    label: "Send Feedback",
+    icon: (focused: boolean) => (
+      <MaterialIcons
+        name="feedback"
+        size={24}
+        color={focused ? themeColors.onyx : themeColors.gray}
+      />
+    ),
+  },
+  {
     title: "Profile",
     name: "profile",
     label: "Profile",

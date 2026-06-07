@@ -8,6 +8,7 @@ import { AuthService } from "./Auth.service";
 import { db, Role } from "./Firebase.service";
 
 export type ChatMessage = {
+  id?: string;
   message: string;
   sender: string;
   sentAt: Date;
@@ -40,6 +41,7 @@ export class ChatService {
           snapshot.forEach((doc) => {
             const data = doc.data();
             messages.push({
+              id: doc.id,
               message: data.message,
               sender: data.sender,
               sentAt: data.sentAt.toDate(),
@@ -77,6 +79,7 @@ export class ChatService {
     return snapshot.docs.map((doc) => {
       const data = doc.data();
       return {
+        id: doc.id,
         message: data.message,
         sender: data.sender,
         sentAt: data.sentAt.toDate(),

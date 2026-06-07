@@ -1,3 +1,4 @@
+import { themeColors } from "@/themes/themes";
 import { MaterialIcons } from "@expo/vector-icons";
 import { toast } from "burnt";
 import { useState } from "react";
@@ -10,13 +11,14 @@ export const MessageTextBox = ({
 }) => {
   const [text, setText] = useState("");
   return (
-    <XStack justifyContent="center" gap={5} alignContent="center" style={{
+    <XStack justifyContent="center" paddingTop={8} borderTopWidth={1} borderColor={themeColors.lightGray} gap={5} alignContent="center" style={{
       position: 'fixed',
       bottom: 0
     }}>
       <Input
         fontFamily={"$js5"}
-        style={{ flex: 1 }}
+        borderWidth={0}
+        style={{ flex: 1, backgroundColor: themeColors.plat }}
         fontSize={14}
         placeholder="Type a message..."
         value={text}

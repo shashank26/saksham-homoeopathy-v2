@@ -29,9 +29,8 @@ export const ChatUserInfo = React.memo(
         style={{
           backgroundColor: themeColors.plat,
           width: "100%",
-          padding: 5,
-          borderRadius: 10,
-          borderBottomColor: "#ccc",
+          padding: 8,
+          borderBottomColor: themeColors.lightGray,
           borderBottomWidth: 1,
         }}
       >

@@ -1,12 +1,11 @@
 import { ChatService } from "@/services/Chat.service";
-import { KeyboardAvoidingView } from "react-native";
+import { useHeaderHeight } from "@react-navigation/elements";
+import { useContext } from "react";
+import { KeyboardAvoidingView, Platform } from "react-native";
 import { YStack } from "tamagui";
+import { ChatContext } from "./ChatContext";
 import { MessageList } from "./MessageList";
 import { MessageTextBox } from "./MessageTextBox";
-import { ChatContext } from "./ChatContext";
-import { useContext } from "react";
-import { Platform } from "react-native";
-import { useHeaderHeight } from "@react-navigation/elements";
 
 export const ChatContainer = () => {
   const { chatId, receiverId } = useContext(ChatContext)!;

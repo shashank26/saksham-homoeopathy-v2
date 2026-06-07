@@ -1,12 +1,17 @@
 import { ChatMessage, ChatService } from "@/services/Chat.service";
 import { MomentService } from "@/services/Moment.service";
-import { useEffect, useRef, useState } from "react";
-import { Dimensions, FlatList } from "react-native";
+import { UserService } from "@/services/User.service";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { FlatList, Text } from "react-native";
 import { View, YStack } from "tamagui";
-import { Text } from "react-native";
 import { useAuth } from "../auth/hooks/useAuth";
+import { ChatMessageRow } from "./ChatMessageRow";
+import { DateSeparator } from "./DateSeparator";
 import { DateToast } from "./DateToast";
-import { themeColors } from "@/themes/themes";
+import {
+  buildMessageListItems,
+  MessageListItem,
+} from "./messageListUtils";
 
 export const MessageList = ({ chatId }: { chatId: string }) => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -17,7 +22,14 @@ export const MessageList = ({ chatId }: { chatId: string }) => {
   const hideTimeout = useRef<NodeJS.Timeout | null>(null);
   const lastDocRef = useRef<any>(null);
   const loadingOlder = useRef(false);
-  const { height } = Dimensions.get("window");
+  const [senderLabels, setSenderLabels] = useState<Map<string, string>>(
+    new Map(),
+  );
+
+  const listItems = useMemo(
+    () => buildMessageListItems(messages),
+    [messages],
+  );
 
   useEffect(() => {
     const unsub = ChatService.listenToLatestMessages(
@@ -32,6 +44,41 @@ export const MessageList = ({ chatId }: { chatId: string }) => {
       unsub();
     };
   }, [chatId]);
+
+  useEffect(() => {
+    if (!messages.length) return;
+
+    const senderIds = [...new Set(messages.map((m) => m.sender))];
+    let cancelled = false;
+
+    const resolveSenders = async () => {
+      const labels = new Map<string, string>();
+
+      await Promise.all(
+        senderIds.map(async (senderId) => {
+          if (senderId === profile?.id) {
+            labels.set(senderId, "You");
+            return;
+          }
+
+          const user = await UserService.getUser(senderId);
+          const label =
+            user?.displayName || user?.phoneNumber || "Unknown";
+          labels.set(senderId, label);
+        }),
+      );
+
+      if (!cancelled) {
+        setSenderLabels(labels);
+      }
+    };
+
+    resolveSenders();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [messages, profile?.id]);
 
   const loadOlderMessages = async () => {
     if (!lastDocRef.current || loadingOlder.current) return;
@@ -54,8 +101,15 @@ export const MessageList = ({ chatId }: { chatId: string }) => {
   const onViewableItemsChanged = useRef(({ viewableItems }: any) => {
     if (!viewableItems.length) return;
 
-    const firstItem = viewableItems[viewableItems.length - 1].item;
-    const date = MomentService.getDDMMMYYY(firstItem.sentAt);
+    const topVisible = viewableItems[viewableItems.length - 1]?.item as
+      | MessageListItem
+      | undefined;
+    if (!topVisible) return;
+
+    const date =
+      topVisible.type === "message"
+        ? MomentService.getDDMMMYYY(topVisible.data.sentAt)
+        : topVisible.label;
 
     setVisibleDate(date);
     setShowDate(true);
@@ -66,6 +120,11 @@ export const MessageList = ({ chatId }: { chatId: string }) => {
     }, 800);
   }).current;
 
+  const getSenderLabel = (senderId: string) => {
+    if (senderId === profile?.id) return "You";
+    return senderLabels.get(senderId) ?? "…";
+  };
+
   if (messages.length === 0) {
     return (
       <YStack style={{ flex: 1 }} justifyContent="center" alignItems="center">
@@ -75,49 +134,30 @@ export const MessageList = ({ chatId }: { chatId: string }) => {
   }
 
   return (
-    <View
-      style={{
-        flex: 1,
-      }}
-    >
+    <View style={{ flex: 1 }}>
       <DateToast date={visibleDate} visible={showDate} />
 
       <FlatList
         ref={flatListRef}
-        data={messages}
+        data={listItems}
         inverted={true}
+        keyExtractor={(item) => item.id}
         onEndReached={loadOlderMessages}
         onEndReachedThreshold={0.1}
         onViewableItemsChanged={onViewableItemsChanged}
         viewabilityConfig={{ itemVisiblePercentThreshold: 20 }}
-        renderItem={({ item, index }: { item: ChatMessage; index: number }) => {
-          const isOwnMessage = item.sender === profile?.id;
+        renderItem={({ item }: { item: MessageListItem }) => {
+          if (item.type === "date") {
+            return <DateSeparator label={item.label} />;
+          }
+
+          const isOwnMessage = item.data.sender === profile?.id;
           return (
-            <YStack
-              alignItems={isOwnMessage ? "flex-end" : "flex-start"}
-              key={index}
-              marginBottom={10}
-              gap={4}
-            >
-              <Text
-                style={{
-                  paddingHorizontal: 10,
-                  paddingVertical: 5,
-                  borderRadius: 15,
-                  backgroundColor: isOwnMessage
-                    ? themeColors.accent
-                    : themeColors.onyx,
-                  color: themeColors.light,
-                  maxWidth: "80%",
-                }}
-                key={index}
-              >
-                {item.message}
-              </Text>
-              <Text style={{ fontSize: 10, color: "#888" }}>
-                {MomentService.getTimeHHMM(item.sentAt)}
-              </Text>
-            </YStack>
+            <ChatMessageRow
+              message={item.data}
+              isOwnMessage={isOwnMessage}
+              senderLabel={getSenderLabel(item.data.sender)}
+            />
           );
         }}
       />

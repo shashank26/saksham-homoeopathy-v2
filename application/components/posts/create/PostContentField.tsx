@@ -11,23 +11,27 @@ type PostContentFieldProps = {
   value: string;
   onChangeText: (text: string) => void;
   maxLength?: number;
+  label?: string;
+  placeholder?: string;
 };
 
 export const PostContentField: FC<PostContentFieldProps> = ({
   value,
   onChangeText,
   maxLength = 500,
+  label = "Content",
+  placeholder = "Share your clinical observations or remedy insights...",
 }) => {
   const [focused, setFocused] = useState(false);
 
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>Content</Text>
+      <Text style={styles.label}>{label}</Text>
       <TextInput
         style={[styles.input, focused && styles.inputFocused]}
         value={value}
         onChangeText={onChangeText}
-        placeholder="Share your clinical observations or remedy insights..."
+        placeholder={placeholder}
         placeholderTextColor={loginColors.outlineVariant}
         maxLength={maxLength}
         multiline

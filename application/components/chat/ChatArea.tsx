@@ -8,6 +8,7 @@ import { UserInfo } from "../common/UserList";
 import { ChatContainer } from "./ChatContainer";
 import { ChatContext } from "./ChatContext";
 import { Role } from "@/services/Firebase.service";
+import { themeColors } from "@/themes/themes";
 
 export const ChatArea = () => {
   const { chatInitiated, receiverId } = useContext(ChatContext)!;
@@ -53,7 +54,7 @@ export const ChatArea = () => {
   }
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, backgroundColor: themeColors.light }}>
       {receiverId !== Role.DOCTOR ? (
         <BackHeader
           title={<UserInfo user={receiverProfile} />}

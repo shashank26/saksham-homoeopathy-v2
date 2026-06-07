@@ -17,9 +17,7 @@ export const UserInfo = React.memo(
           backgroundColor: themeColors.plat,
           width: "100%",
           padding: 5,
-          borderRadius: 10,
-          borderBottomColor: "#eee",
-          borderBottomWidth: 1,
+          marginBottom: 1
         }}
       >
         {user.photoUrl ? (
@@ -108,6 +106,9 @@ export const UserList = ({
         }}
       />
       <FlatList
+      style={{
+        backgroundColor: themeColors.lightGray,
+      }}
         data={userList.filter(
           (user) =>
             user.displayName.startsWith(searchToken) ||
