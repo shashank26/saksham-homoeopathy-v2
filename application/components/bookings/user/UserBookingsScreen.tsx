@@ -49,7 +49,6 @@ export const UserBookingsScreen: FC = () => {
       >
         <Text style={styles.pageTitle}>Book Appointment</Text>
         <BookingForm
-          currentBookings={bookings}
           onSuccess={() => {
             scrollRef.current?.scrollToEnd({ animated: true });
           }}

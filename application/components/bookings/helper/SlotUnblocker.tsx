@@ -6,11 +6,16 @@ import {
 import { VitalityDrawerHeader } from "@/components/common/VitalityDrawerHeader";
 import { BookingSlotGrid } from "@/components/bookings/user/BookingSlotGrid";
 import { useVitalityFonts } from "@/hooks/useVitalityFonts";
-import { BookingService, slots, SlotTime } from "@/services/Booking.service";
+import {
+  BookingService,
+  SlotStatusMap,
+  slots,
+  SlotTime,
+} from "@/services/Booking.service";
 import { MomentService } from "@/services/Moment.service";
 import { loginColors, loginSpacing } from "@/themes/loginDesign";
 import { toast } from "burnt";
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect, useMemo, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
 type SlotUnblockerSheetProps = {
@@ -46,22 +51,26 @@ const SlotUnblockerForm = ({
 }) => {
   const fontsLoaded = useVitalityFonts();
   const [selectedSlots, setSelectedSlots] = useState<SlotTime[]>([]);
-  const [blockedSlots, setBlockedSlots] = useState<
-    { label: string; value: SlotTime }[]
-  >([]);
+  const [slotStatusBySlot, setSlotStatusBySlot] = useState<SlotStatusMap>({});
 
   useEffect(() => {
-    const unsubscribe = BookingService.getBlockedSlotsUpdate(
+    const unsubscribe = BookingService.getSlotsForDateUpdate(
       selectedDate,
-      (blocked) => {
-        setBlockedSlots(
-          slots.filter((s) => blocked.includes(s.value)),
-        );
+      (statusBySlot) => {
+        setSlotStatusBySlot(statusBySlot);
         setSelectedSlots([]);
       },
     );
     return unsubscribe;
   }, [selectedDate]);
+
+  const blockedSlots = useMemo(
+    () =>
+      slots.filter(
+        (slot) => slotStatusBySlot[slot.value] === "blocked",
+      ),
+    [slotStatusBySlot],
+  );
 
   if (!fontsLoaded) {
     return null;

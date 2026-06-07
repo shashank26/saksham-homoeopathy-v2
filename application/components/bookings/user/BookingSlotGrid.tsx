@@ -15,6 +15,7 @@ type BookingSlotGridProps = {
   onSelectSlot: (value: SlotTime) => void;
   selectedSlot?: string;
   selectedSlots?: SlotTime[];
+  unavailableSlots?: SlotTime[];
   sectionTitle?: string;
   emptyMessage?: string;
   compact?: boolean;
@@ -24,6 +25,7 @@ export const BookingSlotGrid: FC<BookingSlotGridProps> = ({
   slots,
   selectedSlot = "",
   selectedSlots,
+  unavailableSlots = [],
   onSelectSlot,
   sectionTitle = "AVAILABLE SLOTS",
   emptyMessage = "No slots available for this date.",
@@ -36,12 +38,15 @@ export const BookingSlotGrid: FC<BookingSlotGridProps> = ({
     ) : (
       <View style={styles.grid}>
         {slots.map((slot) => {
+          const isUnavailable = unavailableSlots.includes(slot.value);
           const selected = selectedSlots
             ? selectedSlots.includes(slot.value)
             : selectedSlot === slot.value;
+
           return (
             <Pressable
               key={slot.value}
+              disabled={isUnavailable}
               onPress={() => onSelectSlot(slot.value)}
               style={styles.pressable}
             >
@@ -50,13 +55,15 @@ export const BookingSlotGrid: FC<BookingSlotGridProps> = ({
                   style={[
                     styles.slot,
                     selected && styles.slotSelected,
-                    pressed && styles.slotPressed,
+                    isUnavailable && styles.slotUnavailable,
+                    pressed && !isUnavailable && styles.slotPressed,
                   ]}
                 >
                   <Text
                     style={[
                       styles.slotText,
                       selected && styles.slotTextSelected,
+                      isUnavailable && styles.slotTextUnavailable,
                     ]}
                   >
                     {slot.label}
@@ -115,6 +122,11 @@ const styles = StyleSheet.create({
     borderColor: loginColors.secondary,
     backgroundColor: "rgba(137, 246, 166, 0.15)",
   },
+  slotUnavailable: {
+    backgroundColor: loginColors.surfaceContainer,
+    borderColor: loginColors.outlineVariant,
+    opacity: 0.55,
+  },
   slotPressed: {
     transform: [{ scale: 0.95 }],
   },
@@ -125,5 +137,8 @@ const styles = StyleSheet.create({
   },
   slotTextSelected: {
     color: loginColors.secondary,
+  },
+  slotTextUnavailable: {
+    color: loginColors.onSurfaceVariant,
   },
 });

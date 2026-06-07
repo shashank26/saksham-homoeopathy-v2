@@ -6,11 +6,16 @@ import {
 import { VitalityDrawerHeader } from "@/components/common/VitalityDrawerHeader";
 import { BookingSlotGrid } from "@/components/bookings/user/BookingSlotGrid";
 import { useVitalityFonts } from "@/hooks/useVitalityFonts";
-import { BookingService, slots, SlotTime } from "@/services/Booking.service";
+import {
+  BookingService,
+  SlotStatusMap,
+  slots,
+  SlotTime,
+} from "@/services/Booking.service";
 import { MomentService } from "@/services/Moment.service";
 import { loginColors, loginSpacing } from "@/themes/loginDesign";
 import { toast } from "burnt";
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect, useMemo, useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
 type SlotBlockerSheetProps = {
@@ -46,22 +51,36 @@ const SlotBlockerForm = ({
 }) => {
   const fontsLoaded = useVitalityFonts();
   const [selectedSlots, setSelectedSlots] = useState<SlotTime[]>([]);
-  const [availableSlots, setAvailableSlots] = useState<
-    { label: string; value: SlotTime }[]
-  >([]);
+  const [slotStatusBySlot, setSlotStatusBySlot] = useState<SlotStatusMap>({});
 
   useEffect(() => {
-    const unsubscribe = BookingService.getBlockedSlotsUpdate(
+    const unsubscribe = BookingService.getSlotsForDateUpdate(
       selectedDate,
-      (blocked) => {
-        setAvailableSlots(
-          slots.filter((s) => !blocked.includes(s.value)),
-        );
+      (statusBySlot) => {
+        setSlotStatusBySlot(statusBySlot);
         setSelectedSlots([]);
       },
     );
     return unsubscribe;
   }, [selectedDate]);
+
+  const unavailableSlots = useMemo(
+    () =>
+      slots
+        .filter((slot) =>
+          BookingService.isSlotUnavailable(slotStatusBySlot[slot.value]),
+        )
+        .map((slot) => slot.value),
+    [slotStatusBySlot],
+  );
+
+  const blockableSlots = useMemo(
+    () =>
+      slots.filter(
+        (slot) => !BookingService.isSlotUnavailable(slotStatusBySlot[slot.value]),
+      ),
+    [slotStatusBySlot],
+  );
 
   if (!fontsLoaded) {
     return null;
@@ -76,8 +95,8 @@ const SlotBlockerForm = ({
   };
 
   const allSelected =
-    availableSlots.length > 0 &&
-    selectedSlots.length === availableSlots.length;
+    blockableSlots.length > 0 &&
+    selectedSlots.length === blockableSlots.length;
 
   return (
     <View style={styles.formRoot}>
@@ -89,7 +108,7 @@ const SlotBlockerForm = ({
         <Text style={styles.dateLabel}>
           {MomentService.getDDMMMYYY(selectedDate)}
         </Text>
-        {availableSlots.length === 0 ? (
+        {blockableSlots.length === 0 ? (
           <Text style={styles.empty}>
             All slots are already blocked for this date.
           </Text>
@@ -100,7 +119,7 @@ const SlotBlockerForm = ({
                 if (allSelected) {
                   setSelectedSlots([]);
                 } else {
-                  setSelectedSlots(availableSlots.map((s) => s.value));
+                  setSelectedSlots(blockableSlots.map((s) => s.value));
                 }
               }}
             >
@@ -117,14 +136,15 @@ const SlotBlockerForm = ({
             <BookingSlotGrid
               compact
               sectionTitle="SELECT SLOTS TO BLOCK"
-              slots={availableSlots}
+              slots={slots}
+              unavailableSlots={unavailableSlots}
               selectedSlots={selectedSlots}
               onSelectSlot={toggleSlot}
             />
           </>
         )}
       </ScrollView>
-      {availableSlots.length > 0 ? (
+      {blockableSlots.length > 0 ? (
         <VitalityDrawerFooter
           backgroundColor={loginColors.surfaceContainerLowest}
         >

@@ -1,7 +1,7 @@
 import { useAuth } from "@/components/auth/hooks/useAuth";
 import {
   BookingService,
-  BookingType,
+  SlotStatusMap,
   slots,
   SlotTime,
 } from "@/services/Booking.service";
@@ -25,14 +25,10 @@ import {
 import { BookingTextField } from "./BookingTextField";
 
 type BookingFormProps = {
-  currentBookings: BookingType[];
   onSuccess?: () => void;
 };
 
-export const BookingForm: FC<BookingFormProps> = ({
-  currentBookings,
-  onSuccess,
-}) => {
+export const BookingForm: FC<BookingFormProps> = ({ onSuccess }) => {
   const [name, setName] = useState("");
   const [age, setAge] = useState("");
   const [sex, setSex] = useState("other");
@@ -41,9 +37,8 @@ export const BookingForm: FC<BookingFormProps> = ({
   );
   const [selectedSlot, setSelectedSlot] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const [availableSlots, setAvailableSlots] = useState<
-    { label: string; value: SlotTime }[]
-  >([]);
+  const [slotStatusBySlot, setSlotStatusBySlot] = useState<SlotStatusMap>({});
+  const [unavailableSlots, setUnavailableSlots] = useState<SlotTime[]>([]);
   const { user } = useAuth();
 
   useEffect(() => {
@@ -54,26 +49,32 @@ export const BookingForm: FC<BookingFormProps> = ({
   }, [selectedDate]);
 
   useEffect(() => {
-    BookingService.getBlockedSlots(selectedDate).then((blockedSlots) => {
-      const allSlots = slots.filter((slot) => {
-        const isBlocked = blockedSlots.some(
-          (blockedSlot) => blockedSlot === slot.value,
-        );
-        const isBooked = currentBookings.some(
-          (booking) =>
-            MomentService.getDDMMMYYY(booking.date) ===
-              MomentService.getDDMMMYYY(selectedDate) &&
-            booking.slot === slot.value,
-        );
+    const unsub = BookingService.getSlotsForDateUpdate(
+      selectedDate,
+      setSlotStatusBySlot,
+    );
+    return unsub;
+  }, [selectedDate]);
+
+  useEffect(() => {
+    const unavailable = slots
+      .filter((slot) => {
+        const status = slotStatusBySlot[slot.value];
+        const isUnavailable = BookingService.isSlotUnavailable(status);
         const isSlotExpired = MomentService.isSlotExpired(
           selectedDate,
           slot.value,
         );
-        return !isBlocked && !isBooked && !isSlotExpired;
-      });
-      setAvailableSlots(allSlots);
-    });
-  }, [selectedDate, currentBookings]);
+        return isUnavailable || isSlotExpired;
+      })
+      .map((slot) => slot.value);
+
+    setUnavailableSlots(unavailable);
+
+    if (selectedSlot && unavailable.includes(selectedSlot as SlotTime)) {
+      setSelectedSlot("");
+    }
+  }, [selectedDate, slotStatusBySlot, selectedSlot]);
 
   const canSubmit =
     name.trim().length > 0 &&
@@ -104,11 +105,12 @@ export const BookingForm: FC<BookingFormProps> = ({
         onSuccess?.();
       } else {
         toast({
-          title: "Booking Failed",
-          message: "Please try again later.",
+          title: "Slot unavailable",
+          message: "This slot was just booked. Please pick another time.",
           preset: "error",
           duration: 5,
         });
+        setSelectedSlot("");
       }
     } finally {
       setSubmitting(false);
@@ -158,7 +160,8 @@ export const BookingForm: FC<BookingFormProps> = ({
       />
 
       <BookingSlotGrid
-        slots={availableSlots}
+        slots={slots}
+        unavailableSlots={unavailableSlots}
         selectedSlot={selectedSlot}
         onSelectSlot={(value) => setSelectedSlot(value)}
       />
