@@ -1,4 +1,5 @@
 import { Monitoring } from "@/services/Monitoring.service";
+import { ModerationService } from "@/services/Moderation.service";
 import {
   FirebaseFirestoreTypes,
   increment,
@@ -158,11 +159,22 @@ export class ChatService {
   }
 
   static async send(message: string, chatId: string, receiverId: string) {
+    const senderId = AuthService.getUser().uid;
+    const canInteract = await ModerationService.canInteract(
+      senderId,
+      receiverId,
+      chatId,
+    );
+
+    if (!canInteract) {
+      throw new Error("INTERACTION_BLOCKED");
+    }
+
     const chatRef = this.collection.doc(chatId);
     console.log("Sending message to chatId:", chatId);
     const messageData: ChatMessage = {
       message,
-      sender: AuthService.getUser().uid,
+      sender: senderId,
       sentAt: serverTimestamp() as unknown as Date,
     };
 
@@ -178,8 +190,12 @@ export class ChatService {
 
       console.log("Message sent successfully");
     } catch (error) {
+      if (error instanceof Error && error.message === "INTERACTION_BLOCKED") {
+        throw error;
+      }
       console.error("Error sending message: ", error);
       Monitoring.captureException(error, { area: "chat", action: "send" });
+      throw error;
     }
   }
 }

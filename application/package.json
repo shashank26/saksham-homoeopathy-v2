@@ -11,7 +11,9 @@
     "test": "jest --watchAll",
     "lint": "expo lint",
     "build:android:production": "bash scripts/eas-local-build.sh --platform android --profile production --local",
-    "build:android:development": "bash scripts/eas-local-build.sh --platform android --profile development --local"
+    "build:android:development": "bash scripts/eas-local-build.sh --platform android --profile development --local",
+    "build:ios:production": "bash scripts/eas-local-build.sh --platform ios --profile production",
+    "ios:submit": "eas submit --platform ios"
   },
   "jest": {
     "preset": "jest-expo"
@@ -19,6 +21,7 @@
   "dependencies": {
     "@expo-google-fonts/manrope": "^0.4.2",
     "@expo/vector-icons": "^15.0.3",
+    "@react-native-async-storage/async-storage": "^3.1.1",
     "@react-native-community/datetimepicker": "8.6.0",
     "@react-native-firebase/app": "^24.0.0",
     "@react-native-firebase/app-check": "^24.0.0",

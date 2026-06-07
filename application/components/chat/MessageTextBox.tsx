@@ -6,29 +6,42 @@ import { Button, Input, XStack } from "tamagui";
 
 export const MessageTextBox = ({
   onSend,
+  disabled = false,
 }: {
   onSend: (message: string) => Promise<any>;
+  disabled?: boolean;
 }) => {
   const [text, setText] = useState("");
   return (
-    <XStack justifyContent="center" paddingTop={8} borderTopWidth={1} borderColor={themeColors.lightGray} gap={5} alignContent="center" style={{
-      position: 'fixed',
-      bottom: 0
-    }}>
+    <XStack
+      justifyContent="center"
+      paddingTop={8}
+      borderTopWidth={1}
+      borderColor={themeColors.lightGray}
+      gap={5}
+      alignContent="center"
+      style={{
+        position: "fixed",
+        bottom: 0,
+      }}
+    >
       <Input
         fontFamily={"$js5"}
         borderWidth={0}
         style={{ flex: 1, backgroundColor: themeColors.plat }}
         fontSize={14}
-        placeholder="Type a message..."
+        placeholder={
+          disabled ? "Messaging disabled" : "Type a message..."
+        }
         value={text}
+        editable={!disabled}
         onChangeText={(text) => {
           setText(text);
         }}
       />
       <Button
         onPress={async () => {
-          if (!text.trim()) return;
+          if (!text.trim() || disabled) return;
           try {
             await onSend(text.trim());
             setText("");
@@ -38,13 +51,14 @@ export const MessageTextBox = ({
               preset: "error",
             });
           }
-          
         }}
         height={42}
         padding={0}
         width={42}
         borderRadius={21}
         backgroundColor={"$accent"}
+        disabled={disabled}
+        opacity={disabled ? 0.5 : 1}
       >
         <MaterialIcons name={"send"} size={18} color={"white"} />
       </Button>

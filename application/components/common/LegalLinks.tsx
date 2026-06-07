@@ -1,7 +1,6 @@
 import { LEGAL_URLS } from "@/constants/legal";
 import { loginColors, loginTypography } from "@/themes/loginDesign";
 import { themeColors } from "@/themes/themes";
-import { openExternalUrl } from "@/utils/openUrl";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Text as TamaguiText } from "@tamagui/core";
 import { Href, router } from "expo-router";
@@ -11,23 +10,18 @@ import { XStack, YStack } from "tamagui";
 
 type LegalLinkItem = {
   label: string;
-  url?: string;
   route?: Href;
 };
 
 const links: LegalLinkItem[] = [
-  { label: "Privacy Policy", url: LEGAL_URLS.privacyPolicy },
-  { label: "Terms of Use", url: LEGAL_URLS.terms },
-  { label: "Send Feedback", route: "/authorized/feedback" as Href },
+  { label: "Privacy Policy", route: "/legal/privacy" as Href },
+  { label: "Terms of Use", route: "/legal/terms" as Href },
+  { label: "Contact Us", route: "/legal/contact" as Href },
 ];
 
 const handleLinkPress = (item: LegalLinkItem) => {
   if (item.route) {
     router.push(item.route);
-    return;
-  }
-  if (item.url) {
-    openExternalUrl(item.url);
   }
 };
 

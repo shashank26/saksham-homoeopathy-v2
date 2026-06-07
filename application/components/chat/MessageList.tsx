@@ -1,6 +1,9 @@
+import { ReportReasonSheet } from "@/components/moderation/ReportReasonSheet";
 import { ChatMessage, ChatService } from "@/services/Chat.service";
+import { ModerationService } from "@/services/Moderation.service";
 import { MomentService } from "@/services/Moment.service";
 import { UserService } from "@/services/User.service";
+import { toast } from "burnt";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { FlatList, Text } from "react-native";
 import { View, YStack } from "tamagui";
@@ -24,6 +27,10 @@ export const MessageList = ({ chatId }: { chatId: string }) => {
   const loadingOlder = useRef(false);
   const [senderLabels, setSenderLabels] = useState<Map<string, string>>(
     new Map(),
+  );
+  const [reportSheetOpen, setReportSheetOpen] = useState(false);
+  const [reportingMessage, setReportingMessage] = useState<ChatMessage | null>(
+    null,
   );
 
   const listItems = useMemo(
@@ -125,6 +132,40 @@ export const MessageList = ({ chatId }: { chatId: string }) => {
     return senderLabels.get(senderId) ?? "…";
   };
 
+  const handleReportMessage = async (
+    reason: Parameters<typeof ModerationService.submitMessageReport>[0]["reason"],
+    details?: string,
+  ) => {
+    if (!reportingMessage?.id || !profile) return false;
+
+    const success = await ModerationService.submitMessageReport({
+      reason,
+      details,
+      reporterId: profile.id,
+      reporterPhone: profile.phoneNumber,
+      reportedUserId: reportingMessage.sender,
+      chatId,
+      messageId: reportingMessage.id,
+      messageText: reportingMessage.message,
+    });
+
+    if (success) {
+      toast({
+        title: "Report submitted",
+        message: "The clinic administrator has been notified.",
+        preset: "done",
+      });
+      setReportingMessage(null);
+    } else {
+      toast({
+        title: "Could not submit report",
+        preset: "error",
+      });
+    }
+
+    return success;
+  };
+
   if (messages.length === 0) {
     return (
       <YStack style={{ flex: 1 }} justifyContent="center" alignItems="center">
@@ -157,9 +198,27 @@ export const MessageList = ({ chatId }: { chatId: string }) => {
               message={item.data}
               isOwnMessage={isOwnMessage}
               senderLabel={getSenderLabel(item.data.sender)}
+              onLongPress={
+                !isOwnMessage
+                  ? () => {
+                      setReportingMessage(item.data);
+                      setReportSheetOpen(true);
+                    }
+                  : undefined
+              }
             />
           );
         }}
+      />
+
+      <ReportReasonSheet
+        open={reportSheetOpen}
+        onOpenChange={(open) => {
+          setReportSheetOpen(open);
+          if (!open) setReportingMessage(null);
+        }}
+        title="Report Message"
+        onSubmit={handleReportMessage}
       />
     </View>
   );

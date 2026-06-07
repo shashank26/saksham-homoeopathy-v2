@@ -101,6 +101,7 @@ export const AuthProvider = ({ children }: React.PropsWithChildren) => {
       let role = await AuthService.getUserRole();
       setRole(role || Role.USER);
       setProfile(userProfile);
+      await AuthService.syncTermsAcceptanceIfNeeded();
       Monitoring.setUser({
         id: user.uid,
         role: role || Role.USER,

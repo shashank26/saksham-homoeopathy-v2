@@ -20,5 +20,7 @@ export const LEGAL_URLS = {
   supportEmail: legalExtra.supportEmail ?? "arniparth@gmail.com",
 };
 
+export const TERMS_VERSION = "1.0.0";
+
 export const HEALTH_DISCLAIMER =
   "This app supports appointment booking and communication with Saksham Homoeopathy. It does not provide emergency care or replace an in-person medical consultation. For emergencies, call local emergency services or visit the nearest hospital.";

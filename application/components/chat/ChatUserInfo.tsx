@@ -29,7 +29,8 @@ export const ChatUserInfo = React.memo(
         style={{
           backgroundColor: themeColors.plat,
           width: "100%",
-          padding: 8,
+          paddingHorizontal: 2,
+          paddingVertical: 8,
           borderBottomColor: themeColors.lightGray,
           borderBottomWidth: 1,
         }}
@@ -50,7 +51,7 @@ export const ChatUserInfo = React.memo(
               height: 48,
               width: 48,
               borderRadius: 24,
-              backgroundColor: "#ccc",
+              backgroundColor: "#fff",
               justifyContent: "center",
               alignItems: "center",
             }}

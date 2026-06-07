@@ -11,6 +11,7 @@ import React from "react";
 import { Platform, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { XStack, YStack } from "tamagui";
+import { Role } from "@/services/Firebase.service";
 import { useAuth } from "../auth/hooks/useAuth";
 import { ShimmerImage } from "../common/ShimmerImage";
 import { DrawerHeaderTitle } from "./DrawerHeaderTitle";
@@ -93,6 +94,15 @@ const drawerOptions = [
     ),
   },
   {
+    title: "Moderation",
+    name: "moderation",
+    label: "Moderation",
+    adminOnly: true,
+    icon: (focused: boolean) => (
+      <MaterialIcons name="shield" size={24} color={focused ? themeColors.onyx : themeColors.gray} />
+    ),
+  },
+  {
     title: "Profile",
     name: "profile",
     label: "Profile",
@@ -148,7 +158,7 @@ const CustomDrawerContent = (props: any) => {
           </Text>
         </YStack>
       </View>
-      <YStack style={{ height: "100%", justifyContent: "space-between" }}>
+      <YStack style={{ height: "95%", justifyContent: "space-between" }}>
         <View>
           <DrawerItemList {...props} />
         </View>
@@ -173,6 +183,7 @@ const CustomDrawerContent = (props: any) => {
 };
 
 export const AppDrawer = () => {
+  const { role } = useAuth();
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <Drawer
@@ -207,6 +218,9 @@ export const AppDrawer = () => {
               title: options.title,
             }}
             options={{
+              drawerItemStyle: {
+                display: options.adminOnly && role === Role.USER ? "none" : "flex",
+              },
               drawerLabel: options.label,
               drawerIcon: ({ focused, size }) => options.icon(focused),
             }}
