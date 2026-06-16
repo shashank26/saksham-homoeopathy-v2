@@ -8,8 +8,10 @@ import {
 } from "@/components/common/VitalityDrawerSheet";
 import { useVitalityFonts } from "@/hooks/useVitalityFonts";
 import { UserProfile } from "@/services/Auth.service";
+import { ChatService } from "@/services/Chat.service";
 import { HistoryService, MedicineType } from "@/services/History.service";
 import { loginColors, loginSpacing } from "@/themes/loginDesign";
+import { toast } from "burnt";
 import { useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { MedicineDateField } from "./MedicineDateField";
@@ -135,10 +137,28 @@ const MedicineForm = ({
             if (!form || !user.phoneNumber) return;
             setLoading(true);
             try {
-              await HistoryService.addMedicine({
+              const docRef = await HistoryService.addMedicine({
                 ...form,
                 phoneNumber: user.phoneNumber,
               });
+              if (!docRef) return;
+
+              try {
+                await ChatService.ensureChatForPatient(user.id);
+                await ChatService.sendPrescription(user.id, user.id, {
+                  historyId: docRef.id,
+                  message: `New prescription: ${form.name} — ${form.dosage}. Tap to view in History.`,
+                });
+              } catch (chatErr) {
+                console.log("Error sending prescription chat message", chatErr);
+                toast({
+                  title: "Medicine saved",
+                  message:
+                    "Prescription was added but the chat notification could not be sent.",
+                  preset: "error",
+                });
+              }
+
               onClose();
             } catch (err) {
               console.log("Error adding medicine", err);

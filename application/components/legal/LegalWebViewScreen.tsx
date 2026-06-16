@@ -4,6 +4,7 @@ import { loginColors } from "@/themes/loginDesign";
 import { themeColors } from "@/themes/themes";
 import { FC, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { WebView } from "react-native-webview";
 
 type LegalWebViewScreenProps = {
@@ -15,10 +16,16 @@ export const LegalWebViewScreen: FC<LegalWebViewScreenProps> = ({
   title,
   url,
 }) => {
+  const insets = useSafeAreaInsets();
   const [loading, setLoading] = useState(true);
 
   return (
-    <View style={styles.container}>
+    <View
+      style={[
+        styles.container,
+        { paddingTop: insets.top, paddingBottom: insets.bottom },
+      ]}
+    >
       <BackHeader title={<Text style={styles.headerTitle}>{title}</Text>} />
       {loading ? (
         <View style={styles.loader}>

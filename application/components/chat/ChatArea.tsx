@@ -1,3 +1,4 @@
+import { LoaderScreen } from "@/components/LoaderScreen";
 import { BlockDoctorPickerSheet } from "@/components/moderation/BlockDoctorPickerSheet";
 import { ReportReasonSheet } from "@/components/moderation/ReportReasonSheet";
 import { UserProfile } from "@/services/Auth.service";
@@ -129,7 +130,7 @@ export const ChatArea = () => {
   };
 
   if (chatInitiated === -1 || !receiverProfile) {
-    return <></>;
+    return <LoaderScreen />;
   }
 
   if (chatInitiated === 0) {

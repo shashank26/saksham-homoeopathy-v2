@@ -1,7 +1,7 @@
 import { themeColors } from "@/themes/themes";
 import { MaterialIcons } from "@expo/vector-icons";
 import { toast } from "burnt";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Button, Input, XStack } from "tamagui";
 
 export const MessageTextBox = ({
@@ -12,6 +12,8 @@ export const MessageTextBox = ({
   disabled?: boolean;
 }) => {
   const [text, setText] = useState("");
+  const sendingRef = useRef(false);
+
   return (
     <XStack
       justifyContent="center"
@@ -41,15 +43,19 @@ export const MessageTextBox = ({
       />
       <Button
         onPress={async () => {
-          if (!text.trim() || disabled) return;
+          if (!text.trim() || disabled || sendingRef.current) return;
+          const trimmed = text.trim();
+          setText("");
+          sendingRef.current = true;
           try {
-            await onSend(text.trim());
-            setText("");
-          } catch (e) {
+            await onSend(trimmed);
+          } catch {
             toast({
               title: "Failed to send message",
               preset: "error",
             });
+          } finally {
+            sendingRef.current = false;
           }
         }}
         height={42}

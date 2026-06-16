@@ -1,3 +1,4 @@
+import { LoaderScreen } from "@/components/LoaderScreen";
 import { ChatMetadata, ChatService } from "@/services/Chat.service";
 import { Role } from "@/services/Firebase.service";
 import { createContext, useEffect, useState } from "react";
@@ -49,7 +50,7 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
   }, [participants, authProfile]);
 
   if (chatInitiated === -1 || !chatId) {
-    return null;
+    return <LoaderScreen />;
   }
 
   return (

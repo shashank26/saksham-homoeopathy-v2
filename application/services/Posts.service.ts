@@ -86,4 +86,14 @@ export class PostService {
   static async delete(id: string) {
     return this.posts.doc(id).delete();
   }
+
+  static async update(id: string, patch: Partial<CreatePostType>) {
+    const updateData: FirebaseFirestoreTypes.DocumentData = {
+      updatedAt: serverTimestamp(),
+    };
+    if (patch.title !== undefined) updateData.title = patch.title;
+    if (patch.body !== undefined) updateData.body = patch.body;
+    if (patch.media !== undefined) updateData.media = patch.media ?? null;
+    return this.posts.doc(id).update(updateData);
+  }
 }

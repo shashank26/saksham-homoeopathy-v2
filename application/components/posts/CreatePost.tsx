@@ -1,7 +1,7 @@
 import { LoginPrimaryButton } from "@/components/auth/login/LoginPrimaryButton";
 import { BookingTextField } from "@/components/bookings/user/BookingTextField";
 import { Role } from "@/services/Firebase.service";
-import { CreatePostType, PostService } from "@/services/Posts.service";
+import { CreatePostType, Post, PostService } from "@/services/Posts.service";
 import { StorageService } from "@/services/Storage.service";
 import { loginSpacing } from "@/themes/loginDesign";
 import { useVitalityFonts } from "@/hooks/useVitalityFonts";
@@ -36,19 +36,24 @@ const CreatePostButton = ({
   />
 );
 
-const CreatePostForm = ({
+export const PostForm = ({
+  post,
   onClose,
 }: {
+  post?: Post;
   onClose: (result: boolean) => void;
 }) => {
   const fonts = useVitalityFonts();
+  const isEdit = Boolean(post?.id);
   const [selectedMedia, setSelectedMedia] = useState<
     Extract<MediaPickerResult, { uri: string }>[]
   >([]);
+  const [mediaRemoved, setMediaRemoved] = useState(false);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState<CreatePostType>({
-    title: "",
-    body: "",
+    title: post?.title ?? "",
+    body: post?.body ?? "",
+    media: post?.media,
   });
 
   const valid = () => Boolean(formData.title && formData.body);
@@ -59,9 +64,20 @@ const CreatePostForm = ({
     return null;
   }
 
+  const existingMedia = !mediaRemoved ? post?.media : undefined;
+  const previewUris =
+    selectedMedia.length > 0
+      ? selectedMedia.map((m) => m.thumbnail || m.uri)
+      : existingMedia
+        ? [existingMedia.thumbnail || existingMedia.url]
+        : [];
+
   return (
     <View style={styles.formRoot}>
-      <CreatePostHeader onClose={dismiss} />
+      <CreatePostHeader
+        title={isEdit ? "Edit Post" : "Create Post"}
+        onClose={dismiss}
+      />
       <ScrollView
         style={styles.scroll}
         contentContainerStyle={styles.scrollContent}
@@ -86,25 +102,32 @@ const CreatePostForm = ({
           }
         />
         <CreatePostMediaTiles
-          onMediaPicked={(media) => setSelectedMedia([media])}
+          onMediaPicked={(media) => {
+            setSelectedMedia([media]);
+            setMediaRemoved(false);
+          }}
         />
-        {selectedMedia.length > 0 ? (
+        {previewUris.length > 0 ? (
           <ImagePreview
             onRemove={(uri) => {
-              setSelectedMedia((prev) =>
-                prev.filter(
-                  (m) => ![m.uri, m.thumbnail].includes(uri),
-                ),
-              );
+              if (selectedMedia.length > 0) {
+                setSelectedMedia((prev) =>
+                  prev.filter(
+                    (m) => ![m.uri, m.thumbnail].includes(uri),
+                  ),
+                );
+              } else {
+                setMediaRemoved(true);
+              }
             }}
-            uris={selectedMedia.map((m) => m.thumbnail || m.uri)}
+            uris={previewUris}
           />
         ) : null}
       </ScrollView>
       <VitalityDrawerFooter>
         <LoginPrimaryButton
-          label="Post Content"
-          loadingLabel="Posting..."
+          label={isEdit ? "Save Changes" : "Post Content"}
+          loadingLabel={isEdit ? "Saving..." : "Posting..."}
           disabled={!valid()}
           loading={loading}
           onPress={async () => {
@@ -112,7 +135,8 @@ const CreatePostForm = ({
             setLoading(true);
             try {
               const media = selectedMedia.length > 0 ? selectedMedia[0] : null;
-              let savedUri, thumbnailUri;
+              let savedUri: string | undefined;
+              let thumbnailUri: string | undefined;
               if (media) {
                 savedUri = await StorageService.setItem(
                   Crypto.randomUUID(),
@@ -128,29 +152,42 @@ const CreatePostForm = ({
                   );
                 }
               }
-              await PostService.create({
-                body: formData.body,
-                media: savedUri
-                  ? {
-                      type: media?.thumbnail ? "video" : "image",
-                      url: savedUri,
-                      thumbnail: thumbnailUri,
-                    }
-                  : undefined,
-                title: formData.title,
-              });
+
+              const mediaPayload = media
+                ? {
+                    type: (media.thumbnail ? "video" : "image") as
+                      | "image"
+                      | "video",
+                    url: savedUri!,
+                    thumbnail: thumbnailUri,
+                  }
+                : mediaRemoved
+                  ? undefined
+                  : formData.media;
+
+              if (isEdit && post?.id) {
+                await PostService.update(post.id, {
+                  body: formData.body,
+                  title: formData.title,
+                  media: mediaPayload,
+                });
+              } else {
+                await PostService.create({
+                  body: formData.body,
+                  title: formData.title,
+                  media: mediaPayload,
+                });
+              }
             } catch (err) {
               console.log("Error while posting", err);
             }
-            setFormData({ body: "", title: "" });
-            setSelectedMedia([]);
             onClose(true);
             setLoading(false);
           }}
         />
       </VitalityDrawerFooter>
       <OverlayActivityIndicator
-        description="Creating new post..."
+        description={isEdit ? "Updating post..." : "Creating new post..."}
         title="Please wait..."
         icon={<></>}
         visible={loading}
@@ -159,6 +196,28 @@ const CreatePostForm = ({
   );
 };
 
+export const EditPostSheet = ({
+  post,
+  open,
+  onOpenChange,
+}: {
+  post: Post;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}) => (
+  <VitalityDrawerSheet<void>
+    open={open}
+    onOpenChange={onOpenChange}
+    Child={({ onClose }) => (
+      <PostForm
+        key={post.id}
+        post={post}
+        onClose={() => onClose()}
+      />
+    )}
+  />
+);
+
 export const CreatePost = () => {
   const { role } = useAuth();
 
@@ -166,7 +225,7 @@ export const CreatePost = () => {
     return (
       <VitalityDrawerSheet<Boolean>
         FC={CreatePostButton}
-        Child={CreatePostForm}
+        Child={({ onClose }) => <PostForm onClose={onClose} />}
         onClose={async () => {}}
       />
     );

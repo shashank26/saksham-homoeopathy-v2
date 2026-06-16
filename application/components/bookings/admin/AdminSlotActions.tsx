@@ -1,3 +1,4 @@
+import { AdminBookingSheet } from "@/components/bookings/admin/AdminBookingSheet";
 import { SlotBlockerSheet } from "@/components/bookings/helper/SlotBlocker";
 import { SlotUnblockerSheet } from "@/components/bookings/helper/SlotUnblocker";
 import {
@@ -16,31 +17,46 @@ type AdminSlotActionsProps = {
 export const AdminSlotActions: FC<AdminSlotActionsProps> = ({
   selectedDate,
 }) => {
+  const [bookOpen, setBookOpen] = useState(false);
   const [blockOpen, setBlockOpen] = useState(false);
   const [unblockOpen, setUnblockOpen] = useState(false);
 
   return (
-    <View style={styles.row}>
-      <Pressable
-        style={styles.pressable}
-        onPress={() => setBlockOpen(true)}
-      >
+    <View style={styles.container}>
+      <Pressable style={styles.pressable} onPress={() => setBookOpen(true)}>
         {({ pressed }) => (
-          <View style={[styles.button, pressed && styles.buttonPressed]}>
-            <Text style={styles.buttonText}>Block Slots</Text>
+          <View style={[styles.buttonPrimary, pressed && styles.buttonPressed]}>
+            <Text style={styles.buttonPrimaryText}>Book Slots</Text>
           </View>
         )}
       </Pressable>
-      <Pressable
-        style={styles.pressableEnd}
-        onPress={() => setUnblockOpen(true)}
-      >
-        {({ pressed }) => (
-          <View style={[styles.button, pressed && styles.buttonPressed]}>
-            <Text style={styles.buttonText}>Unblock Slots</Text>
-          </View>
-        )}
-      </Pressable>
+      <View style={styles.row}>
+        <Pressable
+          style={styles.pressable}
+          onPress={() => setBlockOpen(true)}
+        >
+          {({ pressed }) => (
+            <View style={[styles.button, pressed && styles.buttonPressed]}>
+              <Text style={styles.buttonText}>Block Slots</Text>
+            </View>
+          )}
+        </Pressable>
+        <Pressable
+          style={styles.pressableEnd}
+          onPress={() => setUnblockOpen(true)}
+        >
+          {({ pressed }) => (
+            <View style={[styles.button, pressed && styles.buttonPressed]}>
+              <Text style={styles.buttonText}>Unblock Slots</Text>
+            </View>
+          )}
+        </Pressable>
+      </View>
+      <AdminBookingSheet
+        selectedDate={selectedDate}
+        open={bookOpen}
+        onOpenChange={setBookOpen}
+      />
       <SlotBlockerSheet
         selectedDate={selectedDate}
         open={blockOpen}
@@ -56,9 +72,12 @@ export const AdminSlotActions: FC<AdminSlotActionsProps> = ({
 };
 
 const styles = StyleSheet.create({
+  container: {
+    marginTop: loginSpacing.stackMd,
+    gap: loginSpacing.stackMd,
+  },
   row: {
     flexDirection: "row",
-    marginTop: loginSpacing.stackMd,
   },
   pressable: {
     flex: 1,
@@ -66,6 +85,19 @@ const styles = StyleSheet.create({
   },
   pressableEnd: {
     flex: 1,
+  },
+  buttonPrimary: {
+    minHeight: 48,
+    borderRadius: loginRadius.md,
+    backgroundColor: loginColors.secondary,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: loginSpacing.stackMd,
+    paddingVertical: loginSpacing.stackSm,
+  },
+  buttonPrimaryText: {
+    ...loginTypography.labelMd,
+    color: "#fff",
   },
   button: {
     minHeight: 48,

@@ -12,9 +12,11 @@ import { openExternalUrl } from "@/utils/openUrl";
 import { router } from "expo-router";
 import { FC } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useAuth } from "../auth/hooks/useAuth";
 
 export const ContactUsScreen: FC = () => {
+  const insets = useSafeAreaInsets();
   const fontsLoaded = useVitalityFonts();
   const { user } = useAuth();
 
@@ -23,7 +25,12 @@ export const ContactUsScreen: FC = () => {
   }
 
   return (
-    <View style={styles.container}>
+    <View
+      style={[
+        styles.container,
+        { paddingTop: insets.top, paddingBottom: insets.bottom },
+      ]}
+    >
       <BackHeader title={<Text style={styles.headerTitle}>Contact Us</Text>} />
       <ScrollView contentContainerStyle={styles.content}>
         <Text style={styles.body}>

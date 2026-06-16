@@ -12,7 +12,7 @@
     "lint": "expo lint",
     "build:android:production": "bash scripts/eas-local-build.sh --platform android --profile production --local",
     "build:android:development": "bash scripts/eas-local-build.sh --platform android --profile development --local",
-    "build:ios:production": "bash scripts/eas-local-build.sh --platform ios --profile production",
+    "build:ios:production": "bash scripts/eas-ios-build.sh",
     "ios:submit": "eas submit --platform ios"
   },
   "jest": {

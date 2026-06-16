@@ -44,8 +44,6 @@ export class BookingService {
 
   private static BOOKING_META_COLLECTION = db.collection("booking_meta");
 
-  private static slotHash = new Map<string, BookingType>();
-
   static formatSlotKey(date: Date, slot: SlotTime): string {
     const normalizedDate = MomentService.getDateWithoutTime(date);
     return `${MomentService.formatDateKey(normalizedDate)}_${slot}`;
@@ -121,15 +119,10 @@ export class BookingService {
 
     const unsub = collectionRef.onSnapshot(
       (snapshot) => {
-        snapshot?.docChanges().forEach((change) => {
-          if (change.type === "added" || change.type === "modified") {
-            const booking = this.mapSlotDoc(change.doc.id, change.doc.data());
-            this.slotHash.set(change.doc.id, booking);
-          } else if (change.type === "removed") {
-            this.slotHash.delete(change.doc.id);
-          }
-        });
-        callback(Array.from(this.slotHash.values()));
+        const bookings = snapshot.docs.map((doc) =>
+          this.mapSlotDoc(doc.id, doc.data()),
+        );
+        callback(bookings);
       },
       (error) => {
         console.error("Error in booking update listener:", error);
@@ -140,6 +133,36 @@ export class BookingService {
       },
     );
     return unsub;
+  }
+
+  static async addBookings(
+    booking: Omit<BookingType, "slot" | "id">,
+    slotsToBook: SlotTime[],
+  ): Promise<{ succeeded: SlotTime[]; failed: SlotTime[] }> {
+    const succeeded: SlotTime[] = [];
+    const failed: SlotTime[] = [];
+
+    for (const slot of slotsToBook) {
+      const result = await this.addBooking({
+        ...booking,
+        slot,
+      });
+      if (result) {
+        succeeded.push(slot);
+      } else {
+        failed.push(slot);
+      }
+    }
+
+    if (succeeded.length > 0) {
+      const slotLabels = succeeded.join(", ");
+      await NotificationService.addNotification(
+        booking.phoneNumber,
+        `Your booking${succeeded.length > 1 ? "s have" : " has"} been confirmed for ${booking.date.toLocaleDateString()} at ${slotLabels}.`,
+      );
+    }
+
+    return { succeeded, failed };
   }
 
   static async addBooking(booking: BookingType) {

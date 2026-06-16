@@ -6,15 +6,18 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { Text } from "@tamagui/core";
 import React, { useRef, useState } from "react";
 import { FlatList, View } from "react-native";
+import { Pressable } from "react-native-gesture-handler";
 import { Swipeable } from "react-native-gesture-handler";
 import { Spinner, XStack, YStack } from "tamagui";
 import { useAuth } from "../auth/hooks/useAuth";
 import { ConfirmDialog } from "../common/Alert";
-import { renderRightActions } from "../common/DeleteRightAction";
 import { ImageViewer, VideoViewer } from "../common/MediaViewer";
 import { ShimmerImage } from "../common/ShimmerImage";
-import { CreatePost } from "./CreatePost";
+import { CreatePost, EditPostSheet } from "./CreatePost";
 import usePosts from "./hooks/usePosts";
+
+const isEdited = (item: Post) =>
+  item.updatedAt.getTime() - item.createdAt.getTime() > 60_000;
 
 const RenderPost: React.FC<{ item: Post }> = ({ item }) => {
   const [isMediaVisible, setMediaVisible] = useState(false);
@@ -31,10 +34,15 @@ const RenderPost: React.FC<{ item: Post }> = ({ item }) => {
       elevation={5}
     >
       <XStack alignItems="center" marginBottom={10}>
-        <XStack style={{ flex: 1, alignItems: "center" }}>
+        <XStack style={{ flex: 1, alignItems: "center" }} gap={8}>
           <Text fontFamily={"$js4"} fontSize={12} color="#666">
             {MomentService.timeAgo(item.updatedAt)}
           </Text>
+          {isEdited(item) ? (
+            <Text fontFamily={"$js4"} fontSize={11} color="#999">
+              Edited
+            </Text>
+          ) : null}
         </XStack>
       </XStack>
       <Text
@@ -80,19 +88,52 @@ const RenderPost: React.FC<{ item: Post }> = ({ item }) => {
 
 const DoctorPost: React.FC<{ item: Post }> = ({ item }) => {
   const [showConfirm, setShowConfirm] = useState<boolean>(false);
-  const ref = useRef<any>(null);
+  const [editOpen, setEditOpen] = useState(false);
+  const ref = useRef<Swipeable>(null);
+
   return (
     <>
       <Swipeable
         ref={ref}
-        renderRightActions={() =>
-          renderRightActions(() => {
-            setShowConfirm(true);
-          })
-        }
+        renderRightActions={() => (
+          <XStack>
+            <Pressable
+              onPress={() => {
+                ref.current?.close();
+                setEditOpen(true);
+              }}
+              style={{
+                justifyContent: "center",
+                alignItems: "center",
+                width: 80,
+                backgroundColor: themeColors.accent,
+              }}
+            >
+              <MaterialIcons name="edit" size={28} color="#fff" />
+            </Pressable>
+            <Pressable
+              onPress={() => {
+                ref.current?.close();
+                setShowConfirm(true);
+              }}
+              style={{
+                justifyContent: "center",
+                alignItems: "center",
+                width: 80,
+              }}
+            >
+              <MaterialIcons name="delete" size={32} color={"#ff0000"} />
+            </Pressable>
+          </XStack>
+        )}
       >
         <RenderPost item={item} />
       </Swipeable>
+      <EditPostSheet
+        post={item}
+        open={editOpen}
+        onOpenChange={setEditOpen}
+      />
       <ConfirmDialog
         description="Do you want to delete this post?"
         title="Delete"
@@ -113,7 +154,6 @@ const DoctorPost: React.FC<{ item: Post }> = ({ item }) => {
 export default function Posts() {
   const { role } = useAuth();
   const { loading, posts } = usePosts();
-  const [page, setPage] = useState<number>(0);
 
   if (loading === 1) {
     return (

@@ -3,8 +3,10 @@ import { FC } from "react";
 
 type CreatePostHeaderProps = {
   onClose: () => void;
+  title?: string;
 };
 
-export const CreatePostHeader: FC<CreatePostHeaderProps> = ({ onClose }) => (
-  <VitalityDrawerHeader title="Create Post" onClose={onClose} />
-);
+export const CreatePostHeader: FC<CreatePostHeaderProps> = ({
+  onClose,
+  title = "Create Post",
+}) => <VitalityDrawerHeader title={title} onClose={onClose} />;
