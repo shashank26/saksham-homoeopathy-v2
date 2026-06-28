@@ -1,4 +1,6 @@
+import { TERMS_VERSION } from "@/constants/legal";
 import { FirebaseAuthTypes } from "@react-native-firebase/auth";
+import { serverTimestamp } from "@react-native-firebase/firestore";
 import { callDeleteUserAccount } from "./AccountDeletion.service";
 import { db, Role, userAuth } from "./Firebase.service";
 
@@ -128,5 +130,23 @@ export class AuthService {
     const idToken = await this.user.getIdToken(true);
     await callDeleteUserAccount(idToken);
     await this.Auth.signOut();
+  }
+
+  static async syncTermsAcceptanceIfNeeded(): Promise<void> {
+    if (!this.user) return;
+
+    const userDocRef = db.collection("users").doc(this.user.uid);
+    const doc = await userDocRef.get();
+    const data = doc.data();
+
+    if (data?.termsVersion === TERMS_VERSION) return;
+
+    await userDocRef.set(
+      {
+        termsAcceptedAt: serverTimestamp(),
+        termsVersion: TERMS_VERSION,
+      },
+      { merge: true },
+    );
   }
 }

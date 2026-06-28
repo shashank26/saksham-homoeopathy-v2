@@ -12,26 +12,41 @@ type SlotOption = { label: string; value: SlotTime };
 
 type BookingSlotGridProps = {
   slots: SlotOption[];
-  selectedSlot: string;
   onSelectSlot: (value: SlotTime) => void;
+  selectedSlot?: string;
+  selectedSlots?: SlotTime[];
+  unavailableSlots?: SlotTime[];
+  sectionTitle?: string;
+  emptyMessage?: string;
+  compact?: boolean;
 };
 
 export const BookingSlotGrid: FC<BookingSlotGridProps> = ({
   slots,
-  selectedSlot,
+  selectedSlot = "",
+  selectedSlots,
+  unavailableSlots = [],
   onSelectSlot,
+  sectionTitle = "AVAILABLE SLOTS",
+  emptyMessage = "No slots available for this date.",
+  compact,
 }) => (
-  <View style={styles.section}>
-    <Text style={styles.sectionTitle}>AVAILABLE SLOTS</Text>
+  <View style={[styles.section, compact && styles.sectionCompact]}>
+    <Text style={styles.sectionTitle}>{sectionTitle}</Text>
     {slots.length === 0 ? (
-      <Text style={styles.empty}>No slots available for this date.</Text>
+      <Text style={styles.empty}>{emptyMessage}</Text>
     ) : (
       <View style={styles.grid}>
         {slots.map((slot) => {
-          const selected = selectedSlot === slot.value;
+          const isUnavailable = unavailableSlots.includes(slot.value);
+          const selected = selectedSlots
+            ? selectedSlots.includes(slot.value)
+            : selectedSlot === slot.value;
+
           return (
             <Pressable
               key={slot.value}
+              disabled={isUnavailable}
               onPress={() => onSelectSlot(slot.value)}
               style={styles.pressable}
             >
@@ -40,13 +55,15 @@ export const BookingSlotGrid: FC<BookingSlotGridProps> = ({
                   style={[
                     styles.slot,
                     selected && styles.slotSelected,
-                    pressed && styles.slotPressed,
+                    isUnavailable && styles.slotUnavailable,
+                    pressed && !isUnavailable && styles.slotPressed,
                   ]}
                 >
                   <Text
                     style={[
                       styles.slotText,
                       selected && styles.slotTextSelected,
+                      isUnavailable && styles.slotTextUnavailable,
                     ]}
                   >
                     {slot.label}
@@ -66,6 +83,9 @@ const SLOT_WIDTH_PERCENT = "31%";
 const styles = StyleSheet.create({
   section: {
     marginTop: loginSpacing.stackLg,
+  },
+  sectionCompact: {
+    marginTop: 0,
   },
   sectionTitle: {
     ...loginTypography.labelMd,
@@ -102,6 +122,11 @@ const styles = StyleSheet.create({
     borderColor: loginColors.secondary,
     backgroundColor: "rgba(137, 246, 166, 0.15)",
   },
+  slotUnavailable: {
+    backgroundColor: loginColors.surfaceContainer,
+    borderColor: loginColors.outlineVariant,
+    opacity: 0.55,
+  },
   slotPressed: {
     transform: [{ scale: 0.95 }],
   },
@@ -112,5 +137,8 @@ const styles = StyleSheet.create({
   },
   slotTextSelected: {
     color: loginColors.secondary,
+  },
+  slotTextUnavailable: {
+    color: loginColors.onSurfaceVariant,
   },
 });

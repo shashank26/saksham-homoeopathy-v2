@@ -1,4 +1,5 @@
 import { LoaderScreen } from "@/components/LoaderScreen";
+import { Monitoring } from "@/services/Monitoring.service";
 import { loginColors, loginSpacing } from "@/themes/loginDesign";
 import { FirebaseAuthTypes } from "@react-native-firebase/auth";
 import * as burnt from "burnt";
@@ -41,6 +42,7 @@ export const Login: FC = () => {
       setStatusMessage("");
     } catch (err) {
       console.log(err);
+      Monitoring.captureException(err, { area: "auth", action: "requestOtp" });
       burnt.toast({
         title: "Error",
         message: "Login failed!",

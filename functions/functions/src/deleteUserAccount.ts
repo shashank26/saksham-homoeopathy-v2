@@ -61,7 +61,31 @@ export const deleteUserAccountFunction = onCall(async (request) => {
       admin.firestore().collection("history").where("phoneNumber", "==", phoneNumber),
     );
     await deleteQueryBatch(
-      admin.firestore().collection("bookings").where("phoneNumber", "==", phoneNumber),
+      admin.firestore().collection("booking_slots").where("phoneNumber", "==", phoneNumber),
+    );
+    await deleteQueryBatch(
+      admin
+        .firestore()
+        .collection("moderation_reports")
+        .where("reporterId", "==", uid),
+    );
+    await deleteQueryBatch(
+      admin
+        .firestore()
+        .collection("moderation_reports")
+        .where("reportedUserId", "==", uid),
+    );
+    await deleteQueryBatch(
+      admin
+        .firestore()
+        .collection("user_blocks")
+        .where("blockerId", "==", uid),
+    );
+    await deleteQueryBatch(
+      admin
+        .firestore()
+        .collection("user_blocks")
+        .where("blockedId", "==", uid),
     );
 
     const chatsSnapshot = await admin

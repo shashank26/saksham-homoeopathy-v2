@@ -30,6 +30,23 @@ export function getBookingDateRange(): Date[] {
   return days;
 }
 
+export function getAdminBookingDateRange(): Date[] {
+  const today = MomentService.getDateWithoutTime(new Date());
+  const maxDate = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
+  const days: Date[] = [];
+  const current = new Date(today);
+  while (current.getTime() <= maxDate.getTime()) {
+    days.push(new Date(current));
+    current.setDate(current.getDate() + 1);
+  }
+  return days;
+}
+
+export function getDefaultAdminBookingDate(): Date {
+  const range = getAdminBookingDateRange();
+  return range[0] ?? MomentService.getDateWithoutTime(new Date());
+}
+
 export function getDefaultBookingDate(): Date {
   const range = getBookingDateRange();
   return range[0] ?? MomentService.getDateWithoutTime(new Date());

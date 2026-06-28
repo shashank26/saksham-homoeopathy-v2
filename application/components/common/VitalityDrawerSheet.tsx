@@ -15,10 +15,12 @@ import {
 } from "react-native";
 
 export type VitalityDrawerSheetProps<T = unknown> = {
-  FC: FC<{ setOpen: React.Dispatch<React.SetStateAction<boolean>> }>;
+  FC?: FC<{ setOpen: React.Dispatch<React.SetStateAction<boolean>> }>;
   Child: FC<{ onClose: (data: T | undefined) => void }>;
   onClose?: (data: T | undefined) => void;
   frameBackgroundColor?: string;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 };
 
 export const VitalityDrawerSheet = <T,>({
@@ -26,9 +28,22 @@ export const VitalityDrawerSheet = <T,>({
   Child,
   onClose,
   frameBackgroundColor = loginColors.surface,
+  open: controlledOpen,
+  onOpenChange,
 }: VitalityDrawerSheetProps<T>) => {
   const [position, setPosition] = React.useState(0);
-  const [open, setOpen] = React.useState(false);
+  const [internalOpen, setInternalOpen] = React.useState(false);
+  const isControlled = controlledOpen !== undefined;
+  const open = isControlled ? controlledOpen : internalOpen;
+
+  const setOpen: React.Dispatch<React.SetStateAction<boolean>> = (value) => {
+    const next = typeof value === "function" ? value(open) : value;
+    if (isControlled) {
+      onOpenChange?.(next);
+    } else {
+      setInternalOpen(next);
+    }
+  };
 
   const handleClose = (data: T | undefined) => {
     setOpen(false);
@@ -37,7 +52,7 @@ export const VitalityDrawerSheet = <T,>({
 
   return (
     <>
-      <FC setOpen={setOpen} />
+      {FC ? <FC setOpen={setOpen} /> : null}
       <Sheet
         moveOnKeyboardChange
         forceRemoveScrollEnabled={open}

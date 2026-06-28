@@ -12,8 +12,8 @@ import {
   loginSpacing,
   loginTypography,
 } from "@/themes/loginDesign";
-import { MaterialIcons } from "@expo/vector-icons";
 import { themeColors } from "@/themes/themes";
+import { MaterialIcons } from "@expo/vector-icons";
 import { toast } from "burnt";
 import { FC, useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";

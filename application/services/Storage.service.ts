@@ -1,3 +1,4 @@
+import { Monitoring } from "@/services/Monitoring.service";
 import type { FirebaseStorageTypes } from "@react-native-firebase/storage";
 import { listAll, ref } from "@react-native-firebase/storage";
 import { fileStore } from "./Firebase.service";
@@ -12,6 +13,10 @@ export class StorageService {
         null,
         (error) => {
           console.error("Error uploading data to AsyncStorage:", error);
+          Monitoring.captureException(error, {
+            area: "storage",
+            action: "upload",
+          });
           reject(error);
         },
         async () => {
@@ -30,6 +35,7 @@ export class StorageService {
       return url;
     } catch (error) {
       console.error("Error retrieving data from AsyncStorage:", error);
+      Monitoring.captureException(error, { area: "storage", action: "getItem" });
       return null;
     }
   }
@@ -42,6 +48,7 @@ export class StorageService {
       return downloadURL;
     } catch (error) {
       console.error("Error saving data to AsyncStorage:", error);
+      Monitoring.captureException(error, { area: "storage", action: "setItem" });
     }
   }
 
@@ -53,6 +60,10 @@ export class StorageService {
       return true;
     } catch (error) {
       console.error("Error removing data from AsyncStorage:", error);
+      Monitoring.captureException(error, {
+        area: "storage",
+        action: "removeItem",
+      });
       return false;
     }
   }
@@ -66,6 +77,10 @@ export class StorageService {
       await Promise.all(deletePromises);
     } catch (err) {
       console.error("Error removing files from:", id);
+      Monitoring.captureException(err, {
+        area: "storage",
+        action: "removeFolder",
+      });
     }
   }
 }

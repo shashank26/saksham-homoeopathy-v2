@@ -82,9 +82,34 @@ export class MomentService {
     return new Date(date.getFullYear(), date.getMonth(), date.getDate());
   }
 
+  static formatDateKey(date: Date): string {
+    const d = this.getDateWithoutTime(date);
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  }
+
   static dateDiffInMs(date1: Date, date2: Date): number {
     const d1 = this.getDateWithoutTime(date1);
     const d2 = this.getDateWithoutTime(date2);
     return d1.getTime() - d2.getTime();
+  }
+
+  static getChatDateLabel(date: Date): string {
+    const now = new Date();
+    const today = this.getDateWithoutTime(now);
+    const dateOnly = this.getDateWithoutTime(date);
+    const diffDays = Math.floor(
+      (today.getTime() - dateOnly.getTime()) / (1000 * 60 * 60 * 24),
+    );
+
+    if (diffDays === 0) return "Today";
+    if (diffDays === 1) return "Yesterday";
+    if (diffDays <= 6) {
+      return date.toLocaleString("default", { weekday: "long" });
+    }
+
+    return this.getDDMMMYYY(date);
   }
 }

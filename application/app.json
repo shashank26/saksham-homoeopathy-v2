@@ -7,7 +7,6 @@
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.arniparth.sakshamhomeopathy",
@@ -68,7 +67,16 @@
           "photosPermission": "Saksham Homoeopathy uses your photo library so you can set a profile picture for your clinic account."
         }
       ],
-      "expo-video"
+      "expo-video",
+      "react-native-compressor",
+      [
+        "@sentry/react-native/expo",
+        {
+          "url": "https://sentry.io/",
+          "organization": "arniparth-fq",
+          "project": "react-native"
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true
@@ -81,10 +89,10 @@
         "projectId": "e8e0d64e-2cac-4c08-b093-e78c63236af0"
       },
       "legal": {
-        "privacyPolicyUrl": "https://sakshamhomoeopathy.com/privacy-policy",
-        "termsUrl": "https://sakshamhomoeopathy.com/terms",
-        "feedbackUrl": "mailto:support@sakshamhomoeopathy.com?subject=Saksham%20Homoeopathy%20App%20Feedback",
-        "supportEmail": "support@sakshamhomoeopathy.com"
+        "privacyPolicyUrl": "https://shashank26.github.io/saksham-homoeopathy-v2/",
+        "termsUrl": "https://shashank26.github.io/saksham-homoeopathy-v2/terms",
+        "feedbackUrl": "mailto:arniparth@gmail.com?subject=Saksham%20Homoeopathy%20App%20Feedback",
+        "supportEmail": "arniparth@gmail.com"
       }
     }
   }

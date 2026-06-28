@@ -1,3 +1,4 @@
+import { Monitoring } from "@/services/Monitoring.service";
 import {
   loginColors,
   loginSpacing,
@@ -53,7 +54,8 @@ export const OtpVerificationForm: FC<OtpVerificationFormProps> = ({
         preset: "done",
         duration: 3,
       });
-    } catch {
+    } catch (err) {
+      Monitoring.captureException(err, { area: "auth", action: "resendOtp" });
       burnt.toast({
         title: "Error",
         message: "Failed to resend OTP. Please try again.",
@@ -90,6 +92,11 @@ export const OtpVerificationForm: FC<OtpVerificationFormProps> = ({
             await confirm.confirm(otp);
           } catch (err: unknown) {
             const error = err as { code?: OTPAuthCode; message?: string };
+            Monitoring.captureException(err, {
+              area: "auth",
+              action: "verifyOtp",
+              code: error.code,
+            });
             let errorMessage = "Login failed!";
             if (error.code === "auth/invalid-verification-code") {
               errorMessage = "Invalid OTP. Please try again.";

@@ -1,3 +1,4 @@
+import { FirebaseFirestoreTypes } from "@react-native-firebase/firestore";
 import { db } from "./Firebase.service";
 
 export type MedicineType = {
@@ -43,12 +44,14 @@ export class HistoryService {
     return unsub;
   }
 
-  static async addMedicine(medicine: MedicineType) {
+  static async addMedicine(
+    medicine: MedicineType,
+  ): Promise<FirebaseFirestoreTypes.DocumentReference | null> {
     try {
-      const res = await this.HISTORY_COLLECTION.add(medicine);
-      return res;
+      return await this.HISTORY_COLLECTION.add(medicine);
     } catch (err) {
       console.log(err);
+      return null;
     }
   }
 

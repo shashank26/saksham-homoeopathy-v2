@@ -2,12 +2,13 @@ import * as ExpoImagePicker from "expo-image-picker";
 import { getThumbnailAsync } from "expo-video-thumbnails";
 import ImageResizer from "react-native-image-resizer";
 import VideoCompresser from "react-native-compressor";
+
 export type MediaPickerResult =
   | {
-      blob: Blob;
-      uri: string;
-      thumbnail?: string;
-    }
+    blob: Blob;
+    uri: string;
+    thumbnail?: string;
+  }
   | { error: "canceled" | "file_too_large" | "compression_failed" };
 
 export function isMediaPickerSuccess(
@@ -15,6 +16,9 @@ export function isMediaPickerSuccess(
 ): result is { blob: Blob; uri: string; thumbnail?: string } {
   return !("error" in result);
 }
+
+/** Max width/height in pixels for react-native-compressor (not bytes). Default in lib is 640. */
+const DEFAULT_VIDEO_MAX_SIZE = 1280;
 
 const compressImage = async (uri: string, ratio: number) => {
   try {
@@ -47,12 +51,12 @@ const compressVideo = async (
         getCancellationId: (cancellationId) => {
           started(cancellationId);
         },
-        progressDivider: 1,
-      },
-      (progress) => {
+        progressDivider: 10,
+      }, (progress) => {
+        console.log("progress", progress);
         setProgress(progress);
-      },
-    );
+      });
+
     return compressedVideo;
   } catch (err) {
     console.error(err);
@@ -94,9 +98,6 @@ export async function pickVideoFromLibrary(
 ): Promise<MediaPickerResult> {
   const result = await ExpoImagePicker.launchImageLibraryAsync({
     mediaTypes: ["videos"],
-    allowsEditing: true,
-    aspect: [1, 1],
-    quality: 0.1,
   });
   if (result.canceled) {
     return { error: "canceled" };
@@ -109,7 +110,7 @@ export async function pickVideoFromLibrary(
 
   const compressedVideo = await compressVideo(
     asset.uri,
-    Math.floor((asset.fileSize as number) / 30),
+    DEFAULT_VIDEO_MAX_SIZE,
     callbacks.onCompressionStart,
     callbacks.onCompressionProgress,
   );

@@ -13,6 +13,13 @@ PROFILE="${1:-production}"
 
 cd "$(dirname "$0")/application"
 
+if [[ -f .env.local ]]; then
+  set -a
+  # shellcheck disable=SC1091
+  source .env.local
+  set +a
+fi
+
 case "$PROFILE" in
   production)
     npm run build:android:production

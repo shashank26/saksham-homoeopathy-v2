@@ -16,8 +16,10 @@ export default function Index() {
     });
 
     Notifications.addNotificationResponseReceivedListener((response) => {
-      const chatId = response.notification.request.content.data
-        .chatId as string;
+      const chatId = response.notification.request.content.data?.chatId as
+        | string
+        | undefined;
+      if (!chatId) return;
 
       router.navigate({
         pathname: "/authorized/home/chat/[id]",

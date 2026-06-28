@@ -8,11 +8,23 @@ import { createTamagui } from "@tamagui/core";
 import { PortalProvider } from "@tamagui/portal";
 import { TamaguiProvider } from "tamagui";
 import { ToastProvider } from "@tamagui/toast";
+import * as Sentry from "@sentry/react-native";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import { useEffect, useState } from "react";
 import { Platform, StatusBar } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+
+const SENTRY_DSN = __DEV__
+  ? undefined
+  : "https://549fd39f2cf8d9a9b9a0408e0d3a794a@o4511511935451136.ingest.us.sentry.io/4511511938531328";
+
+Sentry.init({
+  dsn: SENTRY_DSN,
+  environment: __DEV__ ? "development" : "production",
+  enableLogs: true,
+  sendDefaultPii: false,
+});
 
 const config = createTamagui({
   ...defaultConfig,
@@ -28,7 +40,7 @@ const config = createTamagui({
   },
 });
 
-export default function RootLayout() {
+function RootLayout() {
   const [fontsLoaded] = useFonts({
     JosefinSans: require("@/assets/fonts/roboto/Roboto-Regular.ttf"),
     "JosefinSans-100": require("@/assets/fonts/roboto/Roboto-Thin.ttf"),
@@ -86,3 +98,5 @@ export default function RootLayout() {
     </GestureHandlerRootView>
   );
 }
+
+export default __DEV__ ? RootLayout : Sentry.wrap(RootLayout);

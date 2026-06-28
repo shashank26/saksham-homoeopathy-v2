@@ -36,6 +36,8 @@ export const themeColors = {
   light: "#FFFFFF",
   onyx: "#393E41",
   plat: "#FFFFFF",
+  lightGray: "#E5E5E5",
+  gray: "#393E4188",
 };
 
 export const getFonts = () => {

@@ -1,7 +1,7 @@
-import { useAuth } from "../auth/hooks/useAuth";
-import { AdminBookingList } from "./BookingList";
-import { UserBookingsScreen } from "./user/UserBookingsScreen";
 import { Role } from "@/services/Firebase.service";
+import { useAuth } from "../auth/hooks/useAuth";
+import { AdminBookingsScreen } from "./admin/AdminBookingsScreen";
+import { UserBookingsScreen } from "./user/UserBookingsScreen";
 
 export const BookingScreen = () => {
   const { role } = useAuth();
@@ -9,5 +9,5 @@ export const BookingScreen = () => {
   if (role === Role.USER) {
     return <UserBookingsScreen />;
   }
-  return <AdminBookingList />;
+  return <AdminBookingsScreen />;
 };
