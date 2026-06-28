@@ -124,7 +124,7 @@ const ReportReasonForm = ({
                     selectedDoctorId === doctor.id && styles.doctorRowSelected,
                   ]}
                 >
-                  <UserInfo user={doctor} />
+                  <UserInfo user={doctor} staffPrivacy />
                 </Pressable>
               ))
             )}

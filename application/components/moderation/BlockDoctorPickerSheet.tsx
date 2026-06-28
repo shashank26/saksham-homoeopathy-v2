@@ -88,7 +88,7 @@ const BlockDoctorPickerForm = ({
                 selectedId === doctor.id && styles.rowSelected,
               ]}
             >
-              <UserInfo user={doctor} />
+              <UserInfo user={doctor} staffPrivacy />
             </Pressable>
           ))
         )}

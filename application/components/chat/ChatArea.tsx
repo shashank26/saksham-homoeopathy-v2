@@ -6,6 +6,7 @@ import { Role } from "@/services/Firebase.service";
 import { ModerationService } from "@/services/Moderation.service";
 import { UserService } from "@/services/User.service";
 import { themeColors } from "@/themes/themes";
+import { getAggregateStaffDisplayName } from "@/utils/userDisplay";
 import { MaterialIcons } from "@expo/vector-icons";
 import { toast } from "burnt";
 import { router } from "expo-router";
@@ -31,10 +32,9 @@ export const ChatArea = () => {
     if (receiverId === Role.DOCTOR) {
       UserService.getDoctors().then((doctors) => {
         const doctorProfile: UserProfile = {
-          displayName:
-            doctors.find((doc) => doc.displayName)?.displayName || "Doctor",
+          displayName: getAggregateStaffDisplayName(doctors),
           id: Role.DOCTOR,
-          phoneNumber: doctors.map((doc) => doc.phoneNumber).join(", "),
+          phoneNumber: "",
           photoUrl: doctors.find((doc) => doc.photoUrl)?.photoUrl || "",
           role: Role.DOCTOR,
         };
@@ -148,8 +148,8 @@ export const ChatArea = () => {
 
   const headerTitle = (
     <XStack flex={1}>
-      <View style={{ flex: 1, width: "90%" }}>
-        <UserInfo user={receiverProfile} />
+      <View style={{ flex: 1, width: "90%", overflow: "hidden" }}>
+        <UserInfo user={receiverProfile} staffPrivacy />
       </View>
       <Pressable
         onPress={showActionsMenu}

@@ -114,7 +114,7 @@ export class AuthService {
     };
   }
 
-  static async signIn(countryCode: CountryCode, phoneNumber: number) {
+  static async signIn(countryCode: CountryCode, phoneNumber: string) {
     return this.Auth.signInWithPhoneNumber(`${countryCode}${phoneNumber}`);
   }
 

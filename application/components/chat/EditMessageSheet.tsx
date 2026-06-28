@@ -4,7 +4,7 @@ import { ChatMessage, ChatService } from "@/services/Chat.service";
 import { loginSpacing } from "@/themes/loginDesign";
 import { useVitalityFonts } from "@/hooks/useVitalityFonts";
 import { toast } from "burnt";
-import { FC, useState } from "react";
+import { FC, memo, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import {
   VitalityDrawerFooter,
@@ -72,7 +72,7 @@ const EditMessageForm: FC<{
   );
 };
 
-export const EditMessageSheet: FC<EditMessageSheetProps> = ({
+export const EditMessageSheet: FC<EditMessageSheetProps> = memo(({
   chatId,
   message,
   open,
@@ -92,7 +92,7 @@ export const EditMessageSheet: FC<EditMessageSheetProps> = ({
       ) : null
     }
   />
-);
+), (prevProps, nextProps) => prevProps.open === nextProps.open && prevProps.message?.id === nextProps.message?.id && prevProps.chatId === nextProps.chatId);
 
 const styles = StyleSheet.create({
   formRoot: {

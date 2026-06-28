@@ -71,6 +71,8 @@ export const ChatUserInfo = ({
             color={themeColors.onyx}
             ellipsizeMode="tail"
             numberOfLines={1}
+            width="80%"
+            overflow="hidden"
           >
             {user.displayName}
           </Text>

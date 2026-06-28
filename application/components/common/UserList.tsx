@@ -2,6 +2,10 @@ import { UserProfile } from "@/services/Auth.service";
 import { Role } from "@/services/Firebase.service";
 import { UserService } from "@/services/User.service";
 import { themeColors } from "@/themes/themes";
+import {
+  getStaffDisplayLabel,
+  isStaffUser,
+} from "@/utils/userDisplay";
 import { EvilIcons } from "@expo/vector-icons";
 import React, { useEffect, useState } from "react";
 import { FlatList, TouchableOpacity, View } from "react-native";
@@ -9,7 +13,20 @@ import { Input, Text, XStack, YStack } from "tamagui";
 import { ShimmerImage } from "./ShimmerImage";
 
 export const UserInfo = React.memo(
-  ({ user, onPress }: { user: UserProfile; onPress?: () => void }) => {
+  ({
+    user,
+    onPress,
+    staffPrivacy = false,
+  }: {
+    user: UserProfile;
+    onPress?: () => void;
+    staffPrivacy?: boolean;
+  }) => {
+    const hideStaffPhone = staffPrivacy && isStaffUser(user);
+    const primaryLabel = hideStaffPhone
+      ? getStaffDisplayLabel(user)
+      : user.displayName;
+
     const view = (
       <XStack
         gap={15}
@@ -46,11 +63,13 @@ export const UserInfo = React.memo(
         )}
         <YStack justifyContent="center" gap={2}>
           <Text fontFamily={"$js5"} fontSize={"$4"} color={themeColors.onyx}>
-            {user.displayName}
+            {primaryLabel}
           </Text>
-          <Text fontFamily={"$js4"} fontSize={"$2"} color={"#999"}>
-            {user.phoneNumber}
-          </Text>
+          {!hideStaffPhone && user.phoneNumber ? (
+            <Text fontFamily={"$js4"} fontSize={"$2"} color={"#999"}>
+              {user.phoneNumber}
+            </Text>
+          ) : null}
         </YStack>
       </XStack>
     );
@@ -62,9 +81,11 @@ export const UserInfo = React.memo(
   },
   (prev, next) => {
     return (
+      prev.staffPrivacy === next.staffPrivacy &&
       prev.user.phoneNumber === next.user.phoneNumber &&
       prev.user.photoUrl === next.user.photoUrl &&
-      prev.user.displayName === next.user.displayName
+      prev.user.displayName === next.user.displayName &&
+      prev.user.role === next.user.role
     );
   },
 );

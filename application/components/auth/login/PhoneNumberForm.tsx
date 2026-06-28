@@ -1,4 +1,8 @@
 import {
+  isValidNationalNumber,
+  PhoneCountry,
+} from "@/constants/phoneCountries";
+import {
   loginColors,
   loginRadius,
   loginSpacing,
@@ -6,9 +10,12 @@ import {
 } from "@/themes/loginDesign";
 import { FC, useState } from "react";
 import { StyleSheet, Text, TextInput, View } from "react-native";
+import { CountryCodeSelect } from "./CountryCodeSelect";
 import { LoginPrimaryButton } from "./LoginPrimaryButton";
 
 type PhoneNumberFormProps = {
+  country: PhoneCountry;
+  onCountryChange: (country: PhoneCountry) => void;
   phoneNumber: string;
   onPhoneNumberChange: (value: string) => void;
   onSendOtp: () => void;
@@ -19,6 +26,8 @@ type PhoneNumberFormProps = {
 };
 
 export const PhoneNumberForm: FC<PhoneNumberFormProps> = ({
+  country,
+  onCountryChange,
   phoneNumber,
   onPhoneNumberChange,
   onSendOtp,
@@ -39,19 +48,28 @@ export const PhoneNumberForm: FC<PhoneNumberFormProps> = ({
 
       <Text style={styles.label}>Phone Number</Text>
       <View style={styles.phoneRow}>
-        <View style={styles.countryCodeBox}>
-          <Text style={styles.countryCodeText}>+91</Text>
-        </View>
+        <CountryCodeSelect
+          value={country}
+          onValueChange={(nextCountry) => {
+            onCountryChange(nextCountry);
+            if (phoneNumber.length > nextCountry.maxLength) {
+              onPhoneNumberChange(phoneNumber.slice(0, nextCountry.maxLength));
+            }
+          }}
+          disabled={disabled || isLoading || otpSent}
+        />
         <TextInput
           style={[styles.phoneInput, phoneFocused && styles.inputFocused]}
           value={phoneNumber}
           onChangeText={(text) =>
-            onPhoneNumberChange(text.replace(/[^0-9]/g, "").slice(0, 10))
+            onPhoneNumberChange(
+              text.replace(/[^0-9]/g, "").slice(0, country.maxLength),
+            )
           }
           keyboardType="phone-pad"
-          placeholder="Enter your mobile number"
+          placeholder={country.placeholder ?? "Enter your mobile number"}
           placeholderTextColor={loginColors.outlineVariant}
-          maxLength={10}
+          maxLength={country.maxLength}
           editable={!disabled && !isLoading && !otpSent}
           onFocus={() => setPhoneFocused(true)}
           onBlur={() => setPhoneFocused(false)}
@@ -63,7 +81,7 @@ export const PhoneNumberForm: FC<PhoneNumberFormProps> = ({
           label="Send OTP"
           loadingLabel="Sending..."
           onPress={onSendOtp}
-          disabled={phoneNumber.length !== 10 || disabled}
+          disabled={!isValidNationalNumber(country, phoneNumber) || disabled}
           loading={isLoading}
         />
       ) : null}
@@ -102,22 +120,6 @@ const styles = StyleSheet.create({
   phoneRow: {
     flexDirection: "row",
     marginBottom: loginSpacing.stackMd,
-  },
-  countryCodeBox: {
-    minWidth: 72,
-    height: 48,
-    marginRight: loginSpacing.stackSm,
-    borderWidth: 1,
-    borderColor: loginColors.outlineVariant,
-    borderRadius: loginRadius.md,
-    backgroundColor: loginColors.surfaceContainerLow,
-    alignItems: "center",
-    justifyContent: "center",
-    opacity: 0.85,
-  },
-  countryCodeText: {
-    ...loginTypography.labelMd,
-    color: loginColors.onSurface,
   },
   phoneInput: {
     flex: 1,

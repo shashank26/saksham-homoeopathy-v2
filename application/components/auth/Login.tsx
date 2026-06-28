@@ -1,4 +1,5 @@
 import { LoaderScreen } from "@/components/LoaderScreen";
+import { DEFAULT_PHONE_COUNTRY } from "@/constants/phoneCountries";
 import { Monitoring } from "@/services/Monitoring.service";
 import { loginColors, loginSpacing } from "@/themes/loginDesign";
 import { FirebaseAuthTypes } from "@react-native-firebase/auth";
@@ -26,6 +27,7 @@ export const Login: FC = () => {
   const fontsLoaded = useLoginFonts();
   const { isLoading, signIn } = useAuth();
   const [fetchingOTP, setFetchingOTP] = useState(false);
+  const [selectedCountry, setSelectedCountry] = useState(DEFAULT_PHONE_COUNTRY);
   const [phoneNumber, setPhoneNumber] = useState("");
   const [confirm, setConfirm] =
     useState<FirebaseAuthTypes.ConfirmationResult | null>(null);
@@ -37,7 +39,7 @@ export const Login: FC = () => {
     try {
       setStatusMessage("Fetching OTP...");
       setFetchingOTP(true);
-      const confirmation = await signIn(parseInt(phoneNumber, 10));
+      const confirmation = await signIn(selectedCountry.dialCode, phoneNumber);
       setConfirm(confirmation);
       setStatusMessage("");
     } catch (err) {
@@ -52,7 +54,7 @@ export const Login: FC = () => {
       setStatusMessage("Failed to fetch OTP. Please try again.");
     }
     setFetchingOTP(false);
-  }, [isLoading, phoneNumber, signIn]);
+  }, [isLoading, phoneNumber, selectedCountry.dialCode, signIn]);
 
   useEffect(() => {
     if (!confirm) return;
@@ -82,6 +84,8 @@ export const Login: FC = () => {
             <LoginBrandSection />
             <LoginCard>
               <PhoneNumberForm
+                country={selectedCountry}
+                onCountryChange={setSelectedCountry}
                 phoneNumber={phoneNumber}
                 onPhoneNumberChange={setPhoneNumber}
                 disabled={isLoading}

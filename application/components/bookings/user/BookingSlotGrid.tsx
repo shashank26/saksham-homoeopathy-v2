@@ -123,9 +123,9 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(137, 246, 166, 0.15)",
   },
   slotUnavailable: {
-    backgroundColor: loginColors.surfaceContainer,
+    backgroundColor: loginColors.surfaceContainerLowest,
     borderColor: loginColors.outlineVariant,
-    opacity: 0.55,
+    opacity: 0.25,
   },
   slotPressed: {
     transform: [{ scale: 0.95 }],
