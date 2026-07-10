@@ -4,7 +4,7 @@ import { Post, PostService } from "@/services/Posts.service";
 import { themeColors } from "@/themes/themes";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Text } from "@tamagui/core";
-import React, { useRef, useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import { FlatList, View } from "react-native";
 import { Pressable } from "react-native-gesture-handler";
 import { Swipeable } from "react-native-gesture-handler";
@@ -86,9 +86,11 @@ const RenderPost: React.FC<{ item: Post }> = ({ item }) => {
   );
 };
 
-const DoctorPost: React.FC<{ item: Post }> = ({ item }) => {
+const DoctorPost: React.FC<{
+  item: Post;
+  onEdit: (post: Post) => void;
+}> = ({ item, onEdit }) => {
   const [showConfirm, setShowConfirm] = useState<boolean>(false);
-  const [editOpen, setEditOpen] = useState(false);
   const ref = useRef<Swipeable>(null);
 
   return (
@@ -100,7 +102,7 @@ const DoctorPost: React.FC<{ item: Post }> = ({ item }) => {
             <Pressable
               onPress={() => {
                 ref.current?.close();
-                setEditOpen(true);
+                onEdit(item);
               }}
               style={{
                 justifyContent: "center",
@@ -129,11 +131,6 @@ const DoctorPost: React.FC<{ item: Post }> = ({ item }) => {
       >
         <RenderPost item={item} />
       </Swipeable>
-      <EditPostSheet
-        post={item}
-        open={editOpen}
-        onOpenChange={setEditOpen}
-      />
       <ConfirmDialog
         description="Do you want to delete this post?"
         title="Delete"
@@ -154,6 +151,20 @@ const DoctorPost: React.FC<{ item: Post }> = ({ item }) => {
 export default function Posts() {
   const { role } = useAuth();
   const { loading, posts } = usePosts();
+  const [editSheetOpen, setEditSheetOpen] = useState(false);
+  const [editingPost, setEditingPost] = useState<Post | null>(null);
+
+  const handleEditPost = useCallback((post: Post) => {
+    setEditingPost(post);
+    setEditSheetOpen(true);
+  }, []);
+
+  const handleEditSheetOpenChange = useCallback((open: boolean) => {
+    setEditSheetOpen(open);
+    if (!open) {
+      setEditingPost(null);
+    }
+  }, []);
 
   if (loading === 1) {
     return (
@@ -183,7 +194,7 @@ export default function Posts() {
             data={posts}
             renderItem={({ item }) =>
               role === Role.DOCTOR ? (
-                <DoctorPost item={item} />
+                <DoctorPost item={item} onEdit={handleEditPost} />
               ) : (
                 <RenderPost item={item} />
               )
@@ -211,6 +222,13 @@ export default function Posts() {
         </View>
       )}
       <CreatePost />
+      {editingPost ? (
+        <EditPostSheet
+          post={editingPost}
+          open={editSheetOpen}
+          onOpenChange={handleEditSheetOpenChange}
+        />
+      ) : null}
     </>
   );
 }

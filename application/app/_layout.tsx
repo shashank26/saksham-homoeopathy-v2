@@ -1,7 +1,10 @@
 import { Auth } from "@/components/auth/Auth";
 import { AuthProvider } from "@/components/auth/hooks/useAuth";
+import { AppOpenTracker } from "@/components/analytics/AppOpenTracker";
+import { AppUpdateGate } from "@/components/appUpdate/AppUpdateGate";
 import { LoaderScreen } from "@/components/LoaderScreen";
 import { initializeFirebaseAppCheck } from "@/services/AppCheck";
+import { Monitoring } from "@/services/Monitoring.service";
 import { getFonts, themeColors, themes } from "@/themes/themes";
 import { defaultConfig } from "@tamagui/config/v4";
 import { createTamagui } from "@tamagui/core";
@@ -25,6 +28,7 @@ Sentry.init({
   enableLogs: true,
   sendDefaultPii: false,
 });
+Monitoring.setClientVersionTags();
 
 const config = createTamagui({
   ...defaultConfig,
@@ -80,6 +84,7 @@ function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <AuthProvider>
+        <AppOpenTracker />
         <TamaguiProvider config={config} defaultTheme="light">
           <PortalProvider shouldAddRootHost>
             {Platform.OS === "android" && (
@@ -90,7 +95,9 @@ function RootLayout() {
               />
             )}
             <ToastProvider>
-              {appCheckInitialized ? getUI() : null}
+              <AppUpdateGate>
+                {appCheckInitialized ? getUI() : null}
+              </AppUpdateGate>
             </ToastProvider>
           </PortalProvider>
         </TamaguiProvider>

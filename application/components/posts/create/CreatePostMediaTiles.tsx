@@ -4,7 +4,7 @@ import {
   isMediaPickerSuccess,
   pickImageFromLibrary,
   pickVideoFromLibrary,
-  VideoCompresser,
+  Compressor,
 } from "@/components/common/mediaPickerCore";
 import {
   loginColors,
@@ -99,7 +99,7 @@ export const CreatePostMediaTiles: FC<CreatePostMediaTilesProps> = ({
           <Pressable
             onPress={() => {
               if (!compressing) return;
-              VideoCompresser.Video.cancelCompression(compressing);
+              Compressor.cancel(compressing);
             }}
           >
             <MaterialIcons name="cancel" color={themeColors.accent} size={24} />

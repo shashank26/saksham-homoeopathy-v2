@@ -10,7 +10,7 @@ export type CreatePostType = {
   media?: {
     type: "image" | "video";
     url: string;
-    thumbnail?: string; // Optional thumbnail for videos
+    thumbnail?: string | null; // Optional thumbnail for videos
   };
 };
 

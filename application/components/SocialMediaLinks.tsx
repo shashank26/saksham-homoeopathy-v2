@@ -4,8 +4,6 @@ import { Image, Linking, StyleSheet, TouchableOpacity } from "react-native";
 import { Text, XStack } from "tamagui";
 
 const socialLinks = {
-  instagram: "https://instagram.com/saksham_homoeopathy",
-  twitter: "https://twitter.com/drshubhangi19",
   facebook: "https://www.facebook.com/shubhangee.kaushal",
   youtube: "https://www.youtube.com/@drshubhangi19",
 };

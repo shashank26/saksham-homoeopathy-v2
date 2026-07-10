@@ -9,6 +9,7 @@ Use this checklist for the **second** production-access attempt after rejection.
 - [ ] Recruit **15–17** testers on real Android phones (buffer for drop-offs)
 - [ ] Privacy policy live at the URL in `application/app.json` → `extra.legal.privacyPolicyUrl`
 - [ ] Deploy Cloud Function: `cd functions/functions && npm run deploy` (includes `deleteUserAccount`)
+- [ ] Update Firestore `config/appCurrentVersion` after each build so testers see the in-app update prompt — see [APP_RELEASE.md](./APP_RELEASE.md)
 
 ## Tester onboarding
 
