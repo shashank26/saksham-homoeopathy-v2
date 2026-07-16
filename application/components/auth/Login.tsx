@@ -1,5 +1,4 @@
 import { LoaderScreen } from "@/components/LoaderScreen";
-import { DEFAULT_PHONE_COUNTRY } from "@/constants/phoneCountries";
 import { Monitoring } from "@/services/Monitoring.service";
 import { loginColors, loginSpacing } from "@/themes/loginDesign";
 import { FirebaseAuthTypes } from "@react-native-firebase/auth";
@@ -22,12 +21,15 @@ import { LoginSectionDivider } from "./login/LoginSectionDivider";
 import { OtpVerificationForm } from "./login/OtpVerificationForm";
 import { PhoneNumberForm } from "./login/PhoneNumberForm";
 import { useLoginFonts } from "./login/useLoginFonts";
+import { usePhoneCountries } from "./hooks/usePhoneCountries";
+import { PhoneCountry } from "@/constants/phoneCountries";
 
 export const Login: FC = () => {
   const fontsLoaded = useLoginFonts();
   const { isLoading, signIn } = useAuth();
   const [fetchingOTP, setFetchingOTP] = useState(false);
-  const [selectedCountry, setSelectedCountry] = useState(DEFAULT_PHONE_COUNTRY);
+  const { defaultPhoneCountry } = usePhoneCountries();
+  const [selectedCountry, setSelectedCountry] = useState(defaultPhoneCountry as PhoneCountry);
   const [phoneNumber, setPhoneNumber] = useState("");
   const [confirm, setConfirm] =
     useState<FirebaseAuthTypes.ConfirmationResult | null>(null);

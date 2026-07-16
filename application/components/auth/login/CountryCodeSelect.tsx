@@ -1,5 +1,4 @@
 import {
-  PHONE_COUNTRIES,
   PhoneCountry,
 } from "@/constants/phoneCountries";
 import {
@@ -18,6 +17,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { usePhoneCountries } from "../hooks/usePhoneCountries";
 
 type CountryCodeSelectProps = {
   value: PhoneCountry;
@@ -31,6 +31,7 @@ export const CountryCodeSelect: FC<CountryCodeSelectProps> = ({
   disabled,
 }) => {
   const [open, setOpen] = useState(false);
+  const { phoneCountries } = usePhoneCountries();
 
   return (
     <>
@@ -52,7 +53,7 @@ export const CountryCodeSelect: FC<CountryCodeSelectProps> = ({
         <Pressable style={styles.overlay} onPress={() => setOpen(false)}>
           <View style={styles.sheet}>
             <Text style={styles.sheetTitle}>Select country</Text>
-            {PHONE_COUNTRIES.map((option) => (
+            {phoneCountries.map((option) => (
               <TouchableOpacity
                 key={option.id}
                 style={[
