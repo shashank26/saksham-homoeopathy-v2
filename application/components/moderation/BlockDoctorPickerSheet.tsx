@@ -24,6 +24,7 @@ type BlockDoctorPickerSheetProps = {
   onOpenChange: (open: boolean) => void;
   blockerId: string;
   chatId: string;
+  mode?: "block" | "unblock";
 };
 
 export const BlockDoctorPickerSheet: FC<BlockDoctorPickerSheetProps> = ({
@@ -31,6 +32,7 @@ export const BlockDoctorPickerSheet: FC<BlockDoctorPickerSheetProps> = ({
   onOpenChange,
   blockerId,
   chatId,
+  mode = "block",
 }) => (
   <VitalityDrawerSheet<void>
     open={open}
@@ -40,6 +42,7 @@ export const BlockDoctorPickerSheet: FC<BlockDoctorPickerSheetProps> = ({
       <BlockDoctorPickerForm
         blockerId={blockerId}
         chatId={chatId}
+        mode={mode}
         onClose={onClose}
       />
     )}
@@ -49,20 +52,31 @@ export const BlockDoctorPickerSheet: FC<BlockDoctorPickerSheetProps> = ({
 const BlockDoctorPickerForm = ({
   blockerId,
   chatId,
+  mode,
   onClose,
 }: {
   blockerId: string;
   chatId: string;
+  mode: "block" | "unblock";
   onClose: () => void;
 }) => {
   const fontsLoaded = useVitalityFonts();
   const [doctors, setDoctors] = useState<UserProfile[]>([]);
   const [selectedId, setSelectedId] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const isUnblock = mode === "unblock";
 
   useEffect(() => {
-    UserService.getDoctors().then(setDoctors);
-  }, []);
+    (async () => {
+      const allDoctors = await UserService.getDoctors();
+      if (!isUnblock) {
+        setDoctors(allDoctors);
+        return;
+      }
+      const blockedIds = await ModerationService.getBlockedIdsByUser(blockerId);
+      setDoctors(allDoctors.filter((doctor) => blockedIds.includes(doctor.id)));
+    })();
+  }, [blockerId, isUnblock]);
 
   if (!fontsLoaded) {
     return null;
@@ -70,14 +84,20 @@ const BlockDoctorPickerForm = ({
 
   return (
     <View style={styles.formRoot}>
-      <VitalityDrawerHeader title="Block Doctor" onClose={onClose} />
+      <VitalityDrawerHeader
+        title={isUnblock ? "Unblock Doctor" : "Block Doctor"}
+        onClose={onClose}
+      />
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <Text style={styles.description}>
-          Choose which clinic number you want to block. You can still message
-          other doctors at the clinic.
+          {isUnblock
+            ? "Choose which clinic number you want to unblock."
+            : "Choose which clinic number you want to block. You can still message other doctors at the clinic."}
         </Text>
         {doctors.length === 0 ? (
-          <Text style={styles.empty}>No doctors available.</Text>
+          <Text style={styles.empty}>
+            {isUnblock ? "No blocked doctors." : "No doctors available."}
+          </Text>
         ) : (
           doctors.map((doctor) => (
             <Pressable
@@ -98,8 +118,8 @@ const BlockDoctorPickerForm = ({
           backgroundColor={loginColors.surfaceContainerLowest}
         >
           <LoginPrimaryButton
-            label="Block doctor"
-            loadingLabel="Blocking..."
+            label={isUnblock ? "Unblock doctor" : "Block doctor"}
+            loadingLabel={isUnblock ? "Unblocking..." : "Blocking..."}
             disabled={!selectedId || submitting}
             loading={submitting}
             style={styles.submitButton}
@@ -107,17 +127,24 @@ const BlockDoctorPickerForm = ({
               if (!selectedId || submitting) return;
               setSubmitting(true);
               try {
-                const success = await ModerationService.blockUser(
-                  blockerId,
-                  selectedId,
-                  chatId,
-                );
+                const success = isUnblock
+                  ? await ModerationService.unblockUser(blockerId, selectedId)
+                  : await ModerationService.blockUser(
+                      blockerId,
+                      selectedId,
+                      chatId,
+                    );
                 if (success) {
-                  toast({ title: "Doctor blocked", preset: "done" });
+                  toast({
+                    title: isUnblock ? "Doctor unblocked" : "Doctor blocked",
+                    preset: "done",
+                  });
                   onClose();
                 } else {
                   toast({
-                    title: "Could not block doctor",
+                    title: isUnblock
+                      ? "Could not unblock doctor"
+                      : "Could not block doctor",
                     preset: "error",
                   });
                 }

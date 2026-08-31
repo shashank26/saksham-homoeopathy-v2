@@ -13,18 +13,30 @@ import {
   loginSpacing,
   loginTypography,
 } from "@/themes/loginDesign";
-import { FC, useEffect, useState } from "react";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { themeColors } from "@/themes/themes";
+import { toast } from "burnt";
+import { FC, useEffect, useState } from "react";
+import {
+  Alert,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 
 const reasonLabel = (reason: string) =>
   REPORT_REASON_OPTIONS.find((o) => o.value === reason)?.label ?? reason;
 
+const reportTitle = (type: ModerationReport["type"]) => {
+  if (type === "message") return "Message report";
+  if (type === "post") return "Post report";
+  return "User report";
+};
+
 const ReportCard = ({ report }: { report: ModerationReport }) => (
   <View style={styles.card}>
-    <Text style={styles.cardTitle}>
-      {report.type === "message" ? "Message report" : "User report"}
-    </Text>
+    <Text style={styles.cardTitle}>{reportTitle(report.type)}</Text>
     <Text style={styles.cardMeta}>Reason: {reasonLabel(report.reason)}</Text>
     <Text style={styles.cardMeta}>
       Reporter: {report.reporterPhone || report.reporterId}
@@ -32,6 +44,9 @@ const ReportCard = ({ report }: { report: ModerationReport }) => (
     <Text style={styles.cardMeta}>
       Reported user: {report.reportedUserId}
     </Text>
+    {report.postTitle ? (
+      <Text style={styles.cardMeta}>Post: {report.postTitle}</Text>
+    ) : null}
     {report.messageText ? (
       <Text style={styles.cardBody} numberOfLines={3}>
         &quot;{report.messageText}&quot;
@@ -51,20 +66,62 @@ const ReportCard = ({ report }: { report: ModerationReport }) => (
   </View>
 );
 
-const BlockCard = ({ block }: { block: UserBlock }) => (
-  <View style={styles.card}>
-    <Text style={styles.cardTitle}>Blocked user</Text>
-    <Text style={styles.cardMeta}>Blocker: {block.blockerId}</Text>
-    <Text style={styles.cardMeta}>Blocked: {block.blockedId}</Text>
-    <Text style={styles.cardMeta}>Chat: {block.chatId}</Text>
-    {block.createdAt ? (
-      <Text style={styles.cardTime}>
-        {MomentService.getDDMMMYYY(block.createdAt)}{" "}
-        {MomentService.getTimeHHMM(block.createdAt)}
-      </Text>
-    ) : null}
-  </View>
-);
+const BlockCard = ({ block }: { block: UserBlock }) => {
+  const [unblocking, setUnblocking] = useState(false);
+
+  const confirmUnblock = () => {
+    Alert.alert(
+      "Unblock user?",
+      "This will remove the block so messaging can resume.",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Unblock",
+          onPress: async () => {
+            setUnblocking(true);
+            try {
+              const success = await ModerationService.unblockUser(
+                block.blockerId,
+                block.blockedId,
+              );
+              if (success) {
+                toast({ title: "User unblocked", preset: "done" });
+              } else {
+                toast({ title: "Could not unblock user", preset: "error" });
+              }
+            } finally {
+              setUnblocking(false);
+            }
+          },
+        },
+      ],
+    );
+  };
+
+  return (
+    <View style={styles.card}>
+      <Text style={styles.cardTitle}>Blocked user</Text>
+      <Text style={styles.cardMeta}>Blocker: {block.blockerId}</Text>
+      <Text style={styles.cardMeta}>Blocked: {block.blockedId}</Text>
+      <Text style={styles.cardMeta}>Chat: {block.chatId}</Text>
+      {block.createdAt ? (
+        <Text style={styles.cardTime}>
+          {MomentService.getDDMMMYYY(block.createdAt)}{" "}
+          {MomentService.getTimeHHMM(block.createdAt)}
+        </Text>
+      ) : null}
+      <Pressable
+        onPress={confirmUnblock}
+        disabled={unblocking}
+        style={styles.unblockButton}
+      >
+        <Text style={styles.unblockButtonText}>
+          {unblocking ? "Unblocking..." : "Unblock"}
+        </Text>
+      </Pressable>
+    </View>
+  );
+};
 
 export const ModerationScreen: FC = () => {
   const fontsLoaded = useVitalityFonts();
@@ -91,7 +148,7 @@ export const ModerationScreen: FC = () => {
     >
       <Text style={styles.pageTitle}>Moderation</Text>
       <Text style={styles.subtitle}>
-        Reports and blocks from patient-doctor chat.
+        Reports and blocks from patient-doctor chat and posts.
       </Text>
 
       <View style={styles.section}>
@@ -183,5 +240,20 @@ const styles = StyleSheet.create({
     ...loginTypography.labelSm,
     color: loginColors.outlineVariant,
     marginTop: 4,
+  },
+  unblockButton: {
+    marginTop: loginSpacing.stackSm,
+    alignSelf: "flex-start",
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: loginRadius.md,
+    borderWidth: 1,
+    borderColor: loginColors.outlineVariant,
+    backgroundColor: loginColors.surface,
+  },
+  unblockButtonText: {
+    ...loginTypography.labelMd,
+    fontFamily: "Manrope_600SemiBold",
+    color: loginColors.secondary,
   },
 });

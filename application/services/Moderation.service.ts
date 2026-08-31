@@ -6,7 +6,7 @@ import { serverTimestamp } from "@react-native-firebase/firestore";
 import { Role } from "./Firebase.service";
 import { db } from "./Firebase.service";
 
-export type ReportType = "message" | "user";
+export type ReportType = "message" | "user" | "post";
 
 export type ModerationReport = {
   id?: string;
@@ -19,6 +19,8 @@ export type ModerationReport = {
   chatId: string;
   messageId?: string;
   messageText?: string;
+  postId?: string;
+  postTitle?: string;
   createdAt?: Date;
 };
 
@@ -40,6 +42,8 @@ type SubmitReportInput = {
   chatId: string;
   messageId?: string;
   messageText?: string;
+  postId?: string;
+  postTitle?: string;
 };
 
 export class ModerationService {
@@ -55,7 +59,7 @@ export class ModerationService {
     reason: ReportReason,
   ): Promise<void> {
     const doctors = await UserService.getDoctors();
-    const message = `New chat report: ${type} — ${reason}`;
+    const message = `New report: ${type} — ${reason}`;
     await Promise.all(
       doctors
         .filter((doctor) => doctor.phoneNumber)
@@ -79,6 +83,8 @@ export class ModerationService {
             chatId: input.chatId,
             messageId: input.messageId ?? null,
             messageText: input.messageText ?? null,
+            postId: input.postId ?? null,
+            postTitle: input.postTitle ?? null,
             createdAt: serverTimestamp(),
           }),
         ),
@@ -134,6 +140,33 @@ export class ModerationService {
       reporterPhone: params.reporterPhone,
       reportedUserIds: params.reportedUserIds,
       chatId: params.chatId,
+    });
+  }
+
+  static async submitPostReport(params: {
+    reason: ReportReason;
+    details?: string;
+    reporterId: string;
+    reporterPhone: string;
+    postId: string;
+    postTitle: string;
+    postBody: string;
+  }): Promise<boolean> {
+    const truncatedBody =
+      params.postBody.length > 280
+        ? `${params.postBody.slice(0, 280)}…`
+        : params.postBody;
+    return this.submitReport({
+      type: "post",
+      reason: params.reason,
+      details: params.details,
+      reporterId: params.reporterId,
+      reporterPhone: params.reporterPhone,
+      reportedUserIds: [Role.DOCTOR],
+      chatId: "posts",
+      postId: params.postId,
+      postTitle: params.postTitle,
+      messageText: truncatedBody,
     });
   }
 
@@ -200,6 +233,37 @@ export class ModerationService {
       this.blockKey(blockerId, blockedId),
     ).get();
     return doc.exists();
+  }
+
+  static async getBlockedIdsByUser(blockerId: string): Promise<string[]> {
+    try {
+      const snapshot = await this.BLOCKS_COLLECTION.where(
+        "blockerId",
+        "==",
+        blockerId,
+      ).get();
+      return snapshot.docs.map((doc) => doc.data().blockedId as string);
+    } catch (err) {
+      console.error("Error loading blocked ids:", err);
+      Monitoring.captureException(err, {
+        area: "moderation",
+        action: "getBlockedIdsByUser",
+      });
+      return [];
+    }
+  }
+
+  static async hasBlockedInChat(
+    blockerId: string,
+    receiverId: string,
+  ): Promise<boolean> {
+    if (receiverId === Role.DOCTOR) {
+      const blockedIds = await this.getBlockedIdsByUser(blockerId);
+      if (blockedIds.length === 0) return false;
+      const doctorIds = await this.getDoctorUserIds();
+      return blockedIds.some((id) => doctorIds.includes(id));
+    }
+    return this.isBlocked(blockerId, receiverId);
   }
 
   static async getDoctorUserIds(): Promise<string[]> {
@@ -301,6 +365,8 @@ export class ModerationService {
               chatId: data.chatId,
               messageId: data.messageId,
               messageText: data.messageText,
+              postId: data.postId ?? undefined,
+              postTitle: data.postTitle ?? undefined,
               createdAt: data.createdAt?.toDate(),
             };
           });
