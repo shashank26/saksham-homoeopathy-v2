@@ -6,10 +6,11 @@ import { Role } from "@/services/Firebase.service";
 import { ModerationService } from "@/services/Moderation.service";
 import { UserService } from "@/services/User.service";
 import { themeColors } from "@/themes/themes";
+import { getAggregateStaffDisplayName } from "@/utils/userDisplay";
 import { MaterialIcons } from "@expo/vector-icons";
 import { toast } from "burnt";
 import { router } from "expo-router";
-import { useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { Alert, Pressable, Text, View } from "react-native";
 import { XStack } from "tamagui";
 import { BackHeader } from "../common/BackHeader";
@@ -25,16 +26,26 @@ export const ChatArea = () => {
   );
   const [reportSheetOpen, setReportSheetOpen] = useState(false);
   const [blockPickerOpen, setBlockPickerOpen] = useState(false);
+  const [unblockPickerOpen, setUnblockPickerOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [iHaveBlocked, setIHaveBlocked] = useState(false);
+
+  const refreshBlockState = useCallback(async () => {
+    if (!profile?.id || !receiverId) return;
+    const blocked = await ModerationService.hasBlockedInChat(
+      profile.id,
+      receiverId,
+    );
+    setIHaveBlocked(blocked);
+  }, [profile?.id, receiverId]);
 
   useEffect(() => {
     if (receiverId === Role.DOCTOR) {
       UserService.getDoctors().then((doctors) => {
         const doctorProfile: UserProfile = {
-          displayName:
-            doctors.find((doc) => doc.displayName)?.displayName || "Doctor",
+          displayName: getAggregateStaffDisplayName(doctors),
           id: Role.DOCTOR,
-          phoneNumber: doctors.map((doc) => doc.phoneNumber).join(", "),
+          phoneNumber: "",
           photoUrl: doctors.find((doc) => doc.photoUrl)?.photoUrl || "",
           role: Role.DOCTOR,
         };
@@ -46,6 +57,10 @@ export const ChatArea = () => {
       });
     }
   }, [receiverId]);
+
+  useEffect(() => {
+    void refreshBlockState();
+  }, [refreshBlockState]);
 
   const blockPatient = () => {
     Alert.alert(
@@ -64,8 +79,34 @@ export const ChatArea = () => {
             );
             if (success) {
               toast({ title: "User blocked", preset: "done" });
+              setIHaveBlocked(true);
             } else {
               toast({ title: "Could not block user", preset: "error" });
+            }
+          },
+        },
+      ],
+    );
+  };
+
+  const unblockPatient = () => {
+    Alert.alert(
+      "Unblock user?",
+      "You will be able to send messages to each other again.",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Unblock",
+          onPress: async () => {
+            const success = await ModerationService.unblockUser(
+              profile.id,
+              receiverId,
+            );
+            if (success) {
+              toast({ title: "User unblocked", preset: "done" });
+              setIHaveBlocked(false);
+            } else {
+              toast({ title: "Could not unblock user", preset: "error" });
             }
           },
         },
@@ -80,17 +121,28 @@ export const ChatArea = () => {
         text: "Report User",
         onPress: () => setReportSheetOpen(true),
       },
-      {
-        text: "Block User",
-        style: "destructive",
-        onPress: () => {
-          if (receiverId === Role.DOCTOR) {
-            setBlockPickerOpen(true);
-          } else {
-            blockPatient();
+      iHaveBlocked
+        ? {
+            text: "Unblock User",
+            onPress: () => {
+              if (receiverId === Role.DOCTOR) {
+                setUnblockPickerOpen(true);
+              } else {
+                unblockPatient();
+              }
+            },
           }
-        },
-      },
+        : {
+            text: "Block User",
+            style: "destructive",
+            onPress: () => {
+              if (receiverId === Role.DOCTOR) {
+                setBlockPickerOpen(true);
+              } else {
+                blockPatient();
+              }
+            },
+          },
       { text: "Cancel", style: "cancel", onPress: () => setMenuOpen(false) },
     ]);
     setMenuOpen(false);
@@ -148,8 +200,8 @@ export const ChatArea = () => {
 
   const headerTitle = (
     <XStack flex={1}>
-      <View style={{ flex: 1, width: "90%" }}>
-        <UserInfo user={receiverProfile} />
+      <View style={{ flex: 1, width: "90%", overflow: "hidden" }}>
+        <UserInfo user={receiverProfile} staffPrivacy />
       </View>
       <Pressable
         onPress={showActionsMenu}
@@ -189,9 +241,23 @@ export const ChatArea = () => {
       />
       <BlockDoctorPickerSheet
         open={blockPickerOpen}
-        onOpenChange={setBlockPickerOpen}
+        onOpenChange={(open) => {
+          setBlockPickerOpen(open);
+          if (!open) void refreshBlockState();
+        }}
         blockerId={profile.id}
         chatId={chatId}
+        mode="block"
+      />
+      <BlockDoctorPickerSheet
+        open={unblockPickerOpen}
+        onOpenChange={(open) => {
+          setUnblockPickerOpen(open);
+          if (!open) void refreshBlockState();
+        }}
+        blockerId={profile.id}
+        chatId={chatId}
+        mode="unblock"
       />
     </View>
   );

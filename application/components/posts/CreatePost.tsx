@@ -3,8 +3,7 @@ import { BookingTextField } from "@/components/bookings/user/BookingTextField";
 import { Role } from "@/services/Firebase.service";
 import { CreatePostType, Post, PostService } from "@/services/Posts.service";
 import { StorageService } from "@/services/Storage.service";
-import { loginSpacing } from "@/themes/loginDesign";
-import { useVitalityFonts } from "@/hooks/useVitalityFonts";
+import { loginColors, loginSpacing } from "@/themes/loginDesign";
 import * as Crypto from "expo-crypto";
 import { Dispatch, useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
@@ -43,7 +42,6 @@ export const PostForm = ({
   post?: Post;
   onClose: (result: boolean) => void;
 }) => {
-  const fonts = useVitalityFonts();
   const isEdit = Boolean(post?.id);
   const [selectedMedia, setSelectedMedia] = useState<
     Extract<MediaPickerResult, { uri: string }>[]
@@ -59,10 +57,6 @@ export const PostForm = ({
   const valid = () => Boolean(formData.title && formData.body);
 
   const dismiss = () => onClose(false);
-
-  if (!fonts) {
-    return null;
-  }
 
   const existingMedia = !mediaRemoved ? post?.media : undefined;
   const previewUris =
@@ -159,14 +153,14 @@ export const PostForm = ({
                       | "image"
                       | "video",
                     url: savedUri!,
-                    thumbnail: thumbnailUri,
+                    thumbnail: media.thumbnail ? thumbnailUri : null,
                   }
                 : mediaRemoved
                   ? undefined
                   : formData.media;
 
               if (isEdit && post?.id) {
-                await PostService.update(post.id, {
+                await PostService.update(post!.id, {
                   body: formData.body,
                   title: formData.title,
                   media: mediaPayload,
@@ -206,14 +200,15 @@ export const EditPostSheet = ({
   onOpenChange: (open: boolean) => void;
 }) => (
   <VitalityDrawerSheet<void>
-    open={open}
-    onOpenChange={onOpenChange}
-    Child={({ onClose }) => (
-      <PostForm
-        key={post.id}
-        post={post}
-        onClose={() => onClose()}
-      />
+      open={open}
+      onOpenChange={onOpenChange}
+      frameBackgroundColor={loginColors.surfaceContainerLowest}
+      Child={({ onClose }) => (
+        <PostForm
+          key={post.id}
+          post={post}
+          onClose={() => onClose()}
+        />
     )}
   />
 );

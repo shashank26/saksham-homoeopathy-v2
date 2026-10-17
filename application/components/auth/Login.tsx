@@ -21,11 +21,15 @@ import { LoginSectionDivider } from "./login/LoginSectionDivider";
 import { OtpVerificationForm } from "./login/OtpVerificationForm";
 import { PhoneNumberForm } from "./login/PhoneNumberForm";
 import { useLoginFonts } from "./login/useLoginFonts";
+import { usePhoneCountries } from "./hooks/usePhoneCountries";
+import { PhoneCountry } from "@/constants/phoneCountries";
 
 export const Login: FC = () => {
   const fontsLoaded = useLoginFonts();
   const { isLoading, signIn } = useAuth();
   const [fetchingOTP, setFetchingOTP] = useState(false);
+  const { defaultPhoneCountry } = usePhoneCountries();
+  const [selectedCountry, setSelectedCountry] = useState(defaultPhoneCountry as PhoneCountry);
   const [phoneNumber, setPhoneNumber] = useState("");
   const [confirm, setConfirm] =
     useState<FirebaseAuthTypes.ConfirmationResult | null>(null);
@@ -37,7 +41,7 @@ export const Login: FC = () => {
     try {
       setStatusMessage("Fetching OTP...");
       setFetchingOTP(true);
-      const confirmation = await signIn(parseInt(phoneNumber, 10));
+      const confirmation = await signIn(selectedCountry.dialCode, phoneNumber);
       setConfirm(confirmation);
       setStatusMessage("");
     } catch (err) {
@@ -52,7 +56,7 @@ export const Login: FC = () => {
       setStatusMessage("Failed to fetch OTP. Please try again.");
     }
     setFetchingOTP(false);
-  }, [isLoading, phoneNumber, signIn]);
+  }, [isLoading, phoneNumber, selectedCountry.dialCode, signIn]);
 
   useEffect(() => {
     if (!confirm) return;
@@ -82,6 +86,8 @@ export const Login: FC = () => {
             <LoginBrandSection />
             <LoginCard>
               <PhoneNumberForm
+                country={selectedCountry}
+                onCountryChange={setSelectedCountry}
                 phoneNumber={phoneNumber}
                 onPhoneNumberChange={setPhoneNumber}
                 disabled={isLoading}

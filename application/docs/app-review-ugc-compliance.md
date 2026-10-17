@@ -1,12 +1,12 @@
 # App Store UGC Compliance (Guideline 1.2)
 
-This document supports App Review resubmission for Saksham Homoeopathy chat moderation and legal acceptance.
+This document supports App Review resubmission for Saksham Homoeopathy chat moderation, post reporting, and legal acceptance.
 
 ## Manual setup before testing
 
 ### Firestore security rules
 
-Add rules for new collections:
+Add rules for moderation collections:
 
 ```
 match /moderation_reports/{id} {
@@ -14,8 +14,10 @@ match /moderation_reports/{id} {
   allow read: if request.auth != null;
 }
 match /user_blocks/{id} {
-  allow create, delete: if request.auth != null
+  allow create: if request.auth != null
     && request.resource.data.blockerId == request.auth.uid;
+  // Blocker can delete their own block; authenticated clinic staff can reverse any block from Moderation.
+  allow delete: if request.auth != null;
   allow read: if request.auth != null;
 }
 ```
@@ -44,10 +46,12 @@ Ensure Privacy Policy URL, Terms of Use (EULA) URL, and support contact in App S
 - [ ] Long-press on **incoming** chat message opens Report Message sheet
 - [ ] Submitting report shows success toast
 - [ ] Chat header **⋮** menu offers Report User and Block User
-- [ ] Block confirm prevents sending new messages (input disabled + toast)
-- [ ] Doctor **Alerts** tab shows in-app notification for new report
-- [ ] Doctor **Moderation** drawer item lists report in realtime
-- [ ] Doctor **Moderation** screen lists blocked user pair
+- [ ] Block confirm prevents sending new messages (input disabled)
+- [ ] After blocking, chat **⋮** offers **Unblock User** and messaging resumes
+- [ ] Patient Posts tab **⋮** offers **Report Post**; submit shows success toast
+- [ ] Doctor **Alerts** tab shows in-app notification for new report (message / user / post)
+- [ ] Doctor **Moderation** drawer item lists report in realtime (including **Post report**)
+- [ ] Doctor **Moderation** screen lists blocked user pair with **Unblock** action
 - [ ] Account deletion removes user's reports and blocks
 
 ---
@@ -83,28 +87,40 @@ Record on a physical device or simulator. Use two accounts if possible: one pati
 3. Choose **Harassment** (or another reason) and submit.
 4. Show success toast.
 
-### 4. Block user flow
+### 4. Block and unblock user flow
 
 1. In chat header, tap **⋮** → **Block User**.
 2. Confirm the block alert.
-3. Show **"You can't send messages to this user."** below the message list.
+3. Show that message input is disabled.
 4. Attempt to type/send — input is disabled; send does not work.
-5. (Optional) Switch to the other account and confirm they also cannot send.
+5. Tap **⋮** → **Unblock User** and confirm.
+6. Show that messaging is available again.
 
-### 5. Admin visibility of reports
+### 5. Report post flow
+
+1. Sign in as a **patient**.
+2. Open the **Posts** tab.
+3. Tap **⋮** on a post → **Report Post**.
+4. Choose a reason and submit.
+5. Show the success toast.
+
+### 6. Admin visibility of reports and unblock
 
 1. Sign in as **doctor/admin**.
-2. Open **Alerts** tab — show notification: *"New chat report: …"*
+2. Open **Alerts** tab — show notification: *"New report: …"*
 3. Open drawer → **Moderation**.
-4. Show the **Reports** section with the submitted report (type, reason, reporter phone, message preview).
+4. Show the **Reports** section with message / user / **post** reports.
 5. Show **Blocked users** section with the block record.
+6. Tap **Unblock** on a block card and confirm the pair is removed.
 
 ---
 
 ## Notes for reviewers
 
 - Chat is limited to patients and clinic staff (not a public social network).
+- Clinic posts are also user-generated content and can be reported.
 - Terms acceptance is required before registration/login.
-- Users can report objectionable messages and abusive users.
+- Users can report objectionable messages, posts, and abusive users.
 - Users can block others; blocked parties cannot continue messaging.
+- Blocks are reversible by the blocker (chat **Unblock**) or by clinic staff (Moderation **Unblock**).
 - Reports notify the clinic administrator via in-app Alerts.

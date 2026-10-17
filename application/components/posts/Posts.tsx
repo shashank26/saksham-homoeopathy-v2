@@ -1,11 +1,15 @@
+import { ReportReasonSheet } from "@/components/moderation/ReportReasonSheet";
+import { ReportReason } from "@/constants/moderation";
 import { Role } from "@/services/Firebase.service";
+import { ModerationService } from "@/services/Moderation.service";
 import { MomentService } from "@/services/Moment.service";
 import { Post, PostService } from "@/services/Posts.service";
 import { themeColors } from "@/themes/themes";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Text } from "@tamagui/core";
-import React, { useRef, useState } from "react";
-import { FlatList, View } from "react-native";
+import { toast } from "burnt";
+import React, { useCallback, useRef, useState } from "react";
+import { Alert, FlatList, View } from "react-native";
 import { Pressable } from "react-native-gesture-handler";
 import { Swipeable } from "react-native-gesture-handler";
 import { Spinner, XStack, YStack } from "tamagui";
@@ -19,7 +23,10 @@ import usePosts from "./hooks/usePosts";
 const isEdited = (item: Post) =>
   item.updatedAt.getTime() - item.createdAt.getTime() > 60_000;
 
-const RenderPost: React.FC<{ item: Post }> = ({ item }) => {
+const RenderPost: React.FC<{
+  item: Post;
+  onReport?: (post: Post) => void;
+}> = ({ item, onReport }) => {
   const [isMediaVisible, setMediaVisible] = useState(false);
   return (
     <YStack
@@ -44,6 +51,28 @@ const RenderPost: React.FC<{ item: Post }> = ({ item }) => {
             </Text>
           ) : null}
         </XStack>
+        {onReport ? (
+          <Pressable
+            onPress={() => {
+              Alert.alert("Post actions", undefined, [
+                {
+                  text: "Report Post",
+                  style: "destructive",
+                  onPress: () => onReport(item),
+                },
+                { text: "Cancel", style: "cancel" },
+              ]);
+            }}
+            style={{ padding: 4 }}
+            hitSlop={8}
+          >
+            <MaterialIcons
+              name="more-vert"
+              size={22}
+              color={themeColors.accent}
+            />
+          </Pressable>
+        ) : null}
       </XStack>
       <Text
         fontFamily={"$js5"}
@@ -86,9 +115,11 @@ const RenderPost: React.FC<{ item: Post }> = ({ item }) => {
   );
 };
 
-const DoctorPost: React.FC<{ item: Post }> = ({ item }) => {
+const DoctorPost: React.FC<{
+  item: Post;
+  onEdit: (post: Post) => void;
+}> = ({ item, onEdit }) => {
   const [showConfirm, setShowConfirm] = useState<boolean>(false);
-  const [editOpen, setEditOpen] = useState(false);
   const ref = useRef<Swipeable>(null);
 
   return (
@@ -100,7 +131,7 @@ const DoctorPost: React.FC<{ item: Post }> = ({ item }) => {
             <Pressable
               onPress={() => {
                 ref.current?.close();
-                setEditOpen(true);
+                onEdit(item);
               }}
               style={{
                 justifyContent: "center",
@@ -129,11 +160,6 @@ const DoctorPost: React.FC<{ item: Post }> = ({ item }) => {
       >
         <RenderPost item={item} />
       </Swipeable>
-      <EditPostSheet
-        post={item}
-        open={editOpen}
-        onOpenChange={setEditOpen}
-      />
       <ConfirmDialog
         description="Do you want to delete this post?"
         title="Delete"
@@ -152,8 +178,65 @@ const DoctorPost: React.FC<{ item: Post }> = ({ item }) => {
 };
 
 export default function Posts() {
-  const { role } = useAuth();
+  const { role, profile } = useAuth();
   const { loading, posts } = usePosts();
+  const [editSheetOpen, setEditSheetOpen] = useState(false);
+  const [editingPost, setEditingPost] = useState<Post | null>(null);
+  const [reportSheetOpen, setReportSheetOpen] = useState(false);
+  const [reportingPost, setReportingPost] = useState<Post | null>(null);
+
+  const handleEditPost = useCallback((post: Post) => {
+    setEditingPost(post);
+    setEditSheetOpen(true);
+  }, []);
+
+  const handleEditSheetOpenChange = useCallback((open: boolean) => {
+    setEditSheetOpen(open);
+    if (!open) {
+      setEditingPost(null);
+    }
+  }, []);
+
+  const handleReportPost = useCallback((post: Post) => {
+    setReportingPost(post);
+    setReportSheetOpen(true);
+  }, []);
+
+  const handleReportSheetOpenChange = useCallback((open: boolean) => {
+    setReportSheetOpen(open);
+    if (!open) {
+      setReportingPost(null);
+    }
+  }, []);
+
+  const submitPostReport = useCallback(
+    async (reason: ReportReason, details?: string) => {
+      if (!reportingPost?.id || !profile) return false;
+      const success = await ModerationService.submitPostReport({
+        reason,
+        details,
+        reporterId: profile.id,
+        reporterPhone: profile.phoneNumber,
+        postId: reportingPost.id,
+        postTitle: reportingPost.title,
+        postBody: reportingPost.body,
+      });
+      if (success) {
+        toast({
+          title: "Report submitted",
+          message: "The clinic administrator has been notified.",
+          preset: "done",
+        });
+      } else {
+        toast({
+          title: "Could not submit report",
+          preset: "error",
+        });
+      }
+      return success;
+    },
+    [profile, reportingPost],
+  );
 
   if (loading === 1) {
     return (
@@ -183,9 +266,9 @@ export default function Posts() {
             data={posts}
             renderItem={({ item }) =>
               role === Role.DOCTOR ? (
-                <DoctorPost item={item} />
+                <DoctorPost item={item} onEdit={handleEditPost} />
               ) : (
-                <RenderPost item={item} />
+                <RenderPost item={item} onReport={handleReportPost} />
               )
             }
             keyExtractor={(item) => item.id || item.title}
@@ -211,6 +294,21 @@ export default function Posts() {
         </View>
       )}
       <CreatePost />
+      {editingPost ? (
+        <EditPostSheet
+          post={editingPost}
+          open={editSheetOpen}
+          onOpenChange={handleEditSheetOpenChange}
+        />
+      ) : null}
+      {reportingPost ? (
+        <ReportReasonSheet
+          open={reportSheetOpen}
+          onOpenChange={handleReportSheetOpenChange}
+          title="Report Post"
+          onSubmit={submitPostReport}
+        />
+      ) : null}
     </>
   );
 }

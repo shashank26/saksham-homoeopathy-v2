@@ -68,7 +68,6 @@
         }
       ],
       "expo-video",
-      "react-native-compressor",
       [
         "@sentry/react-native/expo",
         {
@@ -93,6 +92,10 @@
         "termsUrl": "https://shashank26.github.io/saksham-homoeopathy-v2/terms",
         "feedbackUrl": "mailto:arniparth@gmail.com?subject=Saksham%20Homoeopathy%20App%20Feedback",
         "supportEmail": "arniparth@gmail.com"
+      },
+      "stores": {
+        "android": "https://play.google.com/store/apps/details?id=com.arniparth.sakshamhomoeopathy",
+        "ios": ""
       }
     }
   }

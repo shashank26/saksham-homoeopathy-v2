@@ -14,7 +14,7 @@ export type SlotTime =
 
 export const slots: { label: string; value: SlotTime }[] = [
   { label: "11.30 AM", value: "11:30" },
-  { label: "11.45 PM", value: "11:45" },
+  { label: "11.45 AM", value: "11:45" },
   { label: "12.00 PM", value: "12:00" },
   { label: "12.15 PM", value: "12:15" },
   { label: "12.30 PM", value: "12:30" },

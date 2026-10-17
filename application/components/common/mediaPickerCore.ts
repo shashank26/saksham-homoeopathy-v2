@@ -1,7 +1,6 @@
 import * as ExpoImagePicker from "expo-image-picker";
 import { getThumbnailAsync } from "expo-video-thumbnails";
-import ImageResizer from "react-native-image-resizer";
-import VideoCompresser from "react-native-compressor";
+import * as Compressor from "expo-image-and-video-compressor";
 
 export type MediaPickerResult =
   | {
@@ -22,14 +21,15 @@ const DEFAULT_VIDEO_MAX_SIZE = 1280;
 
 const compressImage = async (uri: string, ratio: number) => {
   try {
-    const resizedImage = await ImageResizer.createResizedImage(
+    const resizedImage = await Compressor.compressImage(
       uri,
-      ratio * 1000,
-      1000,
-      "JPEG",
-      70,
+      {
+        output: "jpg",
+        maxHeight: ratio * 1000,
+        maxWidth: 1000,
+      }
     );
-    return resizedImage.uri;
+    return resizedImage;
   } catch (err) {
     console.error(err);
     return null;
@@ -43,10 +43,10 @@ const compressVideo = async (
   setProgress: (progress: number) => void,
 ) => {
   try {
-    const compressedVideo = await VideoCompresser.Video.compress(
+    const compressedVideo = await Compressor.compress(
       uri,
       {
-        compressionMethod: "auto",
+        codec: "h264",
         maxSize,
         getCancellationId: (cancellationId) => {
           started(cancellationId);
@@ -132,4 +132,4 @@ export async function pickVideoFromLibrary(
   };
 }
 
-export { VideoCompresser };
+export { Compressor };

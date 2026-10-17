@@ -1,4 +1,4 @@
-import { AuthService, UserProfile } from "@/services/Auth.service";
+import { AuthService, CountryCode, UserProfile } from "@/services/Auth.service";
 import { Monitoring } from "@/services/Monitoring.service";
 import { db, Role } from "@/services/Firebase.service";
 import {
@@ -12,7 +12,8 @@ import React, { useEffect, useState } from "react";
 export type AuthContextType = {
   user: FirebaseAuthTypes.User | null;
   signIn?: (
-    phoneNumber: number,
+    countryCode: CountryCode,
+    phoneNumber: string,
   ) => Promise<FirebaseAuthTypes.ConfirmationResult>;
   signOut?: () => Promise<void>;
   isLoading: boolean;
@@ -130,9 +131,9 @@ export const AuthProvider = ({ children }: React.PropsWithChildren) => {
         user,
         profile,
         notifications,
-        signIn: (phoneNumber: number) => {
+        signIn: (countryCode: CountryCode, phoneNumber: string) => {
           try {
-            return AuthService.signIn("+91", phoneNumber);
+            return AuthService.signIn(countryCode, phoneNumber);
           } catch (err) {
             Monitoring.captureException(err, {
               area: "auth",

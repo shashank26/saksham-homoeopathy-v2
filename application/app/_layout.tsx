@@ -1,19 +1,23 @@
+import { AppOpenTracker } from "@/components/analytics/AppOpenTracker";
+import { AppUpdateGate } from "@/components/appUpdate/AppUpdateGate";
 import { Auth } from "@/components/auth/Auth";
 import { AuthProvider } from "@/components/auth/hooks/useAuth";
+import { PhoneCountriesProvider } from "@/components/auth/hooks/usePhoneCountries";
 import { LoaderScreen } from "@/components/LoaderScreen";
 import { initializeFirebaseAppCheck } from "@/services/AppCheck";
+import { Monitoring } from "@/services/Monitoring.service";
 import { getFonts, themeColors, themes } from "@/themes/themes";
+import * as Sentry from "@sentry/react-native";
 import { defaultConfig } from "@tamagui/config/v4";
 import { createTamagui } from "@tamagui/core";
 import { PortalProvider } from "@tamagui/portal";
-import { TamaguiProvider } from "tamagui";
 import { ToastProvider } from "@tamagui/toast";
-import * as Sentry from "@sentry/react-native";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import { useEffect, useState } from "react";
 import { Platform, StatusBar } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { TamaguiProvider } from "tamagui";
 
 const SENTRY_DSN = __DEV__
   ? undefined
@@ -25,6 +29,7 @@ Sentry.init({
   enableLogs: true,
   sendDefaultPii: false,
 });
+Monitoring.setClientVersionTags();
 
 const config = createTamagui({
   ...defaultConfig,
@@ -79,22 +84,27 @@ function RootLayout() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <AuthProvider>
-        <TamaguiProvider config={config} defaultTheme="light">
-          <PortalProvider shouldAddRootHost>
-            {Platform.OS === "android" && (
-              <StatusBar
-                barStyle="dark-content"
-                translucent={false}
-                backgroundColor="#fff"
-              />
-            )}
-            <ToastProvider>
-              {appCheckInitialized ? getUI() : null}
-            </ToastProvider>
-          </PortalProvider>
-        </TamaguiProvider>
-      </AuthProvider>
+      <TamaguiProvider config={config} defaultTheme="light">
+        <PhoneCountriesProvider>
+          <AuthProvider>
+            <AppOpenTracker />
+            <PortalProvider shouldAddRootHost>
+              {Platform.OS === "android" && (
+                <StatusBar
+                  barStyle="dark-content"
+                  translucent={false}
+                  backgroundColor="#fff"
+                />
+              )}
+              <ToastProvider>
+                <AppUpdateGate>
+                  {appCheckInitialized ? getUI() : null}
+                </AppUpdateGate>
+              </ToastProvider>
+            </PortalProvider>
+          </AuthProvider>
+        </PhoneCountriesProvider>
+      </TamaguiProvider>
     </GestureHandlerRootView>
   );
 }

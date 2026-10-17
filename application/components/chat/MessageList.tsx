@@ -9,6 +9,10 @@ import { Role } from "@/services/Firebase.service";
 import { ModerationService } from "@/services/Moderation.service";
 import { MomentService } from "@/services/Moment.service";
 import { UserService } from "@/services/User.service";
+import {
+  getStaffDisplayLabel,
+  isStaffUser,
+} from "@/utils/userDisplay";
 import { toast } from "burnt";
 import { router } from "expo-router";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -167,8 +171,9 @@ export const MessageList = ({
           }
 
           const user = await UserService.getUser(senderId);
-          const label =
-            user?.displayName || user?.phoneNumber || "Unknown";
+          const label = isStaffUser(user)
+            ? getStaffDisplayLabel(user)
+            : user?.displayName || user?.phoneNumber || "Unknown";
           labels.set(senderId, label);
         }),
       );
